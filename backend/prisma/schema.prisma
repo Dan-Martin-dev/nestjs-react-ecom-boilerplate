@@ -35,11 +35,25 @@ enum InventoryChangeType {
   RETURN
 }
 
+enum ProductAttributeType {
+  COLOR
+  SIZE           // XS, S, M, L, XL, XXL
+  MATERIAL       // Cotton, Polyester, Denim
+  SEASON         // Verano, Invierno, Otoño, Primavera
+  GENDER         // Masculino, Femenino, Unisex
+  STYLE          // Casual, Formal, Deportivo
+  FIT            // Slim, Regular, Loose
+}
+
 enum PaymentMethod {
   STRIPE
   PAYPAL
   CREDIT_CARD
   BANK_TRANSFER
+  MERCADO_PAGO     // Add this - most popular in Argentina
+  RAPIPAGO         // Cash payment network
+  PAGO_FACIL       // Cash payment network
+  BANK_DEBIT 
 }
 
 enum OrderStatus {
@@ -95,9 +109,13 @@ model User {
 model Address {
   id        String   @id @default(cuid())
   street    String
+  streetNumber String? 
   city      String
-  state     String?
+  province  String     
   zipCode   String
+  neighborhood String? // Barrio - important in Argentina
+  floor     String?    // Piso (for apartments)
+  apartment String?    // Departamento
   country   String
   type      AddressType
   isDefault Boolean  @default(false)
@@ -191,7 +209,7 @@ model ProductImage {
 model ProductAttribute {
   id   String @id @default(cuid())
   name String @unique // "Color", "Size", "Material"
-  type String // "COLOR", "SIZE", "TEXT", "NUMBER" (Consider an enum if these are fixed)
+  type ProductAttributeType // "COLOR", "SIZE", "TEXT", "NUMBER" (Consider an enum if these are fixed)
   // createdAt DateTime @default(now()) // Optional
   // updatedAt DateTime @updatedAt // Optional
 
