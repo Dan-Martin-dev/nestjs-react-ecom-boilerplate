@@ -1,0 +1,43 @@
+[01;34m.[0m
+├── [01;34mdist[0m
+│   ├── app.controller.d.ts
+│   ├── app.controller.js
+│   ├── app.controller.js.map
+│   ├── app.module.d.ts
+│   ├── app.module.js
+│   ├── app.module.js.map
+│   ├── app.service.d.ts
+│   ├── app.service.js
+│   ├── app.service.js.map
+│   ├── main.d.ts
+│   ├── main.js
+│   ├── main.js.map
+│   └── tsconfig.build.tsbuildinfo
+├── eslint.config.mjs
+├── folder_structure.txt
+├── nest-cli.json
+├── package.json
+├── pnpm-lock.yaml
+├── [01;34mprisma[0m
+│   ├── [01;34mmigrations[0m
+│   │   ├── [01;34m20250625184219_init[0m
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── README.md
+├── [01;34msrc[0m
+│   ├── app.controller.spec.ts
+│   ├── app.controller.ts
+│   ├── app.module.ts
+│   ├── app.service.ts
+│   ├── main.ts
+│   ├── [01;34mprisma[0m
+│   │   └── prisma.module.ts
+│   └── prisma.service.ts
+├── [01;34mtest[0m
+│   ├── app.e2e-spec.ts
+│   └── jest-e2e.json
+├── tsconfig.build.json
+└── tsconfig.json
+
+7 directories, 33 files
