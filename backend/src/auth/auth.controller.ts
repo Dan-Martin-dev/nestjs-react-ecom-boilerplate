@@ -4,8 +4,9 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { RegisterDto, RegisterSchema } from './dto/register.dto';
 import { LoginDto, LoginSchema } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-@UseGuards(AuthGuard('jwt')) 
+@UseGuards(JwtAuthGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

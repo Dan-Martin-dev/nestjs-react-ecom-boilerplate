@@ -1,3 +1,4 @@
+// monorepo-ecom/backend/src/cart/cart.controller.ts
 import { 
   Controller, 
   Get, 
@@ -13,7 +14,10 @@ import {
 import { CartService } from './cart.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { AddToCartDto, AddToCartSchema } from './dto/add-to-cart.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
 
+@UseGuards(JwtAuthGuard) // <-- SECURE THE ENTIRE CONTROLLER
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}

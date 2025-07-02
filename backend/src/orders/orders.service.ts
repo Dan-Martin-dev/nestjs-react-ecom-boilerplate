@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { OrderStatus, PaymentStatus, InventoryChangeType, Role } from '@prisma/client';
+import { OrderStatus, PaymentStatus, InventoryChangeType, Role, Discount, OrderTrackingStatus } from '@prisma/client'; // Import Discount and OrderTrackingStatus
 
 @Injectable()
 export class OrdersService {
@@ -61,10 +61,10 @@ export class OrdersService {
     );
 
     // Apply discount if provided
-    let appliedDiscount = null;
+    let appliedDiscount: Discount | null = null; // Correct type here
     if (discountCode) {
       const discount = await this.prisma.discount.findUnique({
-        where: { 
+        where: {
           code: discountCode,
           isActive: true,
         },
@@ -72,7 +72,7 @@ export class OrdersService {
 
       if (discount && this.isDiscountValid(discount)) {
         appliedDiscount = discount;
-        
+
         if (discount.type === 'PERCENTAGE') {
           totalAmount = totalAmount * (1 - Number(discount.value) / 100);
         } else {
@@ -80,6 +80,7 @@ export class OrdersService {
         }
 
         // Update discount usage
+        // This should ideally be part of the transaction as well
         await this.prisma.discount.update({
           where: { id: discount.id },
           data: { timesUsed: { increment: 1 } },
@@ -97,7 +98,7 @@ export class OrdersService {
           billingAddressId,
           totalAmount,
           notes,
-          appliedDiscountId: appliedDiscount?.id,
+          appliedDiscountId: appliedDiscount?.id, // Access id safely
           items: {
             create: cart.items.map(item => ({
               productVariantId: item.productVariantId,
@@ -158,7 +159,7 @@ export class OrdersService {
       await tx.orderTracking.create({
         data: {
           orderId: newOrder.id,
-          status: 'ORDER_PLACED',
+          status: OrderTrackingStatus.ORDER_PLACED, // Use enum member
           message: 'Order has been placed successfully',
         },
       });
@@ -170,7 +171,7 @@ export class OrdersService {
   }
 
   async findUserOrders(userId: string, paginationDto: PaginationDto) {
-    const { page, limit, sortBy = 'createdAt', sortOrder } = paginationDto;
+    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder } = paginationDto; // Provide defaults
     const skip = (page - 1) * limit;
 
     const [orders, total] = await Promise.all([
@@ -216,7 +217,7 @@ export class OrdersService {
   }
 
   async findAllOrders(paginationDto: PaginationDto) {
-    const { page, limit, sortBy = 'createdAt', sortOrder } = paginationDto;
+    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder } = paginationDto; // Provide defaults
     const skip = (page - 1) * limit;
 
     const [orders, total] = await Promise.all([
@@ -386,7 +387,7 @@ export class OrdersService {
       await tx.orderTracking.create({
         data: {
           orderId: order.id,
-          status: 'EXCEPTION',
+          status: OrderTrackingStatus.EXCEPTION, // Use enum member
           message: 'Order has been cancelled by customer',
         },
       });
@@ -395,27 +396,28 @@ export class OrdersService {
     return { message: 'Order cancelled successfully' };
   }
 
-  private isDiscountValid(discount: any): boolean {
+  private isDiscountValid(discount: any): boolean { // Consider typing 'discount' more specifically
     const now = new Date();
-    
+
     if (discount.startDate && now < discount.startDate) return false;
     if (discount.endDate && now > discount.endDate) return false;
     if (discount.usageLimit && discount.timesUsed >= discount.usageLimit) return false;
-    
+    // Add check for minimumSpend if applicable
+    // if (discount.minimumSpend && totalAmount < discount.minimumSpend) return false; // Requires totalAmount here
+
     return true;
   }
 
-  private mapOrderStatusToTrackingStatus(status: OrderStatus) {
-    const mapping = {
-      [OrderStatus.PENDING]: 'ORDER_PLACED',
-      [OrderStatus.PROCESSING]: 'PROCESSING',
-      [OrderStatus.SHIPPED]: 'SHIPPED',
-      [OrderStatus.DELIVERED]: 'DELIVERED',
-      [OrderStatus.CANCELLED]: 'EXCEPTION',
-      [OrderStatus.REFUNDED]: 'EXCEPTION',
+  private mapOrderStatusToTrackingStatus(status: OrderStatus): OrderTrackingStatus { // Explicit return type
+    const mapping: Record<OrderStatus, OrderTrackingStatus> = { // Explicit mapping type
+      [OrderStatus.PENDING]: OrderTrackingStatus.ORDER_PLACED,
+      [OrderStatus.PROCESSING]: OrderTrackingStatus.PROCESSING,
+      [OrderStatus.SHIPPED]: OrderTrackingStatus.SHIPPED,
+      [OrderStatus.DELIVERED]: OrderTrackingStatus.DELIVERED,
+      [OrderStatus.CANCELLED]: OrderTrackingStatus.EXCEPTION,
+      [OrderStatus.REFUNDED]: OrderTrackingStatus.EXCEPTION,
     };
-    
-    return mapping[status] || 'ORDER_PLACED';
+
+    return mapping[status] || OrderTrackingStatus.ORDER_PLACED; // Default to ORDER_PLACED
   }
 }
-

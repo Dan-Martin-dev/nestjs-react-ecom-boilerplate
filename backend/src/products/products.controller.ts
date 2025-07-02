@@ -1,3 +1,4 @@
+// monorepo-ecom/backend/src/products/products.controller.ts
 import { 
   Controller, 
   Get, 

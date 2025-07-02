@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+// monorepo-ecom/backend/src/products/products.service.ts
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductFilterDto } from './dto/product-filter.dto';
@@ -211,6 +212,20 @@ export class ProductsService {
     }
 
     return product;
+  }
+
+  async findVariantAndVerifyStock(variantId: string, requestedQuantity: number) {
+    const variant = await this.prisma.productVariant.findUnique({
+      where: { id: variantId },
+    });
+
+    if (!variant) {
+      throw new NotFoundException('Product variant not found');
+    }
+    if (variant.stockQuantity < requestedQuantity) {
+      throw new BadRequestException('Not enough stock available for this variant');
+    }
+    return variant;
   }
 
   async update(id: string, updateProductDto: any) {

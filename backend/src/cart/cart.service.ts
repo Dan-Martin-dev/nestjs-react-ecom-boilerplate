@@ -1,11 +1,17 @@
+// monorepo-ecom/backend/src/cart/cart.service.ts
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class CartService {
-  constructor(private prisma: PrismaService) {}
-
+  // INJECT BOTH SERVICES
+  constructor(
+    private prisma: PrismaService,
+    private productsService: ProductsService, 
+  ) {}
+  
   async getCart(userId: string) {
     let cart = await this.prisma.cart.findUnique({
       where: { userId },
@@ -63,12 +69,11 @@ export class CartService {
   async addToCart(userId: string, addToCartDto: AddToCartDto) {
     const { productVariantId, quantity } = addToCartDto;
 
-    // Check if variant exists and has enough stock
-    const variant = await this.prisma.productVariant.findUnique({
-      where: { id: productVariantId },
-      include: { product: true },
-    });
-
+    const variant = await this.productsService.findVariantAndVerifyStock(
+      productVariantId,
+      quantity,
+    );
+    
     if (!variant) {
       throw new NotFoundException('Product variant not found');
     }
