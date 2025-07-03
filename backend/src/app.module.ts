@@ -11,11 +11,11 @@ import { CategoriesModule } from './categories/categories.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 
-/* import { AddressesModule } from './addresses/addresses.module';
+import { AddressesModule } from './addresses/addresses.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { UsersModule } from './users/users.module';
- */
+
 // NOTE: I've left out 'analytics' and 'payments' as their folders were empty.
 // Add them here once you create their modules.
 
@@ -28,10 +28,10 @@ import { UsersModule } from './users/users.module';
     CategoriesModule,
     CartModule,
     OrdersModule,
-/*     UsersModule,
+    UsersModule,
     AddressesModule,
     ReviewsModule,
-    DiscountsModule, */
+    DiscountsModule, 
   ],
   controllers: [AppController], // Keep the basic app controller for root health checks
   providers: [AppService],   // Keep the basic app service

@@ -1,3 +1,4 @@
+// monorepo-ecom/backend/src/auth/auth.controller.ts
 import { Controller, Post, Body, UsePipes, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -6,7 +7,6 @@ import { LoginDto, LoginSchema } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
