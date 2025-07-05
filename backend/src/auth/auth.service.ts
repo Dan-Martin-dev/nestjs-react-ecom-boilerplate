@@ -3,18 +3,21 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -25,9 +28,13 @@ export class AuthService {
     if (existingUser) {
       throw new ConflictException('User already exists');
     }
+    const saltRounds = this.configService.get<number>('BCRYPT_SALT_ROUNDS');
 
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-
+    if (!saltRounds) {
+        // This is a more robust approach for critical configuration
+        throw new InternalServerErrorException('Server configuration error: Salt rounds not defined.');
+    }
+    const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
     const user = await this.prisma.user.create({
       data: {
         ...registerDto,

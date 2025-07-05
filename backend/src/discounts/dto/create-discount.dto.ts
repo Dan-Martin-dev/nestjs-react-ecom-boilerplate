@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { DiscountType } from '@prisma/client';
 
 // 1. Define the base object shape without refinements. We will export this.
-export const DiscountBaseSchema = z.object({
+export const DiscountBaseSchema = z.object({  
   code: z
     .string()
     .min(3, 'Code must be at least 3 characters')
