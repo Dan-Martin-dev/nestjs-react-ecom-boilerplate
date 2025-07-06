@@ -1,370 +1,230 @@
 [01;34m.[0m
-├── [01;34mbackend[0m
-│   ├── [01;34mdist[0m
-│   │   ├── [01;34maddresses[0m
-│   │   │   ├── addresses.controller.d.ts
-│   │   │   ├── addresses.controller.js
-│   │   │   ├── addresses.controller.js.map
-│   │   │   ├── addresses.module.d.ts
-│   │   │   ├── addresses.module.js
-│   │   │   ├── addresses.module.js.map
-│   │   │   ├── addresses.service.d.ts
-│   │   │   ├── addresses.service.js
-│   │   │   ├── addresses.service.js.map
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── address-resposne.dto.d.ts
-│   │   │       ├── address-resposne.dto.js
-│   │   │       ├── address-resposne.dto.js.map
-│   │   │       ├── create-address.dto.d.ts
-│   │   │       ├── create-address.dto.js
-│   │   │       ├── create-address.dto.js.map
-│   │   │       ├── update-address.dto.d.ts
-│   │   │       ├── update-address.dto.js
-│   │   │       └── update-address.dto.js.map
-│   │   ├── app.controller.d.ts
-│   │   ├── app.controller.js
-│   │   ├── app.controller.js.map
-│   │   ├── app.module.d.ts
-│   │   ├── app.module.js
-│   │   ├── app.module.js.map
-│   │   ├── app.service.d.ts
-│   │   ├── app.service.js
-│   │   ├── app.service.js.map
-│   │   ├── [01;34mauth[0m
-│   │   │   ├── auth.controller.d.ts
-│   │   │   ├── auth.controller.js
-│   │   │   ├── auth.controller.js.map
-│   │   │   ├── auth.module.d.ts
-│   │   │   ├── auth.module.js
-│   │   │   ├── auth.module.js.map
-│   │   │   ├── auth.service.d.ts
-│   │   │   ├── auth.service.js
-│   │   │   ├── auth.service.js.map
-│   │   │   ├── [01;34mdecorators[0m
-│   │   │   │   ├── get-user.decorator.d.ts
-│   │   │   │   ├── get-user.decorator.js
-│   │   │   │   └── get-user.decorator.js.map
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── auth-response.dto.d.ts
-│   │   │   │   ├── auth-response.dto.js
-│   │   │   │   ├── auth-response.dto.js.map
-│   │   │   │   ├── login.dto.d.ts
-│   │   │   │   ├── login.dto.js
-│   │   │   │   ├── login.dto.js.map
-│   │   │   │   ├── register.dto.d.ts
-│   │   │   │   ├── register.dto.js
-│   │   │   │   └── register.dto.js.map
-│   │   │   ├── [01;34mguards[0m
-│   │   │   │   ├── jwt-auth.guard.d.ts
-│   │   │   │   ├── jwt-auth.guard.js
-│   │   │   │   └── jwt-auth.guard.js.map
-│   │   │   └── [01;34mstrategies[0m
-│   │   │       ├── jwt.strategy.d.ts
-│   │   │       ├── jwt.strategy.js
-│   │   │       └── jwt.strategy.js.map
-│   │   ├── [01;34mcart[0m
-│   │   │   ├── cart.controller.d.ts
-│   │   │   ├── cart.controller.js
-│   │   │   ├── cart.controller.js.map
-│   │   │   ├── cart.module.d.ts
-│   │   │   ├── cart.module.js
-│   │   │   ├── cart.module.js.map
-│   │   │   ├── cart.service.d.ts
-│   │   │   ├── cart.service.js
-│   │   │   ├── cart.service.js.map
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── add-to-cart.dto.d.ts
-│   │   │       ├── add-to-cart.dto.js
-│   │   │       ├── add-to-cart.dto.js.map
-│   │   │       ├── cart-response.dto.d.ts
-│   │   │       ├── cart-response.dto.js
-│   │   │       └── cart-response.dto.js.map
-│   │   ├── [01;34mcategories[0m
-│   │   │   ├── categories.controller.d.ts
-│   │   │   ├── categories.controller.js
-│   │   │   ├── categories.controller.js.map
-│   │   │   ├── categories.module.d.ts
-│   │   │   ├── categories.module.js
-│   │   │   ├── categories.module.js.map
-│   │   │   ├── categories.service.d.ts
-│   │   │   ├── categories.service.js
-│   │   │   ├── categories.service.js.map
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── category-filters.dto.d.ts
-│   │   │       ├── category-filters.dto.js
-│   │   │       ├── category-filters.dto.js.map
-│   │   │       ├── category-response.dto.d.ts
-│   │   │       ├── category-response.dto.js
-│   │   │       ├── category-response.dto.js.map
-│   │   │       ├── create-category.dto.d.ts
-│   │   │       ├── create-category.dto.js
-│   │   │       ├── create-category.dto.js.map
-│   │   │       ├── update-category.dto.d.ts
-│   │   │       ├── update-category.dto.js
-│   │   │       └── update-category.dto.js.map
-│   │   ├── [01;34mcommon[0m
-│   │   │   ├── [01;34mdecorators[0m
-│   │   │   │   ├── roles.decorator.d.ts
-│   │   │   │   ├── roles.decorator.js
-│   │   │   │   └── roles.decorator.js.map
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── pagination.dto.d.ts
-│   │   │   │   ├── pagination.dto.js
-│   │   │   │   └── pagination.dto.js.map
-│   │   │   ├── [01;34mguards[0m
-│   │   │   │   ├── auth.guard.d.ts
-│   │   │   │   ├── auth.guard.js
-│   │   │   │   ├── auth.guard.js.map
-│   │   │   │   ├── roles.guard.d.ts
-│   │   │   │   ├── roles.guard.js
-│   │   │   │   └── roles.guard.js.map
-│   │   │   ├── [01;34minterceptors[0m
-│   │   │   │   ├── response.interceptor.d.ts
-│   │   │   │   ├── response.interceptor.js
-│   │   │   │   └── response.interceptor.js.map
-│   │   │   ├── [01;34mpipes[0m
-│   │   │   │   ├── zod-validation.pipe.d.ts
-│   │   │   │   ├── zod-validation.pipe.js
-│   │   │   │   └── zod-validation.pipe.js.map
-│   │   │   └── [01;34mutilities[0m
-│   │   │       ├── utilities.d.ts
-│   │   │       ├── utilities.js
-│   │   │       └── utilities.js.map
-│   │   ├── [01;34mdiscounts[0m
-│   │   │   ├── discounts.controller.d.ts
-│   │   │   ├── discounts.controller.js
-│   │   │   ├── discounts.controller.js.map
-│   │   │   ├── discounts.module.d.ts
-│   │   │   ├── discounts.module.js
-│   │   │   ├── discounts.module.js.map
-│   │   │   ├── discounts.service.d.ts
-│   │   │   ├── discounts.service.js
-│   │   │   ├── discounts.service.js.map
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── create-discount.dto.d.ts
-│   │   │       ├── create-discount.dto.js
-│   │   │       ├── create-discount.dto.js.map
-│   │   │       ├── discount-response.dto.d.ts
-│   │   │       ├── discount-response.dto.js
-│   │   │       ├── discount-response.dto.js.map
-│   │   │       ├── update-discount.dto.d.ts
-│   │   │       ├── update-discount.dto.js
-│   │   │       └── update-discount.dto.js.map
-│   │   ├── main.d.ts
-│   │   ├── main.js
-│   │   ├── main.js.map
-│   │   ├── [01;34morders[0m
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── create-order.dto.d.ts
-│   │   │   │   ├── create-order.dto.js
-│   │   │   │   ├── create-order.dto.js.map
-│   │   │   │   ├── order-response.dto.d.ts
-│   │   │   │   ├── order-response.dto.js
-│   │   │   │   ├── order-response.dto.js.map
-│   │   │   │   ├── update-order.dto.d.ts
-│   │   │   │   ├── update-order.dto.js
-│   │   │   │   └── update-order.dto.js.map
-│   │   │   ├── orders.controller.d.ts
-│   │   │   ├── orders.controller.js
-│   │   │   ├── orders.controller.js.map
-│   │   │   ├── orders.module.d.ts
-│   │   │   ├── orders.module.js
-│   │   │   ├── orders.module.js.map
-│   │   │   ├── orders.service.d.ts
-│   │   │   ├── orders.service.js
-│   │   │   └── orders.service.js.map
-│   │   ├── [01;34mprisma[0m
-│   │   │   ├── prisma.module.d.ts
-│   │   │   ├── prisma.module.js
-│   │   │   ├── prisma.module.js.map
-│   │   │   ├── prisma.service.d.ts
-│   │   │   ├── prisma.service.js
-│   │   │   └── prisma.service.js.map
-│   │   ├── [01;34mproducts[0m
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── create-product.dto.d.ts
-│   │   │   │   ├── create-product.dto.js
-│   │   │   │   ├── create-product.dto.js.map
-│   │   │   │   ├── product-filter.dto.d.ts
-│   │   │   │   ├── product-filter.dto.js
-│   │   │   │   ├── product-filter.dto.js.map
-│   │   │   │   ├── product-response.dto.d.ts
-│   │   │   │   ├── product-response.dto.js
-│   │   │   │   ├── product-response.dto.js.map
-│   │   │   │   ├── update-product.dto.d.ts
-│   │   │   │   ├── update-product.dto.js
-│   │   │   │   └── update-product.dto.js.map
-│   │   │   ├── products.controller.d.ts
-│   │   │   ├── products.controller.js
-│   │   │   ├── products.controller.js.map
-│   │   │   ├── products.module.d.ts
-│   │   │   ├── products.module.js
-│   │   │   ├── products.module.js.map
-│   │   │   ├── products.service.d.ts
-│   │   │   ├── products.service.js
-│   │   │   └── products.service.js.map
-│   │   ├── [01;34mreviews[0m
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── create-review.dto.d.ts
-│   │   │   │   ├── create-review.dto.js
-│   │   │   │   ├── create-review.dto.js.map
-│   │   │   │   ├── review-response.dto.d.ts
-│   │   │   │   ├── review-response.dto.js
-│   │   │   │   └── review-response.dto.js.map
-│   │   │   ├── reviews.controller.d.ts
-│   │   │   ├── reviews.controller.js
-│   │   │   ├── reviews.controller.js.map
-│   │   │   ├── reviews.module.d.ts
-│   │   │   ├── reviews.module.js
-│   │   │   ├── reviews.module.js.map
-│   │   │   ├── reviews.service.d.ts
-│   │   │   ├── reviews.service.js
-│   │   │   └── reviews.service.js.map
-│   │   ├── tsconfig.build.tsbuildinfo
-│   │   └── [01;34musers[0m
-│   │       ├── [01;34mdto[0m
-│   │       │   ├── create-user.dto.d.ts
-│   │       │   ├── create-user.dto.js
-│   │       │   ├── create-user.dto.js.map
-│   │       │   ├── update-user.dto.d.ts
-│   │       │   ├── update-user.dto.js
-│   │       │   ├── update-user.dto.js.map
-│   │       │   ├── user-response.dto.d.ts
-│   │       │   ├── user-response.dto.js
-│   │       │   └── user-response.dto.js.map
-│   │       ├── users.controller.d.ts
-│   │       ├── users.controller.js
-│   │       ├── users.controller.js.map
-│   │       ├── users.module.d.ts
-│   │       ├── users.module.js
-│   │       ├── users.module.js.map
-│   │       ├── users.service.d.ts
-│   │       ├── users.service.js
-│   │       └── users.service.js.map
-│   ├── [01;34mdocs[0m
-│   │   └── schema.prisma.md
-│   ├── eslint.config.mjs
-│   ├── folder_structure.txt
-│   ├── nest-cli.json
-│   ├── package.json
-│   ├── pnpm-lock.yaml
-│   ├── [01;34mprisma[0m
-│   │   ├── [01;34mmigrations[0m
-│   │   │   ├── [01;34m20250625184219_init[0m
-│   │   │   │   └── migration.sql
-│   │   │   ├── [01;34m20250626175840_monorepo_schema[0m
-│   │   │   │   └── migration.sql
-│   │   │   └── migration_lock.toml
-│   │   └── schema.prisma
-│   ├── README.md
-│   ├── [01;34msrc[0m
-│   │   ├── [01;34maddresses[0m
-│   │   │   ├── addresses.controller.ts
-│   │   │   ├── addresses.module.ts
-│   │   │   ├── addresses.service.ts
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── create-address.dto.ts
-│   │   │       └── update-address.dto.ts
-│   │   ├── [01;34manalytics[0m
-│   │   ├── app.controller.spec.ts
-│   │   ├── app.controller.ts
-│   │   ├── app.module.ts
-│   │   ├── app.service.ts
-│   │   ├── [01;34mauth[0m
-│   │   │   ├── auth.controller.ts
-│   │   │   ├── auth.module.ts
-│   │   │   ├── auth.service.ts
-│   │   │   ├── [01;34mdecorators[0m
-│   │   │   │   └── get-user.decorator.ts
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── auth-response.dto.ts
-│   │   │   │   ├── login.dto.ts
-│   │   │   │   └── register.dto.ts
-│   │   │   ├── [01;34mguards[0m
-│   │   │   │   └── jwt-auth.guard.ts
-│   │   │   └── [01;34mstrategies[0m
-│   │   │       └── jwt.strategy.ts
-│   │   ├── [01;34mcart[0m
-│   │   │   ├── cart.controller.ts
-│   │   │   ├── cart.module.ts
-│   │   │   ├── cart.service.ts
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── add-to-cart.dto.ts
-│   │   │       └── cart-response.dto.ts
-│   │   ├── [01;34mcategories[0m
-│   │   │   ├── categories.controller.ts
-│   │   │   ├── categories.module.ts
-│   │   │   ├── categories.service.ts
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── category-filters.dto.ts
-│   │   │       ├── category-response.dto.ts
-│   │   │       ├── create-category.dto.ts
-│   │   │       └── update-category.dto.ts
-│   │   ├── [01;34mcommon[0m
-│   │   │   ├── [01;34mdecorators[0m
-│   │   │   │   └── roles.decorator.ts
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   └── pagination.dto.ts
-│   │   │   ├── [01;34mfilters[0m
-│   │   │   ├── [01;34mguards[0m
-│   │   │   │   ├── auth.guard.ts
-│   │   │   │   └── roles.guard.ts
-│   │   │   ├── [01;34minterceptors[0m
-│   │   │   │   └── response.interceptor.ts
-│   │   │   ├── [01;34mpipes[0m
-│   │   │   │   └── zod-validation.pipe.ts
-│   │   │   └── [01;34mutilities[0m
-│   │   │       └── utilities.ts
-│   │   ├── [01;34mdiscounts[0m
-│   │   │   ├── discounts.controller.ts
-│   │   │   ├── discounts.module.ts
-│   │   │   ├── discounts.service.ts
-│   │   │   └── [01;34mdto[0m
-│   │   │       ├── create-discount.dto.ts
-│   │   │       └── update-discount.dto.ts
-│   │   ├── main.ts
-│   │   ├── [01;34morders[0m
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── create-order.dto.ts
-│   │   │   │   ├── order-response.dto.ts
-│   │   │   │   └── update-order.dto.ts
-│   │   │   ├── orders.controller.ts
-│   │   │   ├── orders.module.ts
-│   │   │   └── orders.service.ts
-│   │   ├── [01;34mpayments[0m
-│   │   ├── [01;34mprisma[0m
-│   │   │   ├── prisma.module.ts
-│   │   │   └── prisma.service.ts
-│   │   ├── [01;34mproducts[0m
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   ├── create-product.dto.ts
-│   │   │   │   ├── product-filter.dto.ts
-│   │   │   │   ├── product-response.dto.ts
-│   │   │   │   └── update-product.dto.ts
-│   │   │   ├── products.controller.ts
-│   │   │   ├── products.module.ts
-│   │   │   └── products.service.ts
-│   │   ├── [01;34mreviews[0m
-│   │   │   ├── [01;34mdto[0m
-│   │   │   │   └── create-review.dto.ts
-│   │   │   ├── reviews.controller.ts
-│   │   │   ├── reviews.module.ts
-│   │   │   └── reviews.service.ts
-│   │   └── [01;34musers[0m
-│   │       ├── [01;34mdto[0m
-│   │       │   ├── create-user.dto.ts
-│   │       │   ├── update-user.dto.ts
-│   │       │   └── user-response.dto.ts
-│   │       ├── users.controller.ts
-│   │       ├── users.module.ts
-│   │       └── users.service.ts
-│   ├── [01;34mtest[0m
-│   │   ├── app.e2e-spec.ts
-│   │   └── jest-e2e.json
-│   ├── tsconfig.build.json
-│   └── tsconfig.json
+├── [01;34mapps[0m
+│   └── [01;34mapi[0m
+│       ├── [01;34mdist[0m
+│       │   ├── [01;34maddresses[0m
+│       │   │   ├── addresses.controller.d.ts
+│       │   │   ├── addresses.controller.js
+│       │   │   ├── addresses.controller.js.map
+│       │   │   ├── addresses.module.d.ts
+│       │   │   ├── addresses.module.js
+│       │   │   ├── addresses.module.js.map
+│       │   │   ├── addresses.service.d.ts
+│       │   │   ├── addresses.service.js
+│       │   │   ├── addresses.service.js.map
+│       │   │   └── [01;34mdto[0m
+│       │   ├── app.controller.d.ts
+│       │   ├── app.controller.js
+│       │   ├── app.controller.js.map
+│       │   ├── app.module.d.ts
+│       │   ├── app.module.js
+│       │   ├── app.module.js.map
+│       │   ├── app.service.d.ts
+│       │   ├── app.service.js
+│       │   ├── app.service.js.map
+│       │   ├── [01;34mauth[0m
+│       │   │   ├── auth.controller.d.ts
+│       │   │   ├── auth.controller.js
+│       │   │   ├── auth.controller.js.map
+│       │   │   ├── auth.module.d.ts
+│       │   │   ├── auth.module.js
+│       │   │   ├── auth.module.js.map
+│       │   │   ├── auth.service.d.ts
+│       │   │   ├── auth.service.js
+│       │   │   ├── auth.service.js.map
+│       │   │   ├── [01;34mdecorators[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── [01;34mguards[0m
+│       │   │   └── [01;34mstrategies[0m
+│       │   ├── [01;34mcart[0m
+│       │   │   ├── cart.controller.d.ts
+│       │   │   ├── cart.controller.js
+│       │   │   ├── cart.controller.js.map
+│       │   │   ├── cart.module.d.ts
+│       │   │   ├── cart.module.js
+│       │   │   ├── cart.module.js.map
+│       │   │   ├── cart.service.d.ts
+│       │   │   ├── cart.service.js
+│       │   │   ├── cart.service.js.map
+│       │   │   └── [01;34mdto[0m
+│       │   ├── [01;34mcategories[0m
+│       │   │   ├── categories.controller.d.ts
+│       │   │   ├── categories.controller.js
+│       │   │   ├── categories.controller.js.map
+│       │   │   ├── categories.module.d.ts
+│       │   │   ├── categories.module.js
+│       │   │   ├── categories.module.js.map
+│       │   │   ├── categories.service.d.ts
+│       │   │   ├── categories.service.js
+│       │   │   ├── categories.service.js.map
+│       │   │   └── [01;34mdto[0m
+│       │   ├── [01;34mcommon[0m
+│       │   │   ├── [01;34mdecorators[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── [01;34mfilters[0m
+│       │   │   ├── [01;34mguards[0m
+│       │   │   ├── [01;34minterceptors[0m
+│       │   │   ├── [01;34mpipes[0m
+│       │   │   └── [01;34mutilities[0m
+│       │   ├── [01;34mdiscounts[0m
+│       │   │   ├── discounts.controller.d.ts
+│       │   │   ├── discounts.controller.js
+│       │   │   ├── discounts.controller.js.map
+│       │   │   ├── discounts.module.d.ts
+│       │   │   ├── discounts.module.js
+│       │   │   ├── discounts.module.js.map
+│       │   │   ├── discounts.service.d.ts
+│       │   │   ├── discounts.service.js
+│       │   │   ├── discounts.service.js.map
+│       │   │   └── [01;34mdto[0m
+│       │   ├── main.d.ts
+│       │   ├── main.js
+│       │   ├── main.js.map
+│       │   ├── [01;34morders[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── orders.controller.d.ts
+│       │   │   ├── orders.controller.js
+│       │   │   ├── orders.controller.js.map
+│       │   │   ├── orders.module.d.ts
+│       │   │   ├── orders.module.js
+│       │   │   ├── orders.module.js.map
+│       │   │   ├── orders.service.d.ts
+│       │   │   ├── orders.service.js
+│       │   │   └── orders.service.js.map
+│       │   ├── [01;34mprisma[0m
+│       │   │   ├── prisma.module.d.ts
+│       │   │   ├── prisma.module.js
+│       │   │   ├── prisma.module.js.map
+│       │   │   ├── prisma.service.d.ts
+│       │   │   ├── prisma.service.js
+│       │   │   └── prisma.service.js.map
+│       │   ├── [01;34mproducts[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── products.controller.d.ts
+│       │   │   ├── products.controller.js
+│       │   │   ├── products.controller.js.map
+│       │   │   ├── products.module.d.ts
+│       │   │   ├── products.module.js
+│       │   │   ├── products.module.js.map
+│       │   │   ├── products.service.d.ts
+│       │   │   ├── products.service.js
+│       │   │   └── products.service.js.map
+│       │   ├── [01;34mreviews[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── reviews.controller.d.ts
+│       │   │   ├── reviews.controller.js
+│       │   │   ├── reviews.controller.js.map
+│       │   │   ├── reviews.module.d.ts
+│       │   │   ├── reviews.module.js
+│       │   │   ├── reviews.module.js.map
+│       │   │   ├── reviews.service.d.ts
+│       │   │   ├── reviews.service.js
+│       │   │   └── reviews.service.js.map
+│       │   ├── tsconfig.build.tsbuildinfo
+│       │   └── [01;34musers[0m
+│       │       ├── [01;34mdto[0m
+│       │       ├── users.controller.d.ts
+│       │       ├── users.controller.js
+│       │       ├── users.controller.js.map
+│       │       ├── users.module.d.ts
+│       │       ├── users.module.js
+│       │       ├── users.module.js.map
+│       │       ├── users.service.d.ts
+│       │       ├── users.service.js
+│       │       └── users.service.js.map
+│       ├── [01;34mdocs[0m
+│       │   └── schema.prisma.md
+│       ├── eslint.config.mjs
+│       ├── folder_structure.txt
+│       ├── nest-cli.json
+│       ├── package.json
+│       ├── pnpm-lock.yaml
+│       ├── [01;34mprisma[0m
+│       │   ├── [01;34mmigrations[0m
+│       │   │   ├── [01;34m20250625184219_init[0m
+│       │   │   ├── [01;34m20250626175840_monorepo_schema[0m
+│       │   │   └── migration_lock.toml
+│       │   └── schema.prisma
+│       ├── README.md
+│       ├── [01;34msrc[0m
+│       │   ├── [01;34maddresses[0m
+│       │   │   ├── addresses.controller.ts
+│       │   │   ├── addresses.module.ts
+│       │   │   ├── addresses.service.ts
+│       │   │   └── [01;34mdto[0m
+│       │   ├── [01;34manalytics[0m
+│       │   ├── app.controller.spec.ts
+│       │   ├── app.controller.ts
+│       │   ├── app.module.ts
+│       │   ├── app.service.ts
+│       │   ├── [01;34mauth[0m
+│       │   │   ├── auth.controller.spec.ts
+│       │   │   ├── auth.controller.ts
+│       │   │   ├── auth.module.ts
+│       │   │   ├── auth.service.spec.ts
+│       │   │   ├── auth.service.ts
+│       │   │   ├── [01;34mdecorators[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── [01;34mguards[0m
+│       │   │   └── [01;34mstrategies[0m
+│       │   ├── [01;34mcart[0m
+│       │   │   ├── cart.controller.ts
+│       │   │   ├── cart.module.ts
+│       │   │   ├── cart.service.ts
+│       │   │   └── [01;34mdto[0m
+│       │   ├── [01;34mcategories[0m
+│       │   │   ├── categories.controller.ts
+│       │   │   ├── categories.module.ts
+│       │   │   ├── categories.service.ts
+│       │   │   └── [01;34mdto[0m
+│       │   ├── [01;34mcommon[0m
+│       │   │   ├── [01;34mdecorators[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── [01;34mfilters[0m
+│       │   │   ├── [01;34mguards[0m
+│       │   │   ├── [01;34minterceptors[0m
+│       │   │   ├── [01;34mpipes[0m
+│       │   │   └── [01;34mutilities[0m
+│       │   ├── [01;34mdiscounts[0m
+│       │   │   ├── discounts.controller.ts
+│       │   │   ├── discounts.module.ts
+│       │   │   ├── discounts.service.ts
+│       │   │   └── [01;34mdto[0m
+│       │   ├── main.ts
+│       │   ├── [01;34morders[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── orders.controller.ts
+│       │   │   ├── orders.module.ts
+│       │   │   └── orders.service.ts
+│       │   ├── [01;34mpayments[0m
+│       │   ├── [01;34mprisma[0m
+│       │   │   ├── prisma.module.ts
+│       │   │   └── prisma.service.ts
+│       │   ├── [01;34mproducts[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── products.controller.ts
+│       │   │   ├── products.module.ts
+│       │   │   └── products.service.ts
+│       │   ├── [01;34mreviews[0m
+│       │   │   ├── [01;34mdto[0m
+│       │   │   ├── reviews.controller.ts
+│       │   │   ├── reviews.module.ts
+│       │   │   └── reviews.service.ts
+│       │   └── [01;34musers[0m
+│       │       ├── [01;34mdto[0m
+│       │       ├── users.controller.ts
+│       │       ├── users.module.ts
+│       │       └── users.service.ts
+│       ├── [01;34mtest[0m
+│       │   ├── app.e2e-spec.ts
+│       │   └── jest-e2e.json
+│       ├── tsconfig.build.json
+│       └── tsconfig.json
 ├── CONTEXT.md
 ├── folder_structure.txt
-└── README.md
+├── package.json
+├── pnpm-workspace.yaml
+├── README.md
+└── turbo.json
 
-70 directories, 297 files
+72 directories, 155 files
