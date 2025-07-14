@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DiscountType } from '@prisma/client';
+import { DiscountType } from '@repo/db';
 
 // 1. Define the base object shape without refinements. We will export this.
 export const DiscountBaseSchema = z.object({  

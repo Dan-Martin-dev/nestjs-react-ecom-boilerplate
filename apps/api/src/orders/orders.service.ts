@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { OrderStatus, PaymentStatus, InventoryChangeType, Role, Discount, OrderTrackingStatus } from '@prisma/client'; // Import Discount and OrderTrackingStatus
+import { OrderStatus, PaymentStatus, InventoryChangeType, Role, Discount, OrderTrackingStatus } from '@repo/db'; // Import from shared db package
 
 @Injectable()
 export class OrdersService {

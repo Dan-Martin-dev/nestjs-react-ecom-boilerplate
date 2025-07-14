@@ -14,7 +14,7 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from '@repo/db';
 import { CreateCategoryDto, CreateCategorySchema } from './dto/create-category.dto';
 
 @Controller('categories')

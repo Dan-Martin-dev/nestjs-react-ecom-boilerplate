@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Role } from '@prisma/client'; // Correctly import the Role enum
+import { Role } from '@repo/db'; // Correctly import the Role enum
 
 // Mocking the bcrypt library
 jest.mock('bcrypt');

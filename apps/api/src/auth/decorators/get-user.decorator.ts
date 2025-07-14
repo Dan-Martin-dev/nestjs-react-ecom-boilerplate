@@ -1,6 +1,6 @@
 // src/auth/get-user.decorator.ts
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User } from '@repo/db';
 
 /**
  * A custom decorator to extract the user object from the request.

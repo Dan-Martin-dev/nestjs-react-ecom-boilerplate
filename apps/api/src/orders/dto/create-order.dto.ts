@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaymentMethod } from '@prisma/client';
+import { PaymentMethod } from '@repo/db';
 
 export const CreateOrderSchema = z.object({
   shippingAddressId: z.string().min(1, 'Shipping address is required'),

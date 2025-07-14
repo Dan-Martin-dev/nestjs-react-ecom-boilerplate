@@ -15,7 +15,7 @@ import { UpdateDiscountDto, UpdateDiscountSchema } from './dto/update-discount.d
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from '@repo/db';
 import { RolesGuard } from '../common/guards/roles.guard';
 
 @Controller('discounts')
