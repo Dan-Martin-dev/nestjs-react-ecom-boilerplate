@@ -27,13 +27,13 @@ export class OrdersController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(CreateOrderSchema))
-  create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
+  create(@Request() req: any, @Body() createOrderDto: CreateOrderDto): Promise<any> {
     return this.ordersService.create(req.user.sub, createOrderDto);
   }
 
   @Get()
   @UsePipes(new ZodValidationPipe(PaginationSchema))
-  findUserOrders(@Request() req, @Query() paginationDto: PaginationDto) {
+  findUserOrders(@Request() req: any, @Query() paginationDto: PaginationDto): Promise<any> {
     return this.ordersService.findUserOrders(req.user.sub, paginationDto);
   }
 
@@ -41,12 +41,12 @@ export class OrdersController {
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(PaginationSchema))
-  findAllOrders(@Query() paginationDto: PaginationDto) {
+  findAllOrders(@Query() paginationDto: PaginationDto): Promise<any> {
     return this.ordersService.findAllOrders(paginationDto);
   }
 
   @Get(':orderNumber')
-  findOne(@Request() req, @Param('orderNumber') orderNumber: string) {
+  findOne(@Request() req: any, @Param('orderNumber') orderNumber: string): Promise<any> {
     return this.ordersService.findOne(req.user.sub, orderNumber, req.user.role);
   }
 
@@ -56,12 +56,12 @@ export class OrdersController {
   updateOrderStatus(
     @Param('orderNumber') orderNumber: string,
     @Body('status') status: OrderStatus,
-  ) {
+  ): Promise<any> {
     return this.ordersService.updateOrderStatus(orderNumber, status);
   }
 
   @Post(':orderNumber/cancel')
-  cancelOrder(@Request() req, @Param('orderNumber') orderNumber: string) {
+  cancelOrder(@Request() req: any, @Param('orderNumber') orderNumber: string): Promise<any> {
     return this.ordersService.cancelOrder(req.user.sub, orderNumber);
   }
 }

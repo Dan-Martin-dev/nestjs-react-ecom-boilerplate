@@ -28,7 +28,7 @@ export class UsersController {
    * This is a very common and recommended best practice.
    */
   @Get('me')
-  getProfile(@Request() req) {
+  getProfile(@Request() req: any): Promise<any> {
     // req.user is populated by the JwtStrategy with the token payload.
     // 'sub' (subject) should contain the user ID.
     return this.usersService.findOne(req.user.sub);
@@ -39,7 +39,7 @@ export class UsersController {
    * This demonstrates a basic authorization check.
    */
   @Get()
-  findAll(@Request() req) {
+  findAll(@Request() req: any): Promise<any> {
     if (req.user.role !== Role.ADMIN) {
       throw new ForbiddenException('You do not have permission to access this resource.');
     }
@@ -50,7 +50,7 @@ export class UsersController {
    * Get a specific user by ID. (ADMIN only)
    */
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
+  findOne(@Param('id') id: string, @Request() req: any): Promise<any> {
     if (req.user.role !== Role.ADMIN) {
       throw new ForbiddenException('You do not have permission to access this resource.');
     }
@@ -66,8 +66,8 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Request() req,
-  ) {
+    @Request() req: any,
+  ): Promise<any> {
     // Authorization check: Allow if the user is an ADMIN or if they are updating their own profile.
     if (req.user.role !== Role.ADMIN && req.user.sub !== id) {
       throw new ForbiddenException('You can only update your own profile.');
@@ -80,7 +80,7 @@ export class UsersController {
    * This is a destructive action and should be heavily protected.
    */
   @Delete(':id')
-  remove(@Param('id') id: string, @Request() req) {
+  remove(@Param('id') id: string, @Request() req: any): Promise<any> {
     if (req.user.role !== Role.ADMIN) {
       throw new ForbiddenException('You do not have permission to perform this action.');
     }

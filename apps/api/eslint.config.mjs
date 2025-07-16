@@ -16,6 +16,14 @@ export default tseslint.config(
   // This is an ARRAY of configs that sets up the parser, plugins,
   // and crucially, the parserOptions to use your tsconfig.json.
   ...tseslint.configs.recommendedTypeChecked,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: __dirname,
+      },
+    },
+  },
 
   // 3. Add Prettier.
   eslintPluginPrettierRecommended,

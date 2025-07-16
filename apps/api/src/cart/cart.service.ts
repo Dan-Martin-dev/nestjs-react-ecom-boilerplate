@@ -12,7 +12,7 @@ export class CartService {
     private productsService: ProductsService, 
   ) {}
   
-  async getCart(userId: string) {
+  async getCart(userId: string): Promise<any> {
     let cart = await this.prisma.cart.findUnique({
       where: { userId },
       include: {
@@ -66,7 +66,7 @@ export class CartService {
     return cart;
   }
 
-  async addToCart(userId: string, addToCartDto: AddToCartDto) {
+  async addToCart(userId: string, addToCartDto: AddToCartDto): Promise<any> {
     const { productVariantId, quantity } = addToCartDto;
 
     const variant = await this.productsService.findVariantAndVerifyStock(
@@ -150,7 +150,7 @@ export class CartService {
     }
   }
 
-  async updateCartItem(userId: string, itemId: string, quantity: number) {
+  async updateCartItem(userId: string, itemId: string, quantity: number): Promise<any> {
     if (quantity <= 0) {
       throw new BadRequestException('Quantity must be greater than 0');
     }
@@ -190,7 +190,7 @@ export class CartService {
     });
   }
 
-  async removeFromCart(userId: string, itemId: string) {
+  async removeFromCart(userId: string, itemId: string): Promise<any> {
     const cartItem = await this.prisma.cartItem.findFirst({
       where: {
         id: itemId,
@@ -209,7 +209,7 @@ export class CartService {
     return { message: 'Item removed from cart' };
   }
 
-  async clearCart(userId: string) {
+  async clearCart(userId: string): Promise<any> {
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
     });

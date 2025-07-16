@@ -93,7 +93,7 @@ export class CategoriesService {
     return categories;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<any> {
     const category = await this.prisma.category.findUnique({
       where: { id, deletedAt: null },
       include: {

@@ -23,32 +23,32 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Get()
-  getCart(@Request() req) {
+  getCart(@Request() req: any): Promise<any> {
     return this.cartService.getCart(req.user.sub);
   }
 
   @Post('items')
   @UsePipes(new ZodValidationPipe(AddToCartSchema))
-  addToCart(@Request() req, @Body() addToCartDto: AddToCartDto) {
+  addToCart(@Request() req: any, @Body() addToCartDto: AddToCartDto): Promise<any> {
     return this.cartService.addToCart(req.user.sub, addToCartDto);
   }
 
   @Patch('items/:itemId')
   updateCartItem(
-    @Request() req,
+    @Request() req: any,
     @Param('itemId') itemId: string,
     @Body('quantity') quantity: number,
-  ) {
+  ): Promise<any> {
     return this.cartService.updateCartItem(req.user.sub, itemId, quantity);
   }
 
   @Delete('items/:itemId')
-  removeFromCart(@Request() req, @Param('itemId') itemId: string) {
+  removeFromCart(@Request() req: any, @Param('itemId') itemId: string): Promise<any> {
     return this.cartService.removeFromCart(req.user.sub, itemId);
   }
 
   @Delete()
-  clearCart(@Request() req) {
+  clearCart(@Request() req: any): Promise<any> {
     return this.cartService.clearCart(req.user.sub);
   }
 }

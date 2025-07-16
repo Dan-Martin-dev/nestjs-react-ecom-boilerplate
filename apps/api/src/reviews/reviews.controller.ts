@@ -24,7 +24,7 @@ export class ReviewsController {
   @Post()
   @UseGuards(AuthGuard)
   @UsePipes(new ZodValidationPipe(CreateReviewSchema))
-  create(@Request() req, @Body() createReviewDto: CreateReviewDto) {
+  create(@Request() req: any, @Body() createReviewDto: CreateReviewDto): Promise<any> {
     return this.reviewsService.create(req.user.sub, createReviewDto);
   }
 
@@ -40,19 +40,19 @@ export class ReviewsController {
   @Get('user')
   @UseGuards(AuthGuard)
   @UsePipes(new ZodValidationPipe(PaginationSchema))
-  findUserReviews(@Request() req, @Query() paginationDto: PaginationDto) {
+  findUserReviews(@Request() req: any, @Query() paginationDto: PaginationDto): Promise<any> {
     return this.reviewsService.findUserReviews(req.user.sub, paginationDto);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard)
-  update(@Request() req, @Param('id') id: string, @Body() updateReviewDto: any) {
+  update(@Request() req: any, @Param('id') id: string, @Body() updateReviewDto: any): Promise<any> {
     return this.reviewsService.update(req.user.sub, id, updateReviewDto);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  remove(@Request() req, @Param('id') id: string) {
+  remove(@Request() req: any, @Param('id') id: string): Promise<any> {
     return this.reviewsService.remove(req.user.sub, id);
   }
 }

@@ -28,37 +28,37 @@ export class ProductsController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(CreateProductSchema))
-  create(@Body() createProductDto: CreateProductDto) {
+  create(@Body() createProductDto: CreateProductDto): Promise<import('@repo/db').Product> {
     return this.productsService.create(createProductDto);
   }
 
   @Get()
   @UsePipes(new ZodValidationPipe(ProductFilterSchema))
-  findAll(@Query() filterDto: ProductFilterDto) {
+  findAll(@Query() filterDto: ProductFilterDto): Promise<{ data: import('@repo/db').Product[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
     return this.productsService.findAll(filterDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<import('@repo/db').Product> {
     return this.productsService.findOne(id);
   }
 
   @Get('slug/:slug')
-  findBySlug(@Param('slug') slug: string) {
+  findBySlug(@Param('slug') slug: string): Promise<import('@repo/db').Product> {
     return this.productsService.findBySlug(slug);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  update(@Param('id') id: string, @Body() updateProductDto: any) {
+  update(@Param('id') id: string, @Body() updateProductDto: any): Promise<import('@repo/db').Product> {
     return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<import('@repo/db').Product> {
     return this.productsService.remove(id);
   }
 }

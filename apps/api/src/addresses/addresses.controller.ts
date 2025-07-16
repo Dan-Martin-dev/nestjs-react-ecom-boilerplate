@@ -23,19 +23,19 @@ export class AddressesController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(CreateAddressSchema))
-  create(@Body() createAddressDto: CreateAddressDto, @Request() req) {
+  create(@Body() createAddressDto: CreateAddressDto, @Request() req: any): Promise<import('@repo/db').Address> {
     const userId = req.user.sub; // 'sub' from JWT payload is the user ID
     return this.addressesService.create(userId, createAddressDto);
   }
 
   @Get()
-  findAll(@Request() req) {
+  findAll(@Request() req: any): Promise<import('@repo/db').Address[]> {
     const userId = req.user.sub;
     return this.addressesService.findAllForUser(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
+  findOne(@Param('id') id: string, @Request() req: any): Promise<import('@repo/db').Address> {
     const userId = req.user.sub;
     return this.addressesService.findOne(id, userId);
   }
@@ -45,14 +45,14 @@ export class AddressesController {
   update(
     @Param('id') id: string,
     @Body() updateAddressDto: UpdateAddressDto,
-    @Request() req,
-  ) {
+    @Request() req: any,
+  ): Promise<import('@repo/db').Address> {
     const userId = req.user.sub;
     return this.addressesService.update(id, userId, updateAddressDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Request() req) {
+  remove(@Param('id') id: string, @Request() req: any): Promise<import('@repo/db').Address> {
     const userId = req.user.sub;
     return this.addressesService.remove(id, userId);
   }

@@ -24,7 +24,7 @@ export class DiscountsController {
 
   // PUBLIC ENDPOINT - for customers to validate a code
   @Get('code/:code')
-  validateCode(@Param('code') code: string) {
+  validateCode(@Param('code') code: string): Promise<any> {
     return this.discountsService.validateDiscountCode(code);
   }
 
@@ -34,21 +34,21 @@ export class DiscountsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(CreateDiscountSchema))
-  create(@Body() createDiscountDto: CreateDiscountDto) {
+  create(@Body() createDiscountDto: CreateDiscountDto): Promise<any> {
     return this.discountsService.create(createDiscountDto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  findAll() {
+  findAll(): Promise<any> {
     return this.discountsService.findAll();
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<any> {
     return this.discountsService.findOne(id);
   }
 
@@ -56,14 +56,14 @@ export class DiscountsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(UpdateDiscountSchema))
-  update(@Param('id') id: string, @Body() updateDiscountDto: UpdateDiscountDto) {
+  update(@Param('id') id: string, @Body() updateDiscountDto: UpdateDiscountDto): Promise<any> {
     return this.discountsService.update(id, updateDiscountDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<any> {
     return this.discountsService.remove(id);
   }
 }

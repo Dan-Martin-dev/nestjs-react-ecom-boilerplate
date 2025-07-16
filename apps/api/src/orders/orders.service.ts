@@ -8,7 +8,7 @@ import { OrderStatus, PaymentStatus, InventoryChangeType, Role, Discount, OrderT
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, createOrderDto: CreateOrderDto) {
+  async create(userId: string, createOrderDto: CreateOrderDto): Promise<any> {
     const { shippingAddressId, billingAddressId, paymentMethod, notes, discountCode } = createOrderDto;
 
     // Verify addresses belong to user
@@ -170,7 +170,7 @@ export class OrdersService {
     return order;
   }
 
-  async findUserOrders(userId: string, paginationDto: PaginationDto) {
+  async findUserOrders(userId: string, paginationDto: PaginationDto): Promise<any> {
     const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder } = paginationDto; // Provide defaults
     const skip = (page - 1) * limit;
 
@@ -216,7 +216,7 @@ export class OrdersService {
     };
   }
 
-  async findAllOrders(paginationDto: PaginationDto) {
+  async findAllOrders(paginationDto: PaginationDto): Promise<any> {
     const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder } = paginationDto; // Provide defaults
     const skip = (page - 1) * limit;
 
@@ -264,7 +264,7 @@ export class OrdersService {
     };
   }
 
-  async findOne(userId: string, orderNumber: string, userRole: Role) {
+  async findOne(userId: string, orderNumber: string, userRole: Role): Promise<any> {
     const order = await this.prisma.order.findUnique({
       where: { orderNumber },
       include: {
@@ -310,7 +310,7 @@ export class OrdersService {
     return order;
   }
 
-  async updateOrderStatus(orderNumber: string, status: OrderStatus) {
+  async updateOrderStatus(orderNumber: string, status: OrderStatus): Promise<any> {
     const order = await this.prisma.order.findUnique({
       where: { orderNumber },
     });

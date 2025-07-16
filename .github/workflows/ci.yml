@@ -100,7 +100,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./apps/api/Dockerfile
+          file: ./Dockerfile
+          target: api
           push: false
           tags: ecommerce-api:test
           cache-from: type=gha
@@ -110,7 +111,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./apps/web/Dockerfile
+          file: ./Dockerfile
+          target: web
           push: false
           tags: ecommerce-web:test
           cache-from: type=gha

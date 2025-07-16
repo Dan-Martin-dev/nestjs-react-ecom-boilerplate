@@ -16,11 +16,23 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { UsersModule } from './users/users.module';
 
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'; 
+import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
+import { CacheConfigModule } from './cache/cache.module';
+import { LoggerModule } from './logger/logger.module';
+import { MetricsModule } from './metrics/metrics.module';
+
 // NOTE: I've left out 'analytics' and 'payments' as their folders were empty.
 // Add them here once you create their modules.
 
 @Module({
   imports: [
+    // --- Configuration and infrastructure modules ---
+    ConfigModule.forRoot({ isGlobal: true }),
+    CacheConfigModule,
+    LoggerModule,
+    MetricsModule,
     // --- Register all modules here ---
     PrismaModule,
     AuthModule,
@@ -31,9 +43,18 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AddressesModule,
     ReviewsModule,
-    DiscountsModule, 
+    DiscountsModule,
+    ThrottlerModule.forRoot([{
+      ttl: 60000, // 60 seconds (1 minute)
+      limit: 20,  // 20 requests per `ttl` per IP
+    }]),
   ],
   controllers: [AppController], // Keep the basic app controller for root health checks
-  providers: [AppService],   // Keep the basic app service
+  providers: [    
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },],   // Keep the basic app service
 })
 export class AppModule {}

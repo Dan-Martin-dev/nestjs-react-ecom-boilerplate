@@ -8,29 +8,57 @@ import { ProductFilterDto } from './dto/product-filter.dto';
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createProductDto: CreateProductDto) {
-    const { variants, images, categoryIds, ...productData } = createProductDto;
+  async create(createProductDto: CreateProductDto): Promise<import('@repo/db').Product> {
+    const {
+      name,
+      slug,
+      description,
+      price,
+      categoryIds,
+      images,
+      variants,
+      metaTitle,
+      metaDescription,
+    } = createProductDto;
 
     return this.prisma.product.create({
       data: {
-        ...productData,
+        name,
+        slug,
+        description,
+        price: price.toString(),
+        metaTitle,
+        metaDescription,
         categories: {
           connect: categoryIds.map(id => ({ id })),
         },
-        images: {
-          create: images || [],
-        },
-        variants: {
-          create: variants.map(variant => ({
-            ...variant,
-            ProductVariantAttribute: {
-              create: variant.attributes?.map(attr => ({
-                attributeId: attr.attributeId,
-                value: attr.value,
-              })) || [],
-            },
-          })),
-        },
+        images: images
+          ? {
+              create: images.map(img => ({
+                url: img.url,
+                altText: img.altText ?? '',
+                isDefault: img.isDefault ?? false,
+              })),
+            }
+          : undefined,
+        variants: variants
+          ? {
+              create: variants.map(variant => ({
+                name: variant.name,
+                sku: variant.sku,
+                price: variant.price.toString(),
+                stockQuantity: variant.stockQuantity,
+                ProductVariantAttribute: variant.attributes
+                  ? {
+                      create: variant.attributes.map(attr => ({
+                        attributeId: attr.attributeId,
+                        value: attr.value,
+                      })),
+                    }
+                  : undefined,
+              })),
+            }
+          : undefined,
       },
       include: {
         categories: true,
@@ -48,7 +76,7 @@ export class ProductsService {
     });
   }
 
-  async findAll(filterDto: ProductFilterDto) {
+  async findAll(filterDto: ProductFilterDto): Promise<{ data: import('@repo/db').Product[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
     const { 
       page, 
       limit, 
@@ -134,7 +162,7 @@ export class ProductsService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<import('@repo/db').Product> {
     const product = await this.prisma.product.findUnique({
       where: { id, isActive: true, deletedAt: null },
       include: {
@@ -179,7 +207,7 @@ export class ProductsService {
     return product;
   }
 
-  async findBySlug(slug: string) {
+  async findBySlug(slug: string): Promise<import('@repo/db').Product> {
     const product = await this.prisma.product.findUnique({
       where: { slug, isActive: true, deletedAt: null },
       include: {
@@ -214,7 +242,7 @@ export class ProductsService {
     return product;
   }
 
-  async findVariantAndVerifyStock(variantId: string, requestedQuantity: number) {
+  async findVariantAndVerifyStock(variantId: string, requestedQuantity: number): Promise<import('@repo/db').ProductVariant> {
     const variant = await this.prisma.productVariant.findUnique({
       where: { id: variantId },
     });
@@ -228,7 +256,7 @@ export class ProductsService {
     return variant;
   }
 
-  async update(id: string, updateProductDto: any) {
+  async update(id: string, updateProductDto: any): Promise<import('@repo/db').Product> {
     // Implementation for updating product
     return this.prisma.product.update({
       where: { id },
@@ -241,7 +269,7 @@ export class ProductsService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<import('@repo/db').Product> {
     // Soft delete
     return this.prisma.product.update({
       where: { id },

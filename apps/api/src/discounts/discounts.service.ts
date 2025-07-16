@@ -14,7 +14,7 @@ export class DiscountsService {
   /**
    * (ADMIN) Creates a new discount and connects it to products/categories.
    */
-  async create(createDiscountDto: CreateDiscountDto) {
+  async create(createDiscountDto: CreateDiscountDto): Promise<any> {
     const {
       applicableProductIds,
       applicableCategoryIds,
@@ -37,7 +37,7 @@ export class DiscountsService {
   /**
    * (ADMIN) Finds all discounts.
    */
-  async findAll() {
+  async findAll(): Promise<any> {
     return this.prisma.discount.findMany({
       include: {
         applicableProducts: { select: { id: true, name: true } },
@@ -51,7 +51,7 @@ export class DiscountsService {
    * (PUBLIC) Finds a single discount by its code and validates its usability.
    * This is for customers applying a code to their cart.
    */
-  async validateDiscountCode(code: string) {
+  async validateDiscountCode(code: string): Promise<any> {
     const discount = await this.prisma.discount.findUnique({
       where: { code: code.toUpperCase() },
     });
@@ -83,7 +83,7 @@ export class DiscountsService {
   /**
    * (ADMIN) Finds a single discount by its ID for management purposes.
    */
-  async findOne(id: string) {
+  async findOne(id: string): Promise<any> {
     const discount = await this.prisma.discount.findUnique({
       where: { id },
       include: {
@@ -101,7 +101,7 @@ export class DiscountsService {
   /**
    * (ADMIN) Updates a discount. `set` is used to replace existing relations.
    */
-  async update(id: string, updateDiscountDto: UpdateDiscountDto) {
+  async update(id: string, updateDiscountDto: UpdateDiscountDto): Promise<any> {
     const {
       applicableProductIds,
       applicableCategoryIds,
@@ -127,7 +127,7 @@ export class DiscountsService {
   /**
    * (ADMIN) Deletes a discount.
    */
-  async remove(id: string) {
+  async remove(id: string): Promise<any> {
     await this.findOne(id); // Ensure discount exists
     return this.prisma.discount.delete({ where: { id } });
   }

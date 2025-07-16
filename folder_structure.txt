@@ -14,12 +14,6 @@
 │   │   ├── nest-cli.json
 │   │   ├── package.json
 │   │   ├── pnpm-lock.yaml
-│   │   ├── prisma
-│   │   │   ├── migrations
-│   │   │   │   ├── 20250625184219_init
-│   │   │   │   ├── 20250626175840_monorepo_schema
-│   │   │   │   └── migration_lock.toml
-│   │   │   └── schema.prisma
 │   │   ├── README.md
 │   │   ├── src
 │   │   │   ├── addresses
@@ -41,6 +35,8 @@
 │   │   │   │   ├── dto
 │   │   │   │   ├── guards
 │   │   │   │   └── strategies
+│   │   │   ├── cache
+│   │   │   │   └── cache.module.ts
 │   │   │   ├── cart
 │   │   │   │   ├── cart.controller.ts
 │   │   │   │   ├── cart.module.ts
@@ -64,7 +60,13 @@
 │   │   │   │   ├── discounts.module.ts
 │   │   │   │   ├── discounts.service.ts
 │   │   │   │   └── dto
+│   │   │   ├── logger
+│   │   │   │   ├── logger.module.ts
+│   │   │   │   └── logger.service.ts
 │   │   │   ├── main.ts
+│   │   │   ├── metrics
+│   │   │   │   ├── metrics.controller.ts
+│   │   │   │   └── metrics.module.ts
 │   │   │   ├── orders
 │   │   │   │   ├── dto
 │   │   │   │   ├── orders.controller.ts
@@ -101,12 +103,14 @@
 │       │   ├── app.html
 │       │   └── routes
 │       │       ├── api
+│       │       ├── health
 │       │       ├── +layout.svelte
 │       │       └── +page.svelte
 │       ├── svelte.config.js
 │       ├── tsconfig.json
 │       └── vite.config.ts
 ├── docker-compose.dev.yml
+├── docker-compose.prod.yml
 ├── docker-compose.yml
 ├── Dockerfile
 ├── folder_structure.txt
@@ -144,4 +148,6 @@
 ├── pnpm-lock.yaml
 ├── pnpm-workspace.yaml
 ├── README.md
+├── scripts
+│   └── backup.sh
 └── turbo.json

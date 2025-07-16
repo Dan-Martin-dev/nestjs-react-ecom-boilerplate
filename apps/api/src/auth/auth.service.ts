@@ -37,8 +37,9 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
     const user = await this.prisma.user.create({
       data: {
-        ...registerDto,
+        email: registerDto.email,
         password: hashedPassword,
+        name: registerDto.name ?? null,
       },
       select: {
         id: true,
@@ -79,5 +80,20 @@ export class AuthService {
       },
       access_token: token,
     };
+  }
+  
+  async refresh(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
+      });
+      const newAccessToken = this.jwtService.sign({ username: payload.username, sub: payload.sub }, {
+        expiresIn: process.env.JWT_EXPIRES_IN || '15m',
+        secret: process.env.JWT_SECRET,
+      });
+      return { accessToken: newAccessToken };
+    } catch (err) {
+      throw new Error('Invalid refresh token');
+    }
   }
 }
