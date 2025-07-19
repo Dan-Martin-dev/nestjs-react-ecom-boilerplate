@@ -9,6 +9,7 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 # Copy package files
+
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 
 # Copy package.json files for all apps and packages
@@ -26,6 +27,7 @@ RUN pnpm install --frozen-lockfile
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN cp .env.dev .env
 
 # Generate Prisma client
 RUN pnpm --filter @repo/db db:generate
@@ -33,6 +35,23 @@ RUN pnpm --filter @repo/db db:generate
 # Build applications
 RUN pnpm --filter api build
 RUN pnpm --filter web build
+
+# Development API stage
+FROM base AS api-dev
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN pnpm --filter @repo/db db:generate
+EXPOSE 3001
+USER node
+CMD ["pnpm", "--filter", "api", "start:dev"]
+
+# Development Web stage  
+FROM base AS web-dev
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+EXPOSE 3000
+USER node
+CMD ["pnpm", "--filter", "web", "dev"]
 
 # Production API stage
 FROM node:20-alpine AS api
