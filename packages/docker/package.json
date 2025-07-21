@@ -1,0 +1,11 @@
+{
+  "name": "@repo/docker",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose -f ../../docker-compose.dev.yml up",
+    "dev:down": "docker-compose -f ../../docker-compose.dev.yml down",
+    "prod": "docker-compose -f ../../docker-compose.prod.yml up -d",
+    "prod:down": "docker-compose -f ../../docker-compose.prod.yml down"
+  }
+}

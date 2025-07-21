@@ -41,17 +41,21 @@ FROM base AS api-dev
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm --filter @repo/db db:generate
+# Build the API first
+RUN pnpm --filter api build
+WORKDIR /app/apps/api
 EXPOSE 3001
 USER node
-CMD ["pnpm", "--filter", "api", "start:dev"]
+CMD ["pnpm", "start:dev"]
 
 # Development Web stage  
 FROM base AS web-dev
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+WORKDIR /app/apps/web
 EXPOSE 3000
 USER node
-CMD ["pnpm", "--filter", "web", "dev"]
+CMD ["pnpm", "dev"]
 
 # Production API stage
 FROM node:20-alpine AS api
