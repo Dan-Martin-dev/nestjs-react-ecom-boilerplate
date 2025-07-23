@@ -48,6 +48,7 @@ import { MetricsModule } from './metrics/metrics.module';
       ttl: 60000, // 60 seconds (1 minute)
       limit: 20,  // 20 requests per `ttl` per IP
     }]),
+    // Make sure AuthGuardModule is imported at the app level
   ],
   controllers: [AppController], // Keep the basic app controller for root health checks
   providers: [    

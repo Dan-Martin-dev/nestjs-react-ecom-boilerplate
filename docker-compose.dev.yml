@@ -68,7 +68,7 @@ services:
       - "traefik.http.routers.api-dev.rule=Host(`api.localhost`)"
       - "traefik.http.routers.api-dev.entrypoints=web"
       - "traefik.http.services.api-dev.loadbalancer.server.port=3001"
-  # Web (SvelteKit)
+  
   web:
     build:
       context: .

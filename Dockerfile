@@ -5,8 +5,8 @@ FROM node:20-alpine AS base
 RUN apk add --no-cache libc6-compat curl
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm v9.14.2 (static binary)
+RUN wget -qO /usr/local/bin/pnpm https://github.com/pnpm/pnpm/releases/download/v9.14.2/pnpm-linuxstatic-x64 && chmod +x /usr/local/bin/pnpm
 
 # Copy package files
 
@@ -38,15 +38,28 @@ RUN pnpm --filter web build
 
 # Development API stage
 FROM base AS api-dev
+# Install OpenSSL and other dependencies needed by Prisma
+RUN apk add --no-cache openssl openssl-dev ca-certificates
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Generate Prisma client
 RUN pnpm --filter @repo/db db:generate
-# Build the API first
+# Build the packages first to ensure JS files are available
+RUN pnpm --filter @repo/db build
+RUN pnpm --filter @repo/shared build
+# Now build the API
 RUN pnpm --filter api build
-WORKDIR /app/apps/api
+# Debug: find the correct main.js location and display output
+RUN find /app -name "main.js" | sort
+RUN ls -la /app
+RUN ls -la /app/apps/api/dist || true
+RUN ls -la /app/dist || true
+WORKDIR /app
 EXPOSE 3001
 USER node
-CMD ["pnpm", "start:dev"]
+# Use the correct path to the compiled JavaScript
+CMD ["node", "/app/apps/api/dist/apps/api/src/main.js"]
 
 # Development Web stage  
 FROM base AS web-dev
@@ -59,7 +72,7 @@ CMD ["pnpm", "dev"]
 
 # Production API stage
 FROM node:20-alpine AS api
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl openssl openssl-dev ca-certificates
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nestjs -u 1001
 
@@ -78,7 +91,7 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3001/api/v1/health || exit 1
 
-CMD ["node", "dist/apps/api/main"]
+CMD ["node", "dist/main.js"]
 
 # Production Web stage
 FROM node:20-alpine AS web

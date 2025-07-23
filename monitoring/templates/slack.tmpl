@@ -1,0 +1,13 @@
+{{ define "slack.default.title" }}
+[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .GroupLabels.alertname }}
+{{ end }}
+
+{{ define "slack.default.text" }}
+{{ range .Alerts }}
+*Alert:* {{ .Annotations.summary }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+*Description:* {{ .Annotations.description }}
+*Instance:* `{{ .Labels.instance }}`
+*Started:* {{ .StartsAt | since }}
+{{ if ne .Status "firing" }}*Resolved:* {{ .EndsAt | since }}{{ end }}
+{{ end }}
+{{ end }}

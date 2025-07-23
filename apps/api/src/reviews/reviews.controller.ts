@@ -9,11 +9,13 @@ import {
   Query,
   UseGuards,
   UsePipes, 
-  Request 
+  Request,
+  Injectable,
+  Inject
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { AuthGuard } from '../common/guards/auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateReviewDto, CreateReviewSchema } from './dto/create-review.dto';
 import { PaginationDto, PaginationSchema } from '../common/dto/pagination.dto';
 
@@ -22,7 +24,7 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(CreateReviewSchema))
   create(@Request() req: any, @Body() createReviewDto: CreateReviewDto): Promise<any> {
     return this.reviewsService.create(req.user.sub, createReviewDto);
@@ -38,20 +40,20 @@ export class ReviewsController {
   }
 
   @Get('user')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(PaginationSchema))
   findUserReviews(@Request() req: any, @Query() paginationDto: PaginationDto): Promise<any> {
     return this.reviewsService.findUserReviews(req.user.sub, paginationDto);
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   update(@Request() req: any, @Param('id') id: string, @Body() updateReviewDto: any): Promise<any> {
     return this.reviewsService.update(req.user.sub, id, updateReviewDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   remove(@Request() req: any, @Param('id') id: string): Promise<any> {
     return this.reviewsService.remove(req.user.sub, id);
   }

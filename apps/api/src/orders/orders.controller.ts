@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { AuthGuard } from '../common/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role, OrderStatus } from '@repo/db';
@@ -21,7 +21,7 @@ import { CreateOrderDto, CreateOrderSchema } from './dto/create-order.dto';
 import { PaginationDto, PaginationSchema } from '../common/dto/pagination.dto';
 
 @Controller('orders')
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 

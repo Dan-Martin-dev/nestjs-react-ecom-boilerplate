@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import * as compression from 'compression';
+import compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

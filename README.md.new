@@ -1,11 +1,11 @@
 # 🛒 E-commerce Monorepo
 
-Modern, full-stack e-commerce platform built with **NestJS**, **React.js**, and **Prisma**.
+Modern, full-stack e-commerce platform built with **NestJS**, **Next.js**, and **Prisma**.
 
 ## 🚀 Tech Stack
 
 - **Backend**: NestJS + Prisma + PostgreSQL
-- **Frontend**: React.js 19
+- **Frontend**: Next.js 14 (App Router) - *Coming Soon*
 - **Authentication**: NextAuth.js with social providers
 - **Payments**: Stripe integration
 - **Deployment**: Docker + Traefik (Self-hosted)
@@ -98,34 +98,3 @@ This project uses GitHub Actions for CI/CD. To set it up:
 
 - **Database backups:** Automatically run daily with retention policies
 - **System updates:** Run `bash scripts/update.sh` on your server periodically
-- **Health checks:** Run every 15 minutes via cron
-- **Security scans:** Run weekly via cron
-
-### Monitoring & Alerting
-
-This project includes a production-ready monitoring and alerting stack:
-
-1. **Prometheus**: Collects metrics from services
-2. **Grafana**: Visualizes metrics in dashboards
-3. **Node Exporter**: Collects host metrics
-4. **cAdvisor**: Collects container metrics
-5. **Alertmanager**: Handles alert notifications
-
-Access your Grafana dashboard at `https://grafana.yourdomain.com`  
-(Default credentials: admin/admin - change on first login)
-
-#### Alerting Configuration
-
-The system is configured to send alerts via email and Slack when critical issues are detected:
-
-1. **Email Alerts**: Update `NOTIFICATION_EMAIL`, `SMTP_USER`, and `SMTP_PASS` in `.env.production`
-2. **Slack Alerts**: Update `SLACK_WEBHOOK_URL` in `.env.production` with your Slack webhook URL
-
-You can customize alert rules in `monitoring/alerts.yml` and notification templates in `monitoring/templates/`.
-
-To verify the monitoring system is working correctly:
-
-```bash
-# Run the health check script
-bash scripts/health_check.sh
-```

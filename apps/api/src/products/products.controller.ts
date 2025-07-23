@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { AuthGuard } from '../common/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@repo/db';
@@ -25,7 +25,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(CreateProductSchema))
   create(@Body() createProductDto: CreateProductDto): Promise<import('@repo/db').Product> {
@@ -49,14 +49,14 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   update(@Param('id') id: string, @Body() updateProductDto: any): Promise<import('@repo/db').Product> {
     return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   remove(@Param('id') id: string): Promise<import('@repo/db').Product> {
     return this.productsService.remove(id);

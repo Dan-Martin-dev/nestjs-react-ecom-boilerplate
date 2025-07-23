@@ -1,0 +1,69 @@
+groups:
+  - name: node_alerts
+    rules:
+      - alert: HighCpuLoad
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU load (instance {{ $labels.instance }})"
+          description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage (instance {{ $labels.instance }})"
+          description: "Memory usage is > 85%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes{fstype=~"ext4|xfs"} - node_filesystem_free_bytes{fstype=~"ext4|xfs"}) / node_filesystem_size_bytes{fstype=~"ext4|xfs"} * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage (instance {{ $labels.instance }})"
+          description: "Disk usage is > 85%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          
+  - name: container_alerts
+    rules:
+      - alert: ContainerDown
+        expr: absent(container_last_seen{name=~".+"})
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container down (instance {{ $labels.instance }})"
+          description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          
+      - alert: ContainerHighCpuUsage
+        expr: sum(rate(container_cpu_usage_seconds_total{name=~".+"}[1m])) by (name) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container high CPU usage (instance {{ $labels.instance }})"
+          description: "Container CPU usage is > 85%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          
+  - name: api_alerts
+    rules:
+      - alert: ApiHighResponseTime
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="api"}[5m])) by (le, route)) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API high response time (instance {{ $labels.instance }})"
+          description: "API response time is > 1s for route {{ $labels.route }}\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+          
+      - alert: ApiHighErrorRate
+        expr: sum(rate(http_requests_total{job="api", status=~"5.."}[5m])) by (route) / sum(rate(http_requests_total{job="api"}[5m])) by (route) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API high error rate (instance {{ $labels.instance }})"
+          description: "API error rate is > 5% for route {{ $labels.route }}\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

@@ -106,7 +106,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
             # Navigate to deployment directory
-            cd /opt/ecommerce
+            cd /opt/monorepo-ecom
             
             # Pull latest images
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -132,3 +132,10 @@ jobs:
             
             # Cleanup old images
             docker image prune -f
+            
+            # Trigger database backup after successful deployment
+            cd /opt/monorepo-ecom
+            docker compose -f docker-compose.prod.yml exec -T db /bin/bash -c "bash /backup.sh"
+            
+            # Send notification
+            echo "Deployment successful at $(date)" | mail -s "Deployment Notification - ${{ github.repository }}" ${{ secrets.NOTIFICATION_EMAIL }}

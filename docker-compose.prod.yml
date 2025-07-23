@@ -24,7 +24,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
     networks:
@@ -40,7 +40,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?connection_limit=20&pool_timeout=20
-      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - BCRYPT_SALT_ROUNDS=${BCRYPT_SALT_ROUNDS:-12}
@@ -131,36 +131,104 @@ services:
     networks:
       - app-network
 
-  # Monitoring (optional - uncomment to enable)
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-  #     - prometheus_data:/prometheus
-  #   networks:
-  #     - app-network
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml
+      - prometheus_data:/prometheus
+    networks:
+      - app-network
+    depends_on:
+      - alertmanager
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.middlewares=prometheus-auth"
+      - "traefik.http.middlewares.prometheus-auth.basicauth.users=${PROMETHEUS_BASIC_AUTH}"
+      
+  alertmanager:
+    image: prom/alertmanager:latest
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/config.yml
+      - ./monitoring/templates:/etc/alertmanager/template
+      - alertmanager_data:/alertmanager
+    networks:
+      - app-network
+    environment:
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL}
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-https://hooks.slack.com/services/your/webhook/url}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alertmanager.rule=Host(`alerts.${DOMAIN}`)"
+      - "traefik.http.routers.alertmanager.entrypoints=websecure"
+      - "traefik.http.routers.alertmanager.tls.certresolver=letsencrypt"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+      - "traefik.http.routers.alertmanager.middlewares=alertmanager-auth"
+      - "traefik.http.middlewares.alertmanager-auth.basicauth.users=${PROMETHEUS_BASIC_AUTH}"
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   restart: unless-stopped
-  #   ports:
-  #     - "3001:3000"
-  #   environment:
-  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-  #   volumes:
-  #     - grafana_data:/var/lib/grafana
-  #   networks:
-  #     - app-network
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+  
+  node-exporter:
+    image: prom/node-exporter:latest
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - app-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    networks:
+      - app-network
 
 volumes:
   db_data:
   redis_data:
   letsencrypt:
-  # prometheus_data:
-  # grafana_data:
+  prometheus_data:
+  grafana_data:
+  alertmanager_data:
 
 networks:
   app-network:

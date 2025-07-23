@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { AuthGuard } from '../common/guards/auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@repo/db';
@@ -22,7 +23,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(CreateCategorySchema))
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -50,14 +51,14 @@ export class CategoriesController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   update(@Param('id') id: string, @Body() updateCategoryDto: any) {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);

@@ -37,6 +37,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     AuthService,
     JwtStrategy, // This is essential for protecting routes later on.
   ],
-  exports: [AuthService], // Export AuthService if other modules need to use it.
+  exports: [AuthService, JwtModule], // Export AuthService if other modules need to use it.
 })
 export class AuthModule {}
