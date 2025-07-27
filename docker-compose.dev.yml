@@ -1,21 +1,22 @@
 services:
-  # PostgreSQL Database
+  # PostgreSQL POSTGRES
   db:
     image: postgres:16-alpine
     restart: always
     env_file:
       - .env.dev
     environment:
-      # Use explicit values from .env.dev to ensure proper database creation
-      POSTGRES_USER: monorepo-ecom-admin
-      POSTGRES_PASSWORD: 197324865
-      POSTGRES_DB: monorepo-ecom
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
     ports:
       - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U monorepo-ecom-admin"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -46,11 +47,11 @@ services:
     env_file:
       - .env.dev
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - DATABASE_URL=postgresql://monorepo-ecom-admin:197324865@db:5432/monorepo-ecom
+      - NODE_ENV=${NODE_ENV}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=${JWT_SECRET:-dev-secret-key-change-in-production}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
     depends_on:
       db:
         condition: service_healthy
@@ -80,8 +81,8 @@ services:
     env_file:
       - .env.dev
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:3001
+      - NODE_ENV=${NODE_ENV}
+      - VITE_API_URL=${VITE_API_URL}
     depends_on:
       - api
     volumes:

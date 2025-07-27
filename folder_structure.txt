@@ -1,0 +1,201 @@
+.
+├── apps
+│   ├── api
+│   │   ├── api@0.0.1
+│   │   ├── dist
+│   │   │   ├── apps
+│   │   │   │   └── api
+│   │   │   ├── packages
+│   │   │   │   └── db
+│   │   │   └── tsconfig.build.tsbuildinfo
+│   │   ├── docs
+│   │   │   └── schema.prisma.md
+│   │   ├── eslint.config.mjs
+│   │   ├── nest
+│   │   ├── nest-cli.json
+│   │   ├── package.json
+│   │   ├── pnpm-lock.yaml
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── addresses
+│   │   │   │   ├── addresses.controller.ts
+│   │   │   │   ├── addresses.module.ts
+│   │   │   │   ├── addresses.service.ts
+│   │   │   │   └── dto
+│   │   │   ├── app.controller.spec.ts
+│   │   │   ├── app.controller.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── app.service.ts
+│   │   │   ├── auth
+│   │   │   │   ├── auth.controller.spec.ts
+│   │   │   │   ├── auth.controller.ts
+│   │   │   │   ├── auth.module.ts
+│   │   │   │   ├── auth.service.spec.ts
+│   │   │   │   ├── auth.service.ts
+│   │   │   │   ├── decorators
+│   │   │   │   ├── dto
+│   │   │   │   ├── guards
+│   │   │   │   └── strategies
+│   │   │   ├── cache
+│   │   │   │   └── cache.module.ts
+│   │   │   ├── cart
+│   │   │   │   ├── cart.controller.ts
+│   │   │   │   ├── cart.module.ts
+│   │   │   │   ├── cart.service.ts
+│   │   │   │   └── dto
+│   │   │   ├── categories
+│   │   │   │   ├── categories.controller.ts
+│   │   │   │   ├── categories.module.ts
+│   │   │   │   ├── categories.service.ts
+│   │   │   │   └── dto
+│   │   │   ├── common
+│   │   │   │   ├── decorators
+│   │   │   │   ├── dto
+│   │   │   │   ├── filters
+│   │   │   │   ├── guards
+│   │   │   │   ├── interceptors
+│   │   │   │   ├── pipes
+│   │   │   │   └── utilities
+│   │   │   ├── discounts
+│   │   │   │   ├── discounts.controller.ts
+│   │   │   │   ├── discounts.module.ts
+│   │   │   │   ├── discounts.service.ts
+│   │   │   │   └── dto
+│   │   │   ├── logger
+│   │   │   │   ├── logger.module.ts
+│   │   │   │   └── logger.service.ts
+│   │   │   ├── main.ts
+│   │   │   ├── metrics
+│   │   │   │   ├── metrics.controller.ts
+│   │   │   │   └── metrics.module.ts
+│   │   │   ├── orders
+│   │   │   │   ├── dto
+│   │   │   │   ├── orders.controller.ts
+│   │   │   │   ├── orders.module.ts
+│   │   │   │   └── orders.service.ts
+│   │   │   ├── prisma
+│   │   │   │   ├── prisma.module.ts
+│   │   │   │   └── prisma.service.ts
+│   │   │   ├── products
+│   │   │   │   ├── dto
+│   │   │   │   ├── products.controller.ts
+│   │   │   │   ├── products.module.ts
+│   │   │   │   └── products.service.ts
+│   │   │   ├── reviews
+│   │   │   │   ├── dto
+│   │   │   │   ├── reviews.controller.ts
+│   │   │   │   ├── reviews.module.ts
+│   │   │   │   └── reviews.service.ts
+│   │   │   ├── types.d.ts
+│   │   │   └── users
+│   │   │       ├── dto
+│   │   │       ├── users.controller.ts
+│   │   │       ├── users.module.ts
+│   │   │       └── users.service.ts
+│   │   ├── test
+│   │   │   ├── app.e2e-spec.ts
+│   │   │   └── jest-e2e.json
+│   │   ├── tsconfig.build.json
+│   │   └── tsconfig.json
+│   └── web
+│       ├── dist
+│       │   ├── assets
+│       │   │   ├── index-9_sxcfan.js
+│       │   │   ├── index-D8b4DHJx.css
+│       │   │   └── react-CHdo91hT.svg
+│       │   ├── index.html
+│       │   └── vite.svg
+│       ├── eslint.config.js
+│       ├── index.html
+│       ├── package.json
+│       ├── public
+│       │   └── vite.svg
+│       ├── README.md
+│       ├── src
+│       │   ├── App.css
+│       │   ├── App.tsx
+│       │   ├── assets
+│       │   │   └── react.svg
+│       │   ├── index.css
+│       │   ├── main.tsx
+│       │   └── vite-env.d.ts
+│       ├── tsconfig.app.json
+│       ├── tsconfig.json
+│       ├── tsconfig.node.json
+│       └── vite.config.ts
+├── docker-compose.dev.yml
+├── docker-compose.prod.yml
+├── Dockerfile
+├── docs
+│   ├── env-setup-guide.md
+│   ├── fix-connection-issues.md
+│   └── namecheap-dns-setup.md
+├── folder_structure.txt
+├── full_output.log
+├── Makefile
+├── monitoring
+│   ├── alertmanager.yml
+│   ├── alerts.yml
+│   ├── grafana-dashboards
+│   │   └── alerts-dashboard.json
+│   ├── grafana-datasources.yml
+│   ├── prometheus.yml
+│   └── templates
+│       ├── email.tmpl
+│       └── slack.tmpl
+├── package.json
+├── packages
+│   ├── db
+│   │   ├── dist
+│   │   │   ├── index.d.ts
+│   │   │   └── index.js
+│   │   ├── index.ts
+│   │   ├── migrations
+│   │   │   ├── 20250625184219_init
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20250626175840_monorepo_schema
+│   │   │   │   └── migration.sql
+│   │   │   ├── 20250724090649_
+│   │   │   │   └── migration.sql
+│   │   │   └── migration_lock.toml
+│   │   ├── package.json
+│   │   ├── schema.prisma
+│   │   └── tsconfig.json
+│   ├── docker
+│   │   └── package.json
+│   ├── shared
+│   │   ├── dist
+│   │   │   ├── index.d.ts
+│   │   │   └── index.js
+│   │   ├── index.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── ui
+│       ├── components
+│       │   ├── Button.svelte
+│       │   ├── Card.svelte
+│       │   └── LoadingSpinner.svelte
+│       ├── dist
+│       │   ├── index.d.ts
+│       │   └── index.js
+│       ├── index.ts
+│       ├── package.json
+│       └── tsconfig.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── README.md
+├── README.md.new
+├── scripts
+│   ├── backup.sh
+│   ├── check_connections.sh
+│   ├── deploy_to_hetzner.sh
+│   ├── enhanced_health_check.sh
+│   ├── health_check.sh
+│   ├── init_db.sh
+│   ├── server_setup.sh
+│   ├── setup_crontabs.sh
+│   ├── setup_dev.sh
+│   ├── setup_env.sh
+│   ├── test_alerts.sh
+│   └── update.sh
+└── turbo.json

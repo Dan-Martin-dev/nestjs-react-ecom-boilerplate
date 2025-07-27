@@ -179,7 +179,7 @@ services:
     image: grafana/grafana:latest
     restart: unless-stopped
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - GF_SERVER_ROOT_URL=https://grafana.${DOMAIN}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:

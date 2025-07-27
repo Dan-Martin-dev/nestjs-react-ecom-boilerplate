@@ -8,8 +8,8 @@ set -e
 
 DATE=$(date +"%Y%m%d_%H%M%S")
 BACKUP_DIR="/backups"
-DB_NAME="${POSTGRES_DB:-monorepo-ecom}"
-DB_USER="${POSTGRES_USER:-monorepo-ecom-admin}"
+DB_NAME="${POSTGRES_DB}"
+DB_USER="${POSTGRES_USER}"
 DB_HOST="db"
 
 # Create backup directory structure
