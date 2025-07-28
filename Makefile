@@ -125,6 +125,18 @@ dev-web:
 dev-all:
 	@echo "Starting all containers in detached mode..."
 	$(COMPOSE_DEV) up -d
+	@echo ""
+	@echo "🚀 Development environment is ready!"
+	@echo "┌───────────────────────────────────────────────────────────────┐"
+	@echo "│ 🌐 Web Frontend:       http://localhost:$$(bash scripts/detect_ports.sh | grep WEB_PORT | cut -d= -f2)                  │"
+	@echo "│ 🚀 API:               http://localhost:$$(bash scripts/detect_ports.sh | grep API_PORT | cut -d= -f2)/api/v1           │"
+	@echo "│ 🗄️  Prisma Studio:     http://localhost:$$(bash scripts/detect_ports.sh | grep PRISMA_PORT | cut -d= -f2)                  │"
+	@echo "│ 🔄 Traefik Dashboard: http://localhost:$$(bash scripts/detect_ports.sh | grep TRAEFIK_PORT | cut -d= -f2)                  │"
+	@echo "└───────────────────────────────────────────────────────────────┘"
+	@echo ""
+	@echo "Verifying API is running..."
+	@curl -s http://localhost:3001/api/v1/health > /dev/null && echo "✅ API is running correctly at http://localhost:3001/api/v1" || echo "❌ API is not responding"
+	@echo ""
 	@echo "Opening Prisma Studio in separate window..."
 	make prisma-studio
 
@@ -169,7 +181,6 @@ shell-web:
 
 
 # ==============================================================================
-# ==============================================================================
 # DOCKER PRODUCTION
 # ==============================================================================
 
@@ -194,6 +205,7 @@ up-prod:
 	@echo "🌐 Production deployment complete! Services are now available."
 	@echo "API: http://api.yourdomain.com"
 	@echo "Web: http://yourdomain.com"
+
 
 # Stop and remove all production containers and volumes
 down-prod:
@@ -285,13 +297,22 @@ pre-deploy-check:
 # ==============================================================================
 
 prisma-generate:
-	pnpm --filter @repo/db db:generate
+	cd packages/db && pnpm db:generate
 
 prisma-migrate:
-	pnpm --filter @repo/db db:migrate
+	cd packages/db && pnpm db:migrate
 
 prisma-studio:
-	cd packages/db && npx dotenv -e ../../.env.dev -- prisma studio
+	@echo "Starting Prisma Studio with Docker container database connection..."
+	@if docker inspect monorepo-ecom-db-1 >/dev/null 2>&1; then \
+		cd packages/db && pnpm db:studio; \
+	else \
+		echo "⚠️  Database container not running! Starting it now..."; \
+		$(COMPOSE_DEV) up -d db; \
+		echo "Waiting for database to start..."; \
+		sleep 5; \
+		cd packages/db && pnpm db:studio; \
+	fi
 	
 backup-db:
 	bash scripts/backup.sh
@@ -336,8 +357,29 @@ check-connections:
 setup-dev:
 	@echo "🔧 Setting up development environment..."
 	@bash scripts/setup_dev.sh
+	@echo ""
+	@echo "🚀 Development environment setup complete!"
+	@echo "┌───────────────────────────────────────────────────────────────┐"
+	@echo "│ 🌐 Web Frontend:       http://localhost:$$(bash scripts/detect_ports.sh | grep WEB_PORT | cut -d= -f2)                  │"
+	@echo "│ 🚀 API:               http://localhost:$$(bash scripts/detect_ports.sh | grep API_PORT | cut -d= -f2)/api/v1           │"
+	@echo "│ 🗄️  Prisma Studio:     http://localhost:$$(bash scripts/detect_ports.sh | grep PRISMA_PORT | cut -d= -f2)                  │"
+	@echo "│ 🔄 Traefik Dashboard: http://localhost:$$(bash scripts/detect_ports.sh | grep TRAEFIK_PORT | cut -d= -f2)                  │"
+	@echo "└───────────────────────────────────────────────────────────────┘"
+	@echo ""
+	@echo "Run 'make dev-all' to start all services"
 	
 # Initialize database and create migrations
+
 init-db:
 	@echo "🗄️  Initializing database and creating migrations..."
 	@bash scripts/init_db.sh
+	@echo ""
+	@echo "🚀 Database initialization complete!"
+	@echo "┌───────────────────────────────────────────────────────────────┐"
+	@echo "│ 🌐 Web Frontend:       http://localhost:$$(bash scripts/detect_ports.sh | grep WEB_PORT | cut -d= -f2)                  │"
+	@echo "│ 🚀 API:               http://localhost:$$(bash scripts/detect_ports.sh | grep API_PORT | cut -d= -f2)/api/v1           │"
+	@echo "│ 🗄️  Prisma Studio:     http://localhost:$$(bash scripts/detect_ports.sh | grep PRISMA_PORT | cut -d= -f2)                  │"
+	@echo "│ 🔄 Traefik Dashboard: http://localhost:$$(bash scripts/detect_ports.sh | grep TRAEFIK_PORT | cut -d= -f2)                  │"
+	@echo "└───────────────────────────────────────────────────────────────┘"
+	@echo ""
+	@echo "Run 'make dev-all' to start all services"

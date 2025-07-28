@@ -11,6 +11,47 @@ NC='\033[0m' # No Color
 # Error counter
 ERRORS=0
 
+# Function to check frontend in background and notify when available
+check_frontend_background() {
+  echo -e "${YELLOW}Starting a background check for frontend availability...${NC}"
+  (
+    MAX_CHECKS=30 # Maximum number of checks (5 minutes total)
+    FRONTEND_URL=""
+    FRONTEND_PORTS=(3000 3001 8080)
+    
+    for i in $(seq 1 $MAX_CHECKS); do
+      # Check multiple possible ports
+      for port in "${FRONTEND_PORTS[@]}"; do
+        if curl -s "http://localhost:$port" &>/dev/null; then
+          FRONTEND_URL="http://localhost:$port"
+          echo -e "\n${GREEN}✓ Frontend is now accessible at $FRONTEND_URL${NC}"
+          
+          # Try to open browser if running in a graphical environment
+          if command -v xdg-open &>/dev/null; then
+            xdg-open "$FRONTEND_URL" &>/dev/null || true
+          elif command -v open &>/dev/null; then
+            open "$FRONTEND_URL" &>/dev/null || true
+          fi
+          
+          # Exit both loops when found
+          break 2
+        fi
+      done
+      
+      # If we've reached the maximum checks without success
+      if [ $i -eq $MAX_CHECKS ]; then
+        echo -e "\n${YELLOW}⚠ Frontend still not accessible after 5 minutes of background checks${NC}"
+        echo -e "${YELLOW}There might be an issue with the frontend build process.${NC}"
+        echo -e "${YELLOW}You can try manually checking these URLs:${NC}"
+        for port in "${FRONTEND_PORTS[@]}"; do
+          echo -e "  - http://localhost:$port"
+        done
+      fi
+      sleep 10
+    done
+  ) &
+}
+
 # Set PROJECT_ROOT to absolute path
 PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
@@ -180,6 +221,8 @@ fi
 
 # Check frontend
 echo -e "\n${YELLOW}Testing frontend development server...${NC}"
+# Initialize FRONTEND_URL at the global scope so it's available throughout the script
+FRONTEND_URL=""
 if docker compose --env-file "$PROJECT_ROOT/.env.dev" -f "$PROJECT_ROOT/docker-compose.dev.yml" ps | grep -q "web.*running"; then
   echo -e "${GREEN}✓ Web container is running${NC}"
   
@@ -187,17 +230,27 @@ if docker compose --env-file "$PROJECT_ROOT/.env.dev" -f "$PROJECT_ROOT/docker-c
   # Give more time for the web container to fully start
   sleep 20
   
+  # Define possible frontend ports to check
+  FRONTEND_PORTS=(3000 3001 8080)
+  
   # Try more times with progressive waiting periods
   MAX_ATTEMPTS=8
   for attempt in $(seq 1 $MAX_ATTEMPTS); do
-    if curl -s http://localhost:3000 &>/dev/null; then
-      echo -e "${GREEN}✓ Frontend is accessible${NC}"
-      FRONTEND_OK=true
-      break
-    else
+    # Check each possible port
+    for port in "${FRONTEND_PORTS[@]}"; do
+      if curl -s "http://localhost:$port" &>/dev/null; then
+        FRONTEND_URL="http://localhost:$port"
+        echo -e "${GREEN}✓ Frontend is accessible at $FRONTEND_URL${NC}"
+        FRONTEND_OK=true
+        break 2  # Break out of both loops
+      fi
+    done
+    
+    # If none of the ports worked, wait and try again
+    if [ -z "$FRONTEND_OK" ]; then
       # Progressive waiting: wait longer with each attempt
       wait_time=$((5 + attempt * 3))
-      echo -e "${YELLOW}⚠ Attempt $attempt: Frontend not yet accessible, waiting ${wait_time}s...${NC}"
+      echo -e "${YELLOW}⚠ Attempt $attempt: Frontend not accessible on ports ${FRONTEND_PORTS[*]}, waiting ${wait_time}s...${NC}"
       sleep $wait_time
     fi
   done
@@ -205,7 +258,10 @@ if docker compose --env-file "$PROJECT_ROOT/.env.dev" -f "$PROJECT_ROOT/docker-c
   if [ -z "$FRONTEND_OK" ]; then
     echo -e "${YELLOW}⚠ Frontend is not accessible after $MAX_ATTEMPTS attempts${NC}"
     echo -e "${YELLOW}This is normal during initial setup as the frontend needs time to build.${NC}"
-    echo -e "${YELLOW}You can check it manually later by opening http://localhost:3000 in your browser.${NC}"
+    echo -e "${YELLOW}You can check it manually later by trying these URLs:${NC}"
+    for port in "${FRONTEND_PORTS[@]}"; do
+      echo -e "  - http://localhost:$port"
+    done
     # Start background check for frontend
     check_frontend_background
     # Don't count this as an error since it's expected during initial setup
@@ -215,17 +271,28 @@ else
   docker compose --env-file "$PROJECT_ROOT/.env.dev" -f "$PROJECT_ROOT/docker-compose.dev.yml" up -d web
   sleep 20
   
+  # Define possible frontend ports to check
+  FRONTEND_PORTS=(3000 3001 8080)
+  # FRONTEND_URL is already defined at the global scope
+  
   # Try more times with progressive waiting periods
   MAX_ATTEMPTS=8
   for attempt in $(seq 1 $MAX_ATTEMPTS); do
-    if curl -s http://localhost:3000 &>/dev/null; then
-      echo -e "${GREEN}✓ Frontend is accessible${NC}"
-      FRONTEND_OK=true
-      break
-    else
+    # Check each possible port
+    for port in "${FRONTEND_PORTS[@]}"; do
+      if curl -s "http://localhost:$port" &>/dev/null; then
+        FRONTEND_URL="http://localhost:$port"
+        echo -e "${GREEN}✓ Frontend is accessible at $FRONTEND_URL${NC}"
+        FRONTEND_OK=true
+        break 2  # Break out of both loops
+      fi
+    done
+    
+    # If none of the ports worked, wait and try again
+    if [ -z "$FRONTEND_OK" ]; then
       # Progressive waiting: wait longer with each attempt
       wait_time=$((5 + attempt * 3))
-      echo -e "${YELLOW}⚠ Attempt $attempt: Frontend not yet accessible, waiting ${wait_time}s...${NC}"
+      echo -e "${YELLOW}⚠ Attempt $attempt: Frontend not accessible on ports ${FRONTEND_PORTS[*]}, waiting ${wait_time}s...${NC}"
       sleep $wait_time
     fi
   done
@@ -233,7 +300,10 @@ else
   if [ -z "$FRONTEND_OK" ]; then
     echo -e "${YELLOW}⚠ Frontend is not accessible after $MAX_ATTEMPTS attempts${NC}"
     echo -e "${YELLOW}This is normal during initial setup as the frontend needs time to build.${NC}"
-    echo -e "${YELLOW}You can check it manually later by opening http://localhost:3000 in your browser.${NC}"
+    echo -e "${YELLOW}You can check it manually later by trying these URLs:${NC}"
+    for port in "${FRONTEND_PORTS[@]}"; do
+      echo -e "  - http://localhost:$port"
+    done
     # Start background check for frontend
     check_frontend_background
     # Don't count this as an error since it's expected during initial setup
@@ -266,7 +336,11 @@ if [ $ERRORS -eq 0 ]; then
   echo -e "\n${YELLOW}Recommended next steps:${NC}"
   echo -e "1. Run 'make dev-all' to start all development services"
   echo -e "2. Access your API at http://localhost:3001"
-  echo -e "3. Access your Frontend at http://localhost:3000"
+  if [ -n "$FRONTEND_URL" ]; then
+    echo -e "3. Access your Frontend at $FRONTEND_URL"
+  else
+    echo -e "3. Access your Frontend at http://localhost:3000 (or check other ports if needed)"
+  fi
   echo -e "4. Use Prisma Studio with 'make prisma-studio' to manage your database"
 else
   echo -e "${RED}❌ FOUND $ERRORS ISSUE(S) TO FIX!${NC}"
