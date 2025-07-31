@@ -5,7 +5,7 @@
 #!/bin/bash
 
 # Configuration
-DEPLOY_PATH="/opt/monorepo-ecom"
+DEPLOY_PATH="/opt/nestjs-reactjs-ecom-boilerplate"
 NOTIFICATION_EMAIL="your-email@example.com"
 SERVICES=("api" "web" "db" "redis" "traefik" "prometheus" "grafana" "alertmanager" "node-exporter" "cadvisor")
 HOST="localhost"

@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 echo -e "${GREEN}=== Starting system update process ===${NC}"
 
 # Directory where the application is deployed
-DEPLOY_PATH="/opt/monorepo-ecom"
+DEPLOY_PATH="/opt/nestjs-reactjs-ecom-boilerplate"
 
 # Update system packages
 echo -e "${YELLOW}Updating system packages...${NC}"

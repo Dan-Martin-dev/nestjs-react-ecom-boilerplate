@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-PROJECT_DIR="/home/vare/project/ecom_101/monorepo-ecom"
+PROJECT_DIR="/home/vare/project/ecom_101/nestjs-reactjs-ecom-boilerplate"
 ENV_FILE="$PROJECT_DIR/.env.production"
 ENV_TEMPLATE="$PROJECT_DIR/.env.production.example"
 

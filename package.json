@@ -1,5 +1,5 @@
 {
-  "name": "monorepo-ecom",
+  "name": "nestjs-reactjs-ecom-boilerplate",
   "private": true,
   "scripts": {
     "build": "turbo build",

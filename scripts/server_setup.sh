@@ -1,6 +1,6 @@
 #!/bin/bash
 # Server setup script for Hetzner Cloud
-# This script sets up a new Ubuntu server for the monorepo ecommerce application
+# This script sets up a new Ubuntu server for the nestjs-reactjs-ecom-boilerplate ecommerce application
 
 # Exit on error
 set -e
@@ -62,8 +62,8 @@ systemctl start fail2ban
 
 # Create deployment directory
 echo -e "${YELLOW}Creating deployment directory...${NC}"
-mkdir -p /opt/monorepo-ecom/{backups,data,logs}
-chown -R 1001:1001 /opt/monorepo-ecom # Match UID from Dockerfile
+mkdir -p /opt/nestjs-reactjs-ecom-boilerplate-ecom/{backups,data,logs}
+chown -R 1001:1001 /opt/nestjs-reactjs-ecom-boilerplate-ecom # Match UID from Dockerfile
 
 # Setup automatic security updates
 echo -e "${YELLOW}Setting up automatic security updates...${NC}"

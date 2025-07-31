@@ -13,13 +13,13 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 echo "[$TIMESTAMP] Running health check..."
 
 # Configuration - loaded from environment or defaults
-DEPLOY_PATH=${DEPLOY_PATH:-"/opt/monorepo-ecom"}
+DEPLOY_PATH=${DEPLOY_PATH:-"/opt/nestjs-reactjs-ecom-boilerplate"}
 NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL:-"admin@yourdomain.com"}
 RESTART_UNHEALTHY=${RESTART_UNHEALTHY:-"true"}
 MAX_CPU_PERCENT=${MAX_CPU_PERCENT:-85}
 MAX_MEM_PERCENT=${MAX_MEM_PERCENT:-85}
 MAX_DISK_PERCENT=${MAX_DISK_PERCENT:-85}
-LOG_FILE=${LOG_FILE:-"/var/log/monorepo-ecom-health.log"}
+LOG_FILE=${LOG_FILE:-"/var/log/nestjs-reactjs-ecom-boilerplate-health.log"}
 
 # Services to check
 SERVICES=("api" "web" "db" "redis" "traefik" "prometheus" "grafana" "alertmanager" "node-exporter" "cadvisor")

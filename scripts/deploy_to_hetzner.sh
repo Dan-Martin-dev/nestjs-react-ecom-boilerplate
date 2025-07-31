@@ -14,8 +14,8 @@ NC='\033[0m' # No Color
 # Configuration - update these values
 SSH_USER="root"
 HETZNER_IP=$(grep HETZNER_SERVER_IP .env.production | cut -d '=' -f2 | tr -d '"')
-REPO_URL="https://github.com/yourusername/monorepo-ecom.git"
-DEPLOY_PATH="/opt/monorepo-ecom"
+REPO_URL="https://github.com/yourusername/nestjs-reactjs-ecom-boilerplate.git"
+DEPLOY_PATH="/opt/nestjs-reactjs-ecom-boilerplate"
 
 if [ -z "$HETZNER_IP" ]; then
   echo -e "${RED}Error: HETZNER_SERVER_IP not found in .env.production${NC}"

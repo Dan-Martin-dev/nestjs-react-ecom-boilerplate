@@ -144,6 +144,7 @@ docker-web:
 	@echo "Starting Dockge web UI..."
 	@echo "Visit http://localhost:5001 for Docker Compose management"
 	docker run -d --name dockge -p 5001:5001 -v /var/run/docker.sock:/var/run/docker.sock louislam/dockge
+
 # ==============================================================================
 # DATABASE
 # ==============================================================================

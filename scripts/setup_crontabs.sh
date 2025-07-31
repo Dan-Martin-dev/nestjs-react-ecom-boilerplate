@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-DEPLOY_PATH="/opt/monorepo-ecom"
+DEPLOY_PATH="/opt/nestjs-reactjs-ecom-boilerplate"
 SCRIPTS_PATH="$DEPLOY_PATH/scripts"
 
 echo -e "${YELLOW}Setting up maintenance crontabs...${NC}"
