@@ -1,6 +1,7 @@
 import { Link, useParams } from '@tanstack/react-router'
 import { Button } from '../../../components/ui/button'
-import { useCartStore } from '../../cart/stores/cartStore'
+import { useAddToCart } from '../../../hooks/useCart'
+import { useAuth } from '../../../hooks/useAuthContext'
 import { ArrowLeft, Star } from 'lucide-react'
 
 // Mock product data - would come from API based on productId
@@ -28,15 +29,27 @@ const mockProduct = {
 
 export function ProductDetailPage() {
   const { productId } = useParams({ from: '/products/$productId' })
-  const { addItem } = useCartStore()
+  const { isAuthenticated } = useAuth()
+  const addToCartMutation = useAddToCart()
 
-  const handleAddToCart = () => {
-    addItem({
-      id: mockProduct.id,
-      name: mockProduct.name,
-      price: mockProduct.price,
-      image: mockProduct.images[0]
-    })
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      alert('Please login to add items to cart')
+      return
+    }
+
+    try {
+      // For demo purposes, we'll use a mock variant ID
+      // In a real app, this would come from the product data
+      await addToCartMutation.mutateAsync({
+        productVariantId: 'mock-variant-id', // This should come from actual product data
+        quantity: 1,
+      })
+      alert('Item added to cart!')
+    } catch (error) {
+      console.error('Failed to add to cart:', error)
+      alert('Failed to add item to cart')
+    }
   }
 
   return (

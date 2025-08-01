@@ -169,7 +169,7 @@ export default function ProductsPage() {
                 value={`${filters.sortBy}-${filters.sortOrder}`}
                 onChange={(e) => {
                   const [sortBy, sortOrder] = e.target.value.split('-') as [string, 'asc' | 'desc'];
-                  handleFilterChange({ sortBy: sortBy as any, sortOrder });
+                  handleFilterChange({ sortBy: sortBy as , sortOrder });
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >

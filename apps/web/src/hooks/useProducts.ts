@@ -1,19 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../lib/apiClient'
-import { type Product, type ProductFilterDto, type PaginatedResponse } from '../types/api'
+import { type Product, type ProductFilterDto, type PaginatedResponse, type CreateProductDto } from '../types/api'
 
 // Query keys
 export const productKeys = {
   all: ['products'] as const,
   lists: () => [...productKeys.all, 'list'] as const,
-  list: (filters: ProductFilters) => [...productKeys.lists(), filters] as const,
+  list: (filters: ProductFilterDto) => [...productKeys.lists(), filters] as const,
   details: () => [...productKeys.all, 'detail'] as const,
   detail: (id: string) => [...productKeys.details(), id] as const,
   search: (query: string) => [...productKeys.all, 'search', query] as const,
 }
 
 // Get products with filters
-export function useProducts(filters: ProductFilters = {}) {
+export function useProducts(filters: ProductFilterDto = {}) {
   return useQuery({
     queryKey: productKeys.list(filters),
     queryFn: async () => {
@@ -25,7 +25,7 @@ export function useProducts(filters: ProductFilters = {}) {
         }
       })
       
-      const endpoint = `${API_ENDPOINTS.PRODUCTS}?${params.toString()}`
+      const endpoint = `/products?${params.toString()}`
       return apiClient.get<PaginatedResponse<Product>>(endpoint)
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -36,7 +36,7 @@ export function useProducts(filters: ProductFilters = {}) {
 export function useProduct(id: string) {
   return useQuery({
     queryKey: productKeys.detail(id),
-    queryFn: () => apiClient.get<Product>(API_ENDPOINTS.PRODUCT_BY_ID(id)),
+    queryFn: () => apiClient.get<Product>(`/products/${id}`),
     enabled: !!id,
     staleTime: 10 * 60 * 1000, // 10 minutes
   })
@@ -48,7 +48,7 @@ export function useProductSearch(query: string) {
     queryKey: productKeys.search(query),
     queryFn: () => {
       const params = new URLSearchParams({ q: query })
-      return apiClient.get<PaginatedResponse<Product>>(`${API_ENDPOINTS.PRODUCT_SEARCH}?${params.toString()}`)
+      return apiClient.get<PaginatedResponse<Product>>(`/products/search?${params.toString()}`)
     },
     enabled: query.length > 2, // Only search if query is longer than 2 characters
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -60,8 +60,8 @@ export function useCreateProduct() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (productData: Partial<Product>) => 
-      apiClient.post<Product>(API_ENDPOINTS.PRODUCTS, productData),
+    mutationFn: (productData: CreateProductDto) => 
+      apiClient.post<Product>('/products', productData),
     onSuccess: () => {
       // Invalidate and refetch products
       queryClient.invalidateQueries({ queryKey: productKeys.all })
@@ -74,8 +74,8 @@ export function useUpdateProduct() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) =>
-      apiClient.put<Product>(API_ENDPOINTS.PRODUCT_BY_ID(id), data),
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateProductDto> }) =>
+      apiClient.put<Product>(`/products/${id}`, data),
     onSuccess: (data) => {
       // Update the specific product in cache
       queryClient.setQueryData(productKeys.detail(data.id), data)
@@ -90,7 +90,7 @@ export function useDeleteProduct() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (id: string) => apiClient.delete(API_ENDPOINTS.PRODUCT_BY_ID(id)),
+    mutationFn: (id: string) => apiClient.delete(`/products/${id}`),
     onSuccess: () => {
       // Invalidate all product queries
       queryClient.invalidateQueries({ queryKey: productKeys.all })

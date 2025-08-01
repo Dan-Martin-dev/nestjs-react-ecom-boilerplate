@@ -18,34 +18,39 @@ export interface PaginatedResponse<T> {
   meta: PaginationMeta;
 }
 
-// Enums matching backend
-export enum Role {
-  CUSTOMER = 'CUSTOMER',
-  ADMIN = 'ADMIN'
-}
+// Enums as const objects for better compatibility
+export const Role = {
+  CUSTOMER: 'CUSTOMER',
+  ADMIN: 'ADMIN'
+} as const;
+export type Role = typeof Role[keyof typeof Role];
 
-export enum AddressType {
-  SHIPPING = 'SHIPPING',
-  BILLING = 'BILLING'
-}
+export const AddressType = {
+  SHIPPING: 'SHIPPING',
+  BILLING: 'BILLING'
+} as const;
+export type AddressType = typeof AddressType[keyof typeof AddressType];
 
-export enum PaymentMethod {
-  STRIPE = 'STRIPE',
-  PAYPAL = 'PAYPAL'
-}
+export const PaymentMethod = {
+  STRIPE: 'STRIPE',
+  PAYPAL: 'PAYPAL'
+} as const;
+export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
 
-export enum OrderStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
-}
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  SHIPPED: 'SHIPPED',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED'
+} as const;
+export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
 
-export enum DiscountType {
-  PERCENTAGE = 'PERCENTAGE',
-  FIXED_AMOUNT = 'FIXED_AMOUNT'
-}
+export const DiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT'
+} as const;
+export type DiscountType = typeof DiscountType[keyof typeof DiscountType];
 
 // User interfaces
 export interface User {
