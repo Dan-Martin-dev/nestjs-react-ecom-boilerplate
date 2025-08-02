@@ -29,6 +29,8 @@ const mockProduct = {
 
 export function ProductDetailPage() {
   const { productId } = useParams({ from: '/products/$productId' })
+  // TODO: Use productId to fetch actual product data instead of mock data
+  console.log('Product ID:', productId) // Temporary to avoid linting error
   const { isAuthenticated } = useAuth()
   const addToCartMutation = useAddToCart()
 

@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Button } from '../../../components/ui/button';
-import { Card } from '../../../components/ui/Card';
-import { useToast } from '../../../hooks/useToast';
+import { Card } from '../../../components/ui/card';
 import { useProducts } from '../../../hooks/useProducts';
 import { useCategories } from '../../../hooks/useCategories';
 import { useAddToCart } from '../../../hooks/useCart';
 import type { ProductFilterDto } from '../../../types/api';
 
 export default function ProductsPage() {
-  const { toast } = useToast();
   const addToCartMutation = useAddToCart();
 
   const [filters, setFilters] = useState<ProductFilterDto>({
@@ -43,16 +41,9 @@ export default function ProductsPage() {
         productVariantId,
         quantity: 1,
       });
-      toast({
-        title: 'Success',
-        description: 'Product added to cart!',
-      });
+      alert('Product added to cart!');
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to add to cart',
-        variant: 'destructive',
-      });
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to add to cart'}`);
     }
   };
 
@@ -169,7 +160,7 @@ export default function ProductsPage() {
                 value={`${filters.sortBy}-${filters.sortOrder}`}
                 onChange={(e) => {
                   const [sortBy, sortOrder] = e.target.value.split('-') as [string, 'asc' | 'desc'];
-                  handleFilterChange({ sortBy: sortBy as , sortOrder });
+                  handleFilterChange({ sortBy: sortBy as ProductFilterDto["sortBy"], sortOrder });
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
