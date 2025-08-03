@@ -1,13 +1,42 @@
-# 🛒 E-commerce Monorepo
+# �️ NestJS + React E-commerce Monorepo
 
-Modern, full-stack e-commerce platform built with **NestJS**, **React.js**, and **Prisma**.
+A modern, production-ready e-commerce application built with NestJS, React 19, Prisma, and PostgreSQL.
 
-## 🚀 Tech Stack
+## ✨ Features
 
-- **Backend**: NestJS + Prisma + PostgreSQL
-- **Frontend**: React.js 19
-- **Authentication**: NextAuth.js with social providers
-- **Payments**: Stripe integration
+- 🏪 **Full E-commerce Functionality**: Products, categories, cart, orders, user management
+- 🔐 **Authentication & Authorization**: JWT-based auth with refresh tokens
+- 💳 **Payment Processing**: Ready for Stripe/PayPal integration
+- 📱 **Responsive Design**: Mobile-first UI with Tailwind CSS v4+
+- 🐳 **Docker Ready**: Complete containerization for dev and production
+- 🚀 **Production Optimized**: Nginx, SSL, monitoring, automated deployment
+- 📊 **Monitoring**: Grafana + Prometheus dashboards
+- 🔒 **Security**: CORS, rate limiting, security headers
+- 📈 **Performance**: Redis caching, optimized builds
+
+## 🏗️ Tech Stack
+
+### Frontend
+- **React 19** - Latest React with concurrent features
+- **TypeScript** - Type-safe development
+- **Tailwind CSS v4+** - Modern CSS-first configuration
+- **TanStack Router** - Type-safe routing
+- **Vite** - Fast build tool and dev server
+
+### Backend
+- **NestJS** - Scalable Node.js framework
+- **Prisma** - Type-safe database ORM
+- **PostgreSQL** - Robust relational database
+- **Redis** - Caching and session storage
+- **JWT** - Secure authentication
+
+### DevOps & Production
+- **Docker** - Containerization
+- **Docker Compose** - Multi-service orchestration
+- **Nginx** - Production web server
+- **Traefik** - Reverse proxy with SSL
+- **Grafana** - Monitoring dashboards
+- **Prometheus** - Metrics collection
 - **Deployment**: Docker + Traefik (Self-hosted)
 
 ## 📊 Features
@@ -26,7 +55,7 @@ Modern, full-stack e-commerce platform built with **NestJS**, **React.js**, and 
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/monorepo-ecom.git
+git clone https://github.com/Dan-Martin-dev/monorepo-ecom.git
 cd monorepo-ecom
 
 # Install dependencies

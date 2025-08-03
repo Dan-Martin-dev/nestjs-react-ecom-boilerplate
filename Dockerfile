@@ -2,14 +2,13 @@
 
 # Base stage: Install dependencies
 FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat curl
+RUN apk add --no-cache libc6-compat curl openssl openssl-dev ca-certificates
 WORKDIR /app
 
 # Install pnpm v9.14.2 (static binary)
 RUN wget -qO /usr/local/bin/pnpm https://github.com/pnpm/pnpm/releases/download/v9.14.2/pnpm-linuxstatic-x64 && chmod +x /usr/local/bin/pnpm
 
 # Copy package files
-
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 
 # Copy package.json files for all apps and packages
@@ -38,28 +37,19 @@ RUN pnpm --filter web build
 
 # Development API stage
 FROM base AS api-dev
-# Install OpenSSL and other dependencies needed by Prisma
-RUN apk add --no-cache openssl openssl-dev ca-certificates
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Generate Prisma client
+
+# Generate Prisma client and build packages
 RUN pnpm --filter @repo/db db:generate
-# Build the packages first to ensure JS files are available
 RUN pnpm --filter @repo/db build
 RUN pnpm --filter @repo/shared build
-# Now build the API
 RUN pnpm --filter api build
-# Debug: find the correct main.js location and display output
-RUN find /app -name "main.js" | sort
-RUN ls -la /app
-RUN ls -la /app/apps/api/dist || true
-RUN ls -la /app/dist || true
-WORKDIR /app
+
+WORKDIR /app/apps/api
 EXPOSE 3001
 USER node
-# Use the correct path to the compiled JavaScript
-CMD ["node", "/app/apps/api/dist/apps/api/src/main.js"]
+CMD ["pnpm", "dev"]
 
 # Development Web stage  
 FROM base AS web-dev
@@ -82,6 +72,7 @@ WORKDIR /app
 COPY --from=build --chown=nestjs:nodejs /app/apps/api/dist ./dist
 COPY --from=build --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nestjs:nodejs /app/packages ./packages
+COPY --from=build --chown=nestjs:nodejs /app/apps/api/package.json ./package.json
 
 USER nestjs
 
@@ -93,25 +84,15 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 CMD ["node", "dist/main.js"]
 
-# Production Web stage
-FROM node:20-alpine AS web
-RUN apk add --no-cache curl
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S sveltekit -u 1001
-
-WORKDIR /app
-
-# Copy built application and dependencies
-COPY --from=build --chown=sveltekit:nodejs /app/apps/web/.svelte-kit/output ./build
-COPY --from=build --chown=sveltekit:nodejs /app/apps/web/package.json ./package.json
-COPY --from=build --chown=sveltekit:nodejs /app/node_modules ./node_modules
-
-USER sveltekit
+# Production Web stage  
+FROM nginx:alpine AS web
+COPY --from=build /app/apps/web/dist /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+  CMD curl -f http://localhost:3000/ || exit 1
 
-CMD ["node", "build"]
+CMD ["nginx", "-g", "daemon off;"]
