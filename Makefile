@@ -174,6 +174,10 @@ clean: down-dev
 	@echo "🧹 Cleaning up Docker resources..."
 	docker system prune -a -f --volumes
 
+check-connections:
+	@echo "🔍 Checking connections between DB, API, and Frontend..."
+	@bash scripts/check_connections.sh
+
 health-check:
 	@echo "🔍 Checking service health..."
 	@curl -s http://localhost:3001/api/v1/health > /dev/null && echo "✅ API healthy" || echo "❌ API not responding"
