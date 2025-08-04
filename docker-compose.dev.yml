@@ -43,6 +43,7 @@ services:
     restart: always
     ports:
       - "3001:3001"
+      - "5555:5555"
     env_file:
       - .env.dev
     environment:

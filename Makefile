@@ -73,10 +73,7 @@ dev-docker:
 	@echo "│ 🌐 Web Frontend:       http://localhost:$$(bash scripts/detect_ports.sh | grep WEB_PORT | cut -d= -f2)                  │"
 	@echo "│ 🚀 API:               http://localhost:$$(bash scripts/detect_ports.sh | grep API_PORT | cut -d= -f2)/api/v1           │"
 	@echo "│ 🗄️  Prisma Studio:     http://localhost:$$(bash scripts/detect_ports.sh | grep PRISMA_PORT | cut -d= -f2)                  │"
-	@echo "│ 🔄 Traefik Dashboard: http://localhost:$$(bash scripts/detect_ports.sh | grep TRAEFIK_PORT | cut -d= -f2)                  │"
 	@echo "└───────────────────────────────────────────────────────────────┘"
-
-
 
 
 # One-time development setup
@@ -152,20 +149,18 @@ docker-web:
 
 # ==============================================================================
 # DATABASE
+
+.PHONY: db-migrate db-studio
 # ==============================================================================
 
 db-generate:
 	cd packages/db && pnpm db:generate
 
 db-migrate:
-	cd packages/db && pnpm db:migrate
+	docker-compose -f docker-compose.dev.yml exec api pnpm --filter @repo/db db:migrate
 
 db-studio:
-	@if ! docker inspect monorepo-ecom-db-1 >/dev/null 2>&1; then \
-		$(COMPOSE_DEV) up -d db; \
-		sleep 5; \
-	fi
-	cd packages/db && pnpm db:studio
+	docker-compose -f docker-compose.dev.yml exec api pnpm --filter @repo/db db:studio
 
 db-init:
 	@echo "🗄️ Initializing database..."
