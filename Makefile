@@ -77,6 +77,8 @@ dev-docker:
 	@echo "└───────────────────────────────────────────────────────────────┘"
 
 
+
+
 # One-time development setup
 dev-setup:
 	@echo "🔧 Setting up development environment..."
@@ -119,6 +121,9 @@ up-dev:
 	$(COMPOSE_DEV) up -d
 
 down-dev:
+	$(COMPOSE_DEV) down --remove-orphans
+
+down-dev-v:
 	$(COMPOSE_DEV) down -v --remove-orphans
 
 # Flexible logging - usage: make logs [service=api]

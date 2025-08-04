@@ -40,11 +40,13 @@ FROM base AS api-dev
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client and build packages
+# Change ownership before switching to node user
+RUN chown -R node:node /app
+
+# Generate Prisma client and build packages first
 RUN pnpm --filter @repo/db db:generate
 RUN pnpm --filter @repo/db build
 RUN pnpm --filter @repo/shared build
-RUN pnpm --filter api build
 
 WORKDIR /app/apps/api
 EXPOSE 3001
@@ -55,6 +57,14 @@ CMD ["pnpm", "dev"]
 FROM base AS web-dev
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Change ownership before switching to node user
+RUN chown -R node:node /app
+
+# Generate shared packages that web might depend on
+RUN pnpm --filter @repo/shared build
+RUN pnpm --filter @repo/ui build
+
 WORKDIR /app/apps/web
 EXPOSE 3000
 USER node
@@ -82,7 +92,7 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3001/api/v1/health || exit 1
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/apps/api/src/main.js"]
 
 # Production Web stage  
 FROM nginx:alpine AS web
