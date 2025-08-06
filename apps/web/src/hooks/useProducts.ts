@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiClient, API_ENDPOINTS } from '../lib/api'
+import { apiClient } from '../lib/apiClient'
 import { type Product, type ProductFilterDto, type PaginatedResponse, type CreateProductDto } from '../types/api'
 
 // Query keys
@@ -16,30 +16,41 @@ export const productKeys = {
 export function useProducts(filters: ProductFilterDto = {}) {
   return useQuery({
     queryKey: productKeys.list(filters),
-    queryFn: () => apiClient.get<PaginatedResponse<Product>>(
-      API_ENDPOINTS.PRODUCTS, 
-      filters as Record<string, string | number | boolean | undefined>
-    ),
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, String(value))
+        }
+      })
+      
+      const endpoint = `/products?${params.toString()}`
+      return apiClient.get<PaginatedResponse<Product>>(endpoint)
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 
 // Get single product by ID
-export function useProduct(id: string, enabled = true) {
+export function useProduct(id: string) {
   return useQuery({
     queryKey: productKeys.detail(id),
-    queryFn: () => apiClient.get<Product>(API_ENDPOINTS.PRODUCT_BY_ID(id)),
-    enabled: enabled && !!id,
+    queryFn: () => apiClient.get<Product>(`/products/${id}`),
+    enabled: !!id,
     staleTime: 10 * 60 * 1000, // 10 minutes
   })
 }
 
 // Search products
-export function useProductSearch(query: string, enabled = true) {
+export function useProductSearch(query: string) {
   return useQuery({
     queryKey: productKeys.search(query),
-    queryFn: () => apiClient.get<PaginatedResponse<Product>>(API_ENDPOINTS.PRODUCT_SEARCH, { q: query }),
-    enabled: enabled && query.length > 2, // Only search if query is longer than 2 characters
+    queryFn: () => {
+      const params = new URLSearchParams({ q: query })
+      return apiClient.get<PaginatedResponse<Product>>(`/products/search?${params.toString()}`)
+    },
+    enabled: query.length > 2, // Only search if query is longer than 2 characters
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
 }
@@ -50,12 +61,10 @@ export function useCreateProduct() {
   
   return useMutation({
     mutationFn: (productData: CreateProductDto) => 
-      apiClient.post<Product>(API_ENDPOINTS.PRODUCTS, productData),
-    onSuccess: (newProduct) => {
-      // Add the new product to the cache
-      queryClient.setQueryData(productKeys.detail(newProduct.id), newProduct)
+      apiClient.post<Product>('/products', productData),
+    onSuccess: () => {
       // Invalidate and refetch products
-      queryClient.invalidateQueries({ queryKey: productKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: productKeys.all })
     },
   })
 }
@@ -66,10 +75,10 @@ export function useUpdateProduct() {
   
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateProductDto> }) =>
-      apiClient.patch<Product>(API_ENDPOINTS.PRODUCT_BY_ID(id), data),
-    onSuccess: (updatedProduct) => {
+      apiClient.put<Product>(`/products/${id}`, data),
+    onSuccess: (data) => {
       // Update the specific product in cache
-      queryClient.setQueryData(productKeys.detail(updatedProduct.id), updatedProduct)
+      queryClient.setQueryData(productKeys.detail(data.id), data)
       // Invalidate products list
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
     },
@@ -81,12 +90,10 @@ export function useDeleteProduct() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (id: string) => apiClient.delete(API_ENDPOINTS.PRODUCT_BY_ID(id)),
-    onSuccess: (_, deletedId) => {
-      // Remove from cache
-      queryClient.removeQueries({ queryKey: productKeys.detail(deletedId) })
+    mutationFn: (id: string) => apiClient.delete(`/products/${id}`),
+    onSuccess: () => {
       // Invalidate all product queries
-      queryClient.invalidateQueries({ queryKey: productKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: productKeys.all })
     },
   })
 }

@@ -12,6 +12,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json,yaml}\""
   },
   "devDependencies": {
+    "@tanstack/router-cli": "^1.130.15",
     "@types/node": "^22.10.7",
     "dotenv-cli": "^8.0.0",
     "prettier": "^3.2.5",

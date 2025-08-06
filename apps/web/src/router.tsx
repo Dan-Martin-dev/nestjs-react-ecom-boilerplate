@@ -38,7 +38,6 @@ const productsRoute = createRoute({
   component: ProductsPage,
 });
 
-// Temporarily disabled due to import issues
 const productDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/products/$productId",
@@ -59,14 +58,13 @@ const authLoginRoute = createRoute({
   component: AuthLoginPage,
 });
 
-// Temporarily disabled due to import issues
 const authRegisterRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/register",
   component: AuthRegisterPage,
 });
 
-// Dashboard route (protected)
+// Dashboard route
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
@@ -101,3 +99,4 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
 }
+ 

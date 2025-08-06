@@ -112,7 +112,9 @@ prod-backup:
 
 # ==============================================================================
 # DOCKER MANAGEMENT
-# ==============================================================================
+# Build dev Docker images
+build-dev:
+	$(COMPOSE_DEV) build
 
 up-dev:
 	$(COMPOSE_DEV) up -d

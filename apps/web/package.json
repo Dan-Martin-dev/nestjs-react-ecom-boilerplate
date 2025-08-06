@@ -9,8 +9,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
-  },
+    "type-check": "tsc --noEmit",
+    "codegen": "tanstack-router codegen"
+    },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^5.2.1",
@@ -59,6 +60,7 @@
     "@eslint/js": "^9.30.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/typography": "^0.5.16",
+    "@tanstack/router-cli": "^1.130.15",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
