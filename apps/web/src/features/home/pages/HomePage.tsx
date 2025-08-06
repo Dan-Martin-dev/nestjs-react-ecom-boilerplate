@@ -1,95 +1,113 @@
 import { Link } from '@tanstack/react-router'
-import { Button } from '../../../components/ui/button'
+import { Button, Text, Title, Container, Grid, Card, Box, Stack, Group } from '@mantine/core'
 import { ArrowRight, ShoppingBag, Star, Users } from 'lucide-react'
 
 export function HomePage() {
   return (
-    <div className="flex flex-col">
+    <Box>
       {/* Hero Section */}
-      <section className="px-4 py-20 mx-auto max-w-7xl">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Welcome to{' '}
-            <span className="text-primary">EcomStore</span>
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-            Discover amazing products at unbeatable prices. Your one-stop shop for everything you need.
-          </p>
-          <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link to="/products">
-              <Button size="lg" className="gap-2">
-                Shop Now <ArrowRight className="h-4 w-4" />
+      <Box py={80} bg="gray.0">
+        <Container size="lg">
+          <Stack align="center" gap="xl">
+            <Title order={1} size="3.5rem" fw={700} ta="center">
+              Welcome to{' '}
+              <Text component="span" c="blue">EcomStore</Text>
+            </Title>
+            <Text size="lg" ta="center" maw={600} c="dimmed">
+              Discover amazing products at unbeatable prices. Your one-stop shop for everything you need.
+            </Text>
+            <Group>
+              <Link to="/products">
+                <Button size="lg" rightSection={<ArrowRight size={18} />}>
+                  Shop Now
+                </Button>
+              </Link>
+              <Button variant="outline" size="lg">
+                Learn More
               </Button>
-            </Link>
-            <Button variant="outline" size="lg">
-              Learn More
-            </Button>
-          </div>
-        </div>
-      </section>
+            </Group>
+          </Stack>
+        </Container>
+      </Box>
 
       {/* Features Section */}
-      <section className="py-20 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Why Choose EcomStore?
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              We provide the best shopping experience with these amazing features
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                <ShoppingBag className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Wide Selection</h3>
-              <p className="text-muted-foreground">
-                Thousands of products across multiple categories to choose from
-              </p>
-            </div>
+      <Box py={80} bg="gray.1">
+        <Container size="lg">
+          <Stack align="center" gap={64}>
+            <Stack align="center" gap="md">
+              <Title order={2} size="2.5rem" fw={700} ta="center">
+                Why Choose EcomStore?
+              </Title>
+              <Text size="lg" ta="center" c="dimmed">
+                We provide the best shopping experience with these amazing features
+              </Text>
+            </Stack>
             
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                <Star className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Quality Products</h3>
-              <p className="text-muted-foreground">
-                Only the highest quality products from trusted suppliers
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                <Users className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Great Support</h3>
-              <p className="text-muted-foreground">
-                24/7 customer support to help you with any questions
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 4 }}>
+                <Card padding="xl">
+                  <Stack align="center" gap="md">
+                    <Box w={48} h={48} bg="blue" c="white" style={{ borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <ShoppingBag size={24} />
+                    </Box>
+                    <Title order={3} size="1.25rem" fw={600}>Wide Selection</Title>
+                    <Text ta="center" c="dimmed">
+                      Thousands of products across multiple categories to choose from
+                    </Text>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+              
+              <Grid.Col span={{ base: 12, md: 4 }}>
+                <Card padding="xl">
+                  <Stack align="center" gap="md">
+                    <Box w={48} h={48} bg="blue" c="white" style={{ borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Star size={24} />
+                    </Box>
+                    <Title order={3} size="1.25rem" fw={600}>Quality Products</Title>
+                    <Text ta="center" c="dimmed">
+                      Only the highest quality products from trusted suppliers
+                    </Text>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+              
+              <Grid.Col span={{ base: 12, md: 4 }}>
+                <Card padding="xl">
+                  <Stack align="center" gap="md">
+                    <Box w={48} h={48} bg="blue" c="white" style={{ borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Users size={24} />
+                    </Box>
+                    <Title order={3} size="1.25rem" fw={600}>Great Support</Title>
+                    <Text ta="center" c="dimmed">
+                      24/7 customer support to help you with any questions
+                    </Text>
+                  </Stack>
+                </Card>
+              </Grid.Col>
+            </Grid>
+          </Stack>
+        </Container>
+      </Box>
 
       {/* CTA Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tight mb-4">
-            Ready to Start Shopping?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers and discover your new favorite products today.
-          </p>
-          <Link to="/products">
-            <Button size="lg" className="gap-2">
-              Browse Products <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
-      </section>
-    </div>
+      <Box py={80}>
+        <Container size="lg">
+          <Stack align="center" gap="xl">
+            <Title order={2} size="2.5rem" fw={700} ta="center">
+              Ready to Start Shopping?
+            </Title>
+            <Text size="lg" ta="center" c="dimmed" maw={600}>
+              Join thousands of satisfied customers and discover your new favorite products today.
+            </Text>
+            <Link to="/products">
+              <Button size="lg" rightSection={<ArrowRight size={18} />}>
+                Browse Products
+              </Button>
+            </Link>
+          </Stack>
+        </Container>
+      </Box>
+    </Box>
   )
 }

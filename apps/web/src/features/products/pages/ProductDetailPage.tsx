@@ -1,7 +1,7 @@
 import { Link, useParams } from '@tanstack/react-router'
 import { Button } from '../../../components/ui/button'
 import { useAddToCart } from '../../../hooks/useCart'
-import { useAuth } from '../../../hooks/useAuthContext'
+import { useAuthStore } from '../../../stores/auth'
 import { ArrowLeft, Star } from 'lucide-react'
 
 // Mock product data - would come from API based on productId
@@ -31,7 +31,7 @@ export function ProductDetailPage() {
   const { productId } = useParams({ from: '/products/$productId' })
   // TODO: Use productId to fetch actual product data instead of mock data
   console.log('Product ID:', productId) // Temporary to avoid linting error
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthStore()
   const addToCartMutation = useAddToCart()
 
   const handleAddToCart = async () => {

@@ -3,12 +3,12 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { useLogin } from '../../../hooks/useAuthNew';
-import { useAuth } from '../../../hooks/useAuthContext';
+import { useAuthStore } from '../../../stores/auth';
 import type { LoginDto } from '../../../types/api';
 
 export default function AuthLoginPage() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuthStore();
   const loginMutation = useLogin();
 
   const [formData, setFormData] = useState<LoginDto>({

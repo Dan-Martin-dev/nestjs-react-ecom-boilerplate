@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../lib/apiClient';
+import { apiClient, API_ENDPOINTS } from '../lib/api';
 import type { 
   Category,
   CreateCategoryDto 
@@ -19,8 +19,8 @@ export const categoryKeys = {
 export const useCategories = () => {
   return useQuery({
     queryKey: categoryKeys.lists(),
-    queryFn: async (): Promise<Category[]> => {
-      return apiClient.get<Category[]>('/categories');
+    queryFn: (): Promise<Category[]> => {
+      return apiClient.get<Category[]>(API_ENDPOINTS.CATEGORIES);
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -30,35 +30,35 @@ export const useCategories = () => {
 export const useCategoryTree = () => {
   return useQuery({
     queryKey: categoryKeys.tree(),
-    queryFn: async (): Promise<Category[]> => {
-      return apiClient.get<Category[]>('/categories/tree');
+    queryFn: (): Promise<Category[]> => {
+      return apiClient.get<Category[]>(`${API_ENDPOINTS.CATEGORIES}/tree`);
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 
 // Get single category by ID
-export const useCategory = (id: string | undefined) => {
+export const useCategory = (id: string | undefined, enabled = true) => {
   return useQuery({
     queryKey: categoryKeys.detail(id || ''),
-    queryFn: async (): Promise<Category> => {
+    queryFn: (): Promise<Category> => {
       if (!id) throw new Error('Category ID is required');
-      return apiClient.get<Category>(`/categories/${id}`);
+      return apiClient.get<Category>(API_ENDPOINTS.CATEGORY_BY_ID(id));
     },
-    enabled: !!id,
+    enabled: enabled && !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
 // Get category by slug
-export const useCategoryBySlug = (slug: string | undefined) => {
+export const useCategoryBySlug = (slug: string | undefined, enabled = true) => {
   return useQuery({
     queryKey: categoryKeys.slug(slug || ''),
-    queryFn: async (): Promise<Category> => {
+    queryFn: (): Promise<Category> => {
       if (!slug) throw new Error('Category slug is required');
-      return apiClient.get<Category>(`/categories/slug/${slug}`);
+      return apiClient.get<Category>(`${API_ENDPOINTS.CATEGORIES}/slug/${slug}`);
     },
-    enabled: !!slug,
+    enabled: enabled && !!slug,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -68,10 +68,12 @@ export const useCreateCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (categoryData: CreateCategoryDto): Promise<Category> => {
-      return apiClient.post<Category>('/categories', categoryData);
+    mutationFn: (categoryData: CreateCategoryDto): Promise<Category> => {
+      return apiClient.post<Category>(API_ENDPOINTS.CATEGORIES, categoryData);
     },
-    onSuccess: () => {
+    onSuccess: (newCategory) => {
+      // Add to cache
+      queryClient.setQueryData(categoryKeys.detail(newCategory.id), newCategory);
       // Invalidate categories lists
       queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: categoryKeys.tree() });
@@ -84,18 +86,18 @@ export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
+    mutationFn: ({ 
       id, 
       data 
     }: { 
       id: string; 
       data: Partial<CreateCategoryDto> 
     }): Promise<Category> => {
-      return apiClient.patch<Category>(`/categories/${id}`, data);
+      return apiClient.patch<Category>(API_ENDPOINTS.CATEGORY_BY_ID(id), data);
     },
-    onSuccess: (data) => {
+    onSuccess: (updatedCategory) => {
       // Update cached category
-      queryClient.setQueryData(categoryKeys.detail(data.id), data);
+      queryClient.setQueryData(categoryKeys.detail(updatedCategory.id), updatedCategory);
       // Invalidate categories lists
       queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: categoryKeys.tree() });
@@ -108,12 +110,12 @@ export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string): Promise<Category> => {
-      return apiClient.delete<Category>(`/categories/${id}`);
+    mutationFn: (id: string): Promise<void> => {
+      return apiClient.delete(API_ENDPOINTS.CATEGORY_BY_ID(id));
     },
-    onSuccess: (_, id) => {
+    onSuccess: (_, deletedId) => {
       // Remove from cache
-      queryClient.removeQueries({ queryKey: categoryKeys.detail(id) });
+      queryClient.removeQueries({ queryKey: categoryKeys.detail(deletedId) });
       // Invalidate categories lists
       queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: categoryKeys.tree() });

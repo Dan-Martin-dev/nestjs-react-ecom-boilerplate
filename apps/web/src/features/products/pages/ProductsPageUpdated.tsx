@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Button } from '../../../components/ui/button';
 import { useProducts } from '../../../hooks/useProductsNew';
 import { useAddToCart } from '../../../hooks/useCart';
-import { useAuth } from '../../../hooks/useAuthContext';
+import { useAuthStore } from '../../../stores/auth';
 import type { Product, ProductImage } from '../../../types/api';
 
 export function ProductsPage() {
   const [filter, setFilter] = useState<'all' | 'electronics' | 'accessories'>('all');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuthStore();
   const { data: productsResponse, isLoading, error } = useProducts({});
   const addToCartMutation = useAddToCart();
 
