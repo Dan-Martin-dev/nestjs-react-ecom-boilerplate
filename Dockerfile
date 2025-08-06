@@ -37,11 +37,20 @@ RUN pnpm --filter web build
 
 # Development API stage
 FROM base AS api-dev
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Copy dependencies with proper ownership
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
 
-# Change ownership before switching to node user
-RUN chown -R node:node /app
+# Copy files with correct ownership from the start
+COPY --chown=node:node apps/api ./apps/api
+COPY --chown=node:node packages ./packages
+COPY --chown=node:node pnpm-workspace.yaml ./
+COPY --chown=node:node .env.dev ./
+
+# Set NODE_PATH to find modules from root
+ENV NODE_PATH=/app/node_modules
+
+# Switch to node user before building to avoid permission issues
+USER node
 
 # Generate Prisma client and build packages first
 RUN pnpm --filter @repo/db db:generate
@@ -50,16 +59,25 @@ RUN pnpm --filter @repo/shared build
 
 WORKDIR /app/apps/api
 EXPOSE 3001
-USER node
 CMD ["pnpm", "dev"]
 
 # Development Web stage  
 FROM base AS web-dev
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Copy dependencies with proper ownership
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
 
-# Change ownership before switching to node user
-RUN chown -R node:node /app
+# Copy files with correct ownership from the start
+COPY --chown=node:node apps/web ./apps/web
+COPY --chown=node:node apps/api ./apps/api
+COPY --chown=node:node packages ./packages
+COPY --chown=node:node pnpm-workspace.yaml ./
+COPY --chown=node:node .env.dev ./
+
+# Set NODE_PATH to find modules from root
+ENV NODE_PATH=/app/node_modules
+
+# Switch to node user before building to avoid permission issues
+USER node
 
 # Generate shared packages that web might depend on
 RUN pnpm --filter @repo/shared build
@@ -67,7 +85,6 @@ RUN pnpm --filter @repo/ui build
 
 WORKDIR /app/apps/web
 EXPOSE 3000
-USER node
 CMD ["pnpm", "dev"]
 
 # Production API stage
