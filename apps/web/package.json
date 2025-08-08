@@ -13,8 +13,6 @@
     "codegen": "tanstack-router codegen"
     },
   "dependencies": {
-    "@repo/shared": "workspace:*",
-    "@repo/db": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^5.2.1",
     "@mantine/core": "^8.2.3",
