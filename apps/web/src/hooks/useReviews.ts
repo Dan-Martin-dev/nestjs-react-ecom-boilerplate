@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../lib/apiClient';
 import type { 
-  Review,
-  CreateReviewDto,
-  PaginatedResponse 
-} from '../types/api';
+  Review, 
+  CreateReviewDto, 
+  PaginatedResponse
+} from '@repo/shared';
 
 // Review Query Keys
 export const reviewKeys = {

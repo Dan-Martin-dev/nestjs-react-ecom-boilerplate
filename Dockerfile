@@ -49,16 +49,20 @@ COPY --chown=node:node .env.dev ./
 # Set NODE_PATH to find modules from root
 ENV NODE_PATH=/app/node_modules
 
-# Switch to node user before building to avoid permission issues
-USER node
-
-# Generate Prisma client and build packages first
+# Generate Prisma client and build packages as root first to avoid permission issues
 RUN pnpm --filter @repo/db db:generate
 RUN pnpm --filter @repo/db build
 RUN pnpm --filter @repo/shared build
 
+# Create a startup script to fix permissions and run as node user
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'chown -R node:node /app/apps/api /app/packages 2>/dev/null || true' >> /entrypoint.sh && \
+    echo 'exec su node -c "$*"' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
 WORKDIR /app/apps/api
 EXPOSE 3001
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["pnpm", "dev"]
 
 # Development Web stage  
@@ -76,15 +80,19 @@ COPY --chown=node:node .env.dev ./
 # Set NODE_PATH to find modules from root
 ENV NODE_PATH=/app/node_modules
 
-# Switch to node user before building to avoid permission issues
-USER node
-
-# Generate shared packages that web might depend on
+# Generate shared packages that web might depend on as root first
 RUN pnpm --filter @repo/shared build
 RUN pnpm --filter @repo/ui build
 
+# Create a startup script to fix permissions and run as node user
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'chown -R node:node /app/apps/web /app/packages 2>/dev/null || true' >> /entrypoint.sh && \
+    echo 'exec su node -c "$*"' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
 WORKDIR /app/apps/web
 EXPOSE 3000
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["pnpm", "dev"]
 
 # Production API stage

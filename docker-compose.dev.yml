@@ -58,11 +58,11 @@ services:
         condition: service_healthy
     volumes:
       # Mount source code for hot-reloading, but preserve container's node_modules and built packages
-      - ./apps/api/src:/app/apps/api/src
-      - ./apps/api/package.json:/app/apps/api/package.json
-      - ./packages:/app/packages
-      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml
-      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./apps/api/src:/app/apps/api/src:z
+      - ./apps/api/package.json:/app/apps/api/package.json:z
+      - ./packages:/app/packages:z
+      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml:z
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml:z
       # Use named volumes to preserve container's dependencies
       - api_node_modules:/app/node_modules
       - api_packages_shared_dist:/app/packages/shared/dist
@@ -97,17 +97,17 @@ services:
         condition: service_healthy
     volumes:
       # Mount source code for hot-reloading, but preserve container's node_modules and built packages
-      - ./apps/web/src:/app/apps/web/src
-      - ./apps/web/public:/app/apps/web/public
-      - ./apps/web/index.html:/app/apps/web/index.html
-      - ./apps/web/package.json:/app/apps/web/package.json
-      - ./apps/web/vite.config.ts:/app/apps/web/vite.config.ts
-      - ./apps/web/tsconfig.json:/app/apps/web/tsconfig.json
-      - ./apps/web/tailwind.config.js:/app/apps/web/tailwind.config.js
-      - ./apps/web/postcss.config.js:/app/apps/web/postcss.config.js
-      - ./packages:/app/packages
-      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml
-      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./apps/web/src:/app/apps/web/src:z
+      - ./apps/web/public:/app/apps/web/public:z
+      - ./apps/web/index.html:/app/apps/web/index.html:z
+      - ./apps/web/package.json:/app/apps/web/package.json:z
+      - ./apps/web/vite.config.ts:/app/apps/web/vite.config.ts:z
+      - ./apps/web/tsconfig.json:/app/apps/web/tsconfig.json:z
+      - ./apps/web/tailwind.config.js:/app/apps/web/tailwind.config.js:z
+      - ./apps/web/postcss.config.js:/app/apps/web/postcss.config.js:z
+      - ./packages:/app/packages:z
+      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml:z
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml:z
       # Use named volumes to preserve container's dependencies
       - web_node_modules:/app/node_modules
       - web_packages_shared_dist:/app/packages/shared/dist

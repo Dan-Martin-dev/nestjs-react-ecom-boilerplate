@@ -4,7 +4,7 @@ import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { useLogin } from '../../../hooks/useAuth';
 import { useAuthStore } from '../../../stores/auth';
-import type { LoginDto } from '../../../types/api';
+import type { LoginDto } from '@repo/shared';
 
 export default function AuthLoginPage() {
   const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient, API_ENDPOINTS } from '../lib/api';
 import type { 
-  Category,
-  CreateCategoryDto 
-} from '../types/api';
+  Category, 
+  CreateCategoryDto
+} from '@repo/shared';
 
 // Category Query Keys
 export const categoryKeys = {

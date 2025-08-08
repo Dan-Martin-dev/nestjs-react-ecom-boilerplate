@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient, API_ENDPOINTS } from '../lib/api';
 import type { 
-  Cart,
+  Cart, 
   AddToCartDto 
-} from '../types/api';
+} from '@repo/shared';
 
 // Cart Query Keys
 export const cartKeys = {

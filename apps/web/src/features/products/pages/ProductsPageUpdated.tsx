@@ -3,7 +3,7 @@ import { Button } from '../../../components/ui/button';
 import { useProducts } from '../../../hooks/useProducts';
 import { useAddToCart } from '../../../hooks/useCart';
 import { useAuthStore } from '../../../stores/auth';
-import type { Product, ProductImage } from '../../../types/api';
+import type { Product, ProductImage } from '@repo/shared';
 
 export function ProductsPage() {
   const [filter, setFilter] = useState<'all' | 'electronics' | 'accessories'>('all');

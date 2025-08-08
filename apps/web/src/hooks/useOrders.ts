@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../lib/apiClient';
 import type { 
-  Order,
-  CreateOrderDto,
-  PaginatedResponse 
-} from '../types/api';
+  Order, 
+  CreateOrderDto, 
+  PaginatedResponse
+} from '@repo/shared';
 
 // Order Query Keys
 export const orderKeys = {

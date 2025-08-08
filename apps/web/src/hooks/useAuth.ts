@@ -5,7 +5,7 @@ import type {
   LoginDto, 
   RegisterDto, 
   User 
-} from '../types/api';
+} from '@repo/shared';
 
 // Auth Query Keys
 export const authKeys = {

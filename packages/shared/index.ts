@@ -1,38 +1,51 @@
-// Shared types for the ecommerce monorepo
-export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  role: 'USER' | 'ADMIN';
-}
+// Shared types and utilities for the ecommerce monorepo
 
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  price: number;
-  stock: number;
-  isActive: boolean;
-}
+// Export all enums
+export * from './types/enums';
 
-export interface Order {
-  id: string;
-  userId: string;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  total: number;
-  createdAt: Date;
-}
+// Export all entity types
+export * from './types/entities';
 
-// API Response types
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
+// Export all API types
+export * from './types/api';
 
-// Validation utilities
+// Export all DTO types
+export * from './types/dtos';
+
+// Export validation schemas
+export * from './schemas/auth.schemas';
+
+// Explicitly export commonly used types for frontend/backend type sharing
+export type { LoginDto, RegisterDto } from './schemas/auth.schemas';
+export type {
+  ProductFilterDto,
+  CreateProductDto,
+  CreateCategoryDto,
+  AddToCartDto,
+  CreateAddressDto,
+  CreateOrderDto,
+  CreateReviewDto,
+  CreateDiscountDto,
+  AuthResponse
+} from './types/dtos';
+export type {
+  Category,
+  Product,
+  Cart,
+  CartItem,
+  Address,
+  Order,
+  Review,
+  Discount,
+  User
+} from './types/entities';
+export type {
+  ApiResponse,
+  PaginatedResponse,
+  ApiError
+} from './types/api';
+
+// Utility functions
 export const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);

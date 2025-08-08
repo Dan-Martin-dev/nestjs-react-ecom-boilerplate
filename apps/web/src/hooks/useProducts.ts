@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiClient } from '../lib/apiClient'
-import { type Product, type ProductFilterDto, type PaginatedResponse, type CreateProductDto } from '../types/api'
+import { apiClient } from '../lib/api'
+import { type Product, type ProductFilterDto, type PaginatedResponse, type CreateProductDto } from '@repo/shared'
 
 // Query keys
 export const productKeys = {

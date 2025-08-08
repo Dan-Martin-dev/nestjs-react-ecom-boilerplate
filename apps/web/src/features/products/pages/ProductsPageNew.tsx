@@ -4,7 +4,7 @@ import { Card } from '../../../components/ui/card';
 import { useProducts } from '../../../hooks/useProducts';
 import { useCategories } from '../../../hooks/useCategories';
 import { useAddToCart } from '../../../hooks/useCart';
-import type { ProductFilterDto } from '../../../types/api';
+import type { ProductFilterDto } from '@repo/shared';
 
 export default function ProductsPage() {
   const addToCartMutation = useAddToCart();

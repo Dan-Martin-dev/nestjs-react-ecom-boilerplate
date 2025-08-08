@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../lib/apiClient';
-import type { 
-  Address,
-  CreateAddressDto 
-} from '../types/api';
+import { 
+  type Address, 
+  type CreateAddressDto
+} from '@repo/shared';
 
 // Address Query Keys
 export const addressKeys = {

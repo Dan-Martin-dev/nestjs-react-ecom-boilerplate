@@ -3,11 +3,12 @@ import { ShoppingCart, User, Menu, Search } from 'lucide-react'
 import { Button } from '@mantine/core'
 import { useCart } from '../../../hooks/useCart'
 import { useAuthStore } from '../../../stores/auth'
+import type { CartItem } from '@repo/shared'
 
 export function Header() {
   const { data: cart } = useCart()
   const { isAuthenticated } = useAuthStore()
-  const itemCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
+  const itemCount = cart?.items?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">

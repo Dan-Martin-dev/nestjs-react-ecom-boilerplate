@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { User, AuthResponse, LoginDto, RegisterDto } from '../types/api'
+import type { User, AuthResponse, LoginDto, RegisterDto } from '@repo/shared'
 import { apiClient, API_ENDPOINTS } from '../lib/api'
 
 interface AuthState {
