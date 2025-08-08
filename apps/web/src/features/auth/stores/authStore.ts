@@ -1,12 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-export interface User {
-  id: string
-  email: string
-  name: string
-  role: 'user' | 'admin'
-}
+import type { User } from '@repo/shared'
 
 interface AuthState {
   user: User | null
