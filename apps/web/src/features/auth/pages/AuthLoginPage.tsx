@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { useLogin } from '../../../hooks/useAuth';
@@ -18,7 +18,7 @@ export default function AuthLoginPage() {
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    navigate({ to: '/dashboard' });
+    navigate('/dashboard');
     return null;
   }
 
@@ -28,7 +28,7 @@ export default function AuthLoginPage() {
     try {
       await loginMutation.mutateAsync(formData);
       // The auth context will automatically update with the new user data
-      navigate({ to: '/dashboard' });
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       // You can add toast notification here if you have one available

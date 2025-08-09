@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from 'react-router-dom'
 import { ShoppingCart} from 'lucide-react'
 import { Button } from '@mantine/core'
 

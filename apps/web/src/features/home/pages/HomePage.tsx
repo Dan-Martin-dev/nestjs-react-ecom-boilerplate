@@ -1,6 +1,9 @@
 import { Container, Title, Text, Button, Box, Stack, Group } from '@mantine/core'
+import { useNavigate } from 'react-router-dom'
 
 export function HomePage() {
+  const navigate = useNavigate()
+
   return (
     <Box>
       <Container size="lg" py="xl">
@@ -12,7 +15,7 @@ export function HomePage() {
             Discover amazing products at unbeatable prices. Your one-stop shop for everything you need.
           </Text>
           <Group>
-            <Button size="lg">
+            <Button size="lg" onClick={() => navigate('/products')}>
               Shop Now
             </Button>
             <Button variant="outline" size="lg">
