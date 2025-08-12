@@ -34,6 +34,7 @@
     "@nestjs/throttler": "^6.4.0",
     "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",
+    "argon2": "^0.44.0",
     "bcrypt": "^6.0.0",
     "cache-manager": "^7.0.1",
     "cache-manager-redis-store": "^3.0.1",

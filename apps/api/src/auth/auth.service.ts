@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -28,13 +28,7 @@ export class AuthService {
     if (existingUser) {
       throw new ConflictException('User already exists');
     }
-    const saltRounds = this.configService.get<number>('BCRYPT_SALT_ROUNDS');
-
-    if (!saltRounds) {
-        // This is a more robust approach for critical configuration
-        throw new InternalServerErrorException('Server configuration error: Salt rounds not defined.');
-    }
-    const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
+    const hashedPassword = await argon2.hash(registerDto.password);
     const user = await this.prisma.user.create({
       data: {
         email: registerDto.email,
@@ -64,7 +58,7 @@ export class AuthService {
       where: { email: loginDto.email },
     });
 
-    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
+    if (!user || !(await argon2.verify(user.password, loginDto.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 

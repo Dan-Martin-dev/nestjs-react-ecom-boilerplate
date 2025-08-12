@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "codegen": "tanstack-router codegen"
-  },
+    },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^5.2.1",
@@ -40,12 +40,13 @@
     "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-toast": "^1.2.14",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@repo/shared": "workspace:*",
+    "react-router-dom": "^6.22.3",
     "@tanstack/react-query": "^5.84.0",
     "@tanstack/react-query-devtools": "^5.84.0",
     "@tanstack/react-router": "^1.130.12",
     "@tanstack/router-devtools": "^1.130.9",
     "@tanstack/router-vite-plugin": "^1.130.15",
-    "@types/react-router-dom": "^5.3.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "immer": "^10.1.1",
@@ -53,7 +54,6 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.62.0",
-    "react-router-dom": "^6.22.3",
     "tailwind-merge": "^3.3.1",
     "zod": "^3.25.67",
     "zustand": "^5.0.7"
