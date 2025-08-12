@@ -37,19 +37,34 @@ RUN pnpm --filter web build
 
 # Development API stage
 FROM base AS api-dev
-# Copy dependencies with proper ownership
-COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+# Copy project configuration
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+COPY packages/db/package.json ./packages/db/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/ui/package.json ./packages/ui/
+
+# Copy .env.dev file first so it's available for installation
+COPY .env.dev ./
+
+# Copy Prisma schema
+COPY packages/db/schema.prisma ./packages/db/
+
+# Install all dependencies
+RUN pnpm install --frozen-lockfile
 
 # Copy files with correct ownership from the start
-COPY --chown=node:node apps/api ./apps/api
-COPY --chown=node:node packages ./packages
-COPY --chown=node:node pnpm-workspace.yaml ./
-COPY --chown=node:node .env.dev ./
+COPY apps/api ./apps/api
+COPY packages ./packages
 
 # Set NODE_PATH to find modules from root
 ENV NODE_PATH=/app/node_modules
 
-# Switch to node user before building to avoid permission issues
+# Change ownership of all files
+RUN chown -R node:node /app
+
+# Switch to node user
 USER node
 
 # Generate Prisma client and build packages first
@@ -63,20 +78,35 @@ CMD ["pnpm", "dev"]
 
 # Development Web stage  
 FROM base AS web-dev
-# Copy dependencies with proper ownership
-COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+# Copy project configuration
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+COPY packages/db/package.json ./packages/db/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/ui/package.json ./packages/ui/
+
+# Copy .env.dev file first
+COPY .env.dev ./
+
+# Copy Prisma schema
+COPY packages/db/schema.prisma ./packages/db/
+
+# Install all dependencies
+RUN pnpm install --frozen-lockfile
 
 # Copy files with correct ownership from the start
-COPY --chown=node:node apps/web ./apps/web
-COPY --chown=node:node apps/api ./apps/api
-COPY --chown=node:node packages ./packages
-COPY --chown=node:node pnpm-workspace.yaml ./
-COPY --chown=node:node .env.dev ./
+COPY apps/web ./apps/web
+COPY apps/api ./apps/api
+COPY packages ./packages
 
 # Set NODE_PATH to find modules from root
 ENV NODE_PATH=/app/node_modules
 
-# Switch to node user before building to avoid permission issues
+# Change ownership of all files
+RUN chown -R node:node /app
+
+# Switch to node user
 USER node
 
 # Generate shared packages that web might depend on
