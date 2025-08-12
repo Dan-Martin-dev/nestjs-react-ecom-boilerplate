@@ -1,9 +1,9 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { useCartStore } from '../stores/cartStore'
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 
-export function CartPage() {
+const CartPage = () => {
   const { items, updateQuantity, removeItem, clearCart, getTotalPrice } = useCartStore()
 
   if (items.length === 0) {
@@ -127,3 +127,4 @@ export function CartPage() {
     </div>
   )
 }
+export default CartPage;

@@ -1,4 +1,4 @@
-import { Link, useParams } from '@tanstack/react-router'
+import { Link, useParams } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { useAddToCart } from '../../../hooks/useCart'
 import { useAuthStore } from '../../../stores/auth'
@@ -27,8 +27,8 @@ const mockProduct = {
   inStock: true
 }
 
-export function ProductDetailPage() {
-  const { productId } = useParams({ from: '/products/$productId' })
+function ProductDetailPage() {
+  const { productId } = useParams();
   // TODO: Use productId to fetch actual product data instead of mock data
   console.log('Product ID:', productId) // Temporary to avoid linting error
   const { isAuthenticated } = useAuthStore()
@@ -156,3 +156,5 @@ export function ProductDetailPage() {
     </div>
   )
 }
+
+export default ProductDetailPage;

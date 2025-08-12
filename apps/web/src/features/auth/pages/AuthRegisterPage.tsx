@@ -1,6 +1,6 @@
 
 import { useForm } from 'react-hook-form'
-import { Link } from '@tanstack/react-router'
+import { Link } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 
 type RegisterFormInputs = {

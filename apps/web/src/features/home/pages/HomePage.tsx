@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from 'react-router-dom'
 import { Button, Text, Title, Container, Grid, Card, Box, Stack, Group } from '@mantine/core'
 import { ArrowRight, ShoppingBag, Star, Users } from 'lucide-react'
 

@@ -1,4 +1,4 @@
-export function NotFoundPage() {
+  const NotFoundPage = () => {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center space-y-4">
       <h1 className="text-4xl font-bold">404</h1>
@@ -9,3 +9,4 @@ export function NotFoundPage() {
     </div>
   )
 }
+export default NotFoundPage;

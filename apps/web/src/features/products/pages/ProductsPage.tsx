@@ -3,9 +3,10 @@ import { Button } from '../../../components/ui/button';
 import { useProducts } from '../../../hooks/useProducts';
 import { useAddToCart } from '../../../hooks/useCart';
 import { useAuthStore } from '../../../stores/auth';
+import { notifications } from '@mantine/notifications';
 import type { Product } from '../../../types/api';
 
-export function ProductsPage() {
+const ProductsPage = () => {
   const [filter, setFilter] = useState<'all' | 'electronics' | 'accessories'>('all')
   const { isAuthenticated } = useAuthStore()
   const { data: productsResponse, isLoading, error } = useProducts({})
@@ -13,14 +14,22 @@ export function ProductsPage() {
 
   const handleAddToCart = async (product: Product) => {
     if (!isAuthenticated) {
-      alert('Please login to add items to cart')
+      notifications.show({
+        title: 'Authentication Required',
+        message: 'Please login to add items to cart',
+        color: 'yellow'
+      });
       return
     }
 
     // For demo purposes, use first variant if available
     const firstVariant = product.variants?.[0]
     if (!firstVariant) {
-      alert('This product has no available variants')
+      notifications.show({
+        title: 'Product Unavailable',
+        message: 'This product has no available variants',
+        color: 'red'
+      });
       return
     }
 
@@ -29,18 +38,49 @@ export function ProductsPage() {
         productVariantId: firstVariant.id,
         quantity: 1,
       })
-      alert('Item added to cart!')
+      notifications.show({
+        title: 'Success',
+        message: 'Item added to cart!',
+        color: 'green'
+      });
     } catch (error) {
       console.error('Failed to add to cart:', error)
-      alert('Failed to add item to cart')
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to add item to cart',
+        color: 'red'
+      });
     }
   }
 
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center min-h-64">
-          <div className="text-lg">Loading products...</div>
+        <div className="mb-8">
+          <div className="h-8 w-48 bg-muted animate-pulse rounded mb-2"></div>
+          <div className="h-4 w-96 bg-muted animate-pulse rounded mb-6"></div>
+          <div className="flex gap-2 mb-6">
+            <div className="h-10 w-32 bg-muted animate-pulse rounded"></div>
+            <div className="h-10 w-32 bg-muted animate-pulse rounded"></div>
+            <div className="h-10 w-32 bg-muted animate-pulse rounded"></div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="border rounded-lg overflow-hidden">
+              <div className="w-full h-48 bg-muted animate-pulse"></div>
+              <div className="p-4">
+                <div className="h-6 w-3/4 bg-muted animate-pulse mb-2"></div>
+                <div className="h-4 w-full bg-muted animate-pulse mb-1"></div>
+                <div className="h-4 w-2/3 bg-muted animate-pulse mb-3"></div>
+                <div className="flex items-center justify-between">
+                  <div className="h-8 w-20 bg-muted animate-pulse"></div>
+                  <div className="h-10 w-28 bg-muted animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -128,3 +168,4 @@ export function ProductsPage() {
     </div>
   )
 }
+export default ProductsPage;

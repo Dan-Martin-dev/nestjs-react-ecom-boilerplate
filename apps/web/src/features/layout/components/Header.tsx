@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from 'react-router-dom'
 import { ShoppingCart, User, Menu, Search } from 'lucide-react'
 import { Button } from '@mantine/core'
 import { useCart } from '../../../hooks/useCart'
