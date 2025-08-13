@@ -10,8 +10,6 @@ RUN wget -qO /usr/local/bin/pnpm https://github.com/pnpm/pnpm/releases/download/
 
 # Copy package files
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
-
-# Copy package.json files for all apps and packages
 COPY apps/api/package.json ./apps/api/
 COPY apps/web/package.json ./apps/web/
 COPY packages/db/package.json ./packages/db/
@@ -37,6 +35,7 @@ RUN pnpm --filter web build
 
 # Development API stage
 FROM base AS api-dev
+
 # Copy project configuration
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
@@ -51,26 +50,32 @@ COPY .env.dev ./
 # Copy Prisma schema
 COPY packages/db/schema.prisma ./packages/db/
 
+# Copy source files
+COPY apps/api ./apps/api/
+COPY packages ./packages/
+
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy files with correct ownership from the start
-COPY apps/api ./apps/api
-COPY packages ./packages
+# Install argon2 native dependencies first
+RUN apk add --no-cache make gcc g++ python3
+
+# Generate Prisma client and build packages as root
+RUN pnpm --filter @repo/db db:generate
+RUN pnpm --filter @repo/db build
+RUN pnpm --filter @repo/shared build
+
+# Make sure types are installed properly
+RUN cd /app/apps/api && pnpm install
 
 # Set NODE_PATH to find modules from root
 ENV NODE_PATH=/app/node_modules
 
-# Change ownership of all files
+# Fix permissions: make node user the owner of all files
 RUN chown -R node:node /app
 
 # Switch to node user
 USER node
-
-# Generate Prisma client and build packages first
-RUN pnpm --filter @repo/db db:generate
-RUN pnpm --filter @repo/db build
-RUN pnpm --filter @repo/shared build
 
 WORKDIR /app/apps/api
 EXPOSE 3001
@@ -78,6 +83,7 @@ CMD ["pnpm", "dev"]
 
 # Development Web stage  
 FROM base AS web-dev
+
 # Copy project configuration
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
@@ -104,7 +110,14 @@ COPY packages ./packages
 ENV NODE_PATH=/app/node_modules
 
 # Change ownership of all files
-RUN chown -R node:node /app
+COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY --chown=node:node turbo.json Makefile ./
+COPY --chown=node:node apps/api ./apps/api
+COPY --chown=node:node apps/web ./apps/web
+COPY --chown=node:node packages/db ./packages/db
+COPY --chown=node:node packages/shared ./packages/shared
+COPY --chown=node:node packages/ui ./packages/ui
+COPY --chown=node:node scripts ./scripts
 
 # Switch to node user
 USER node

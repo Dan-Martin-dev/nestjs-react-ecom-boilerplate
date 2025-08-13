@@ -56,7 +56,8 @@
     "react-hook-form": "^7.62.0",
     "tailwind-merge": "^3.3.1",
     "zod": "^3.25.67",
-    "zustand": "^5.0.7"
+    "zustand": "^5.0.7",
+    "argon2": "0.44.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

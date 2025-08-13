@@ -76,6 +76,7 @@ dev-docker:
 	@echo "└───────────────────────────────────────────────────────────────┘"
 
 
+
 # One-time development setup
 dev-setup:
 	@echo "🔧 Setting up development environment..."
@@ -113,6 +114,12 @@ prod-backup:
 # ==============================================================================
 # DOCKER MANAGEMENT
 # Build dev Docker images
+api-dev:
+	$(COMPOSE_DEV) build api
+
+web-dev:
+	$(COMPOSE_DEV) build web
+
 build-dev:
 	$(COMPOSE_DEV) build
 
