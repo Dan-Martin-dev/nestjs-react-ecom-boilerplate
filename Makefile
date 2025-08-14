@@ -64,7 +64,7 @@ dev:
 	DOTENV_CONFIG_PATH=.env.dev pnpm turbo run dev
 
 # Docker-based development
-dev-docker:
+docker-dev:
 	@echo "🚀 Starting all containers in detached mode..."
 	$(COMPOSE_DEV) up -d
 	@echo ""
@@ -111,8 +111,11 @@ prod-backup:
 	docker exec monorepo-ecom-db-1 pg_dump -U $${POSTGRES_USER:-postgres} $${POSTGRES_DB:-monorepo-ecom} > ./backups/db-backup-$$TIMESTAMP.sql; \
 	echo "✅ Backup saved: ./backups/db-backup-$$TIMESTAMP.sql"
 
+
 # ==============================================================================
 # DOCKER MANAGEMENT
+.PHONY: api-dev web-dev down-dev-v docker-ui docker-web check-connections verify-env-prod
+
 # Build dev Docker images
 api-dev:
 	$(COMPOSE_DEV) build api
@@ -134,19 +137,14 @@ down-dev-v:
 
 # Flexible logging - usage: make logs [service=api]
 logs:
-	@if [ -n "$(service)" ]; then \
-		$(COMPOSE_DEV) logs -f $(service); \
-	else \
-		$(COMPOSE_DEV) logs -f; \
-	fi
+	@$(COMPOSE_DEV) logs -f $(if $(service),$(service),)
 
-# Flexible shell access - usage: make shell service=api
 shell:
 	@if [ -z "$(service)" ]; then \
 		echo "Usage: make shell service=api|web"; \
 		exit 1; \
 	fi
-	$(COMPOSE_DEV) exec $(service) bash
+	@$(COMPOSE_DEV) exec $(service) bash
 	
 docker-ui:
 	lazydocker
@@ -159,17 +157,21 @@ docker-web:
 # ==============================================================================
 # DATABASE
 
-.PHONY: db-migrate db-studio
+.PHONY: help dev dev-docker dev-setup build-dev up-dev down-dev \
+    prod-build prod-deploy prod-down prod-backup logs shell \
+    db-generate db-migrate db-studio db-init clean health-check deploy \
+    api-dev web-dev down-dev-v docker-ui docker-web check-connections verify-env-prod
+
 # ==============================================================================
 
 db-generate:
 	cd packages/db && pnpm db:generate
 
 db-migrate:
-	docker-compose -f docker-compose.dev.yml exec api pnpm --filter @repo/db db:migrate
+	$(COMPOSE_DEV) exec api pnpm --filter @repo/db db:migrate
 
 db-studio:
-	docker-compose -f docker-compose.dev.yml exec api pnpm --filter @repo/db db:studio
+	$(COMPOSE_DEV) exec api pnpm --filter @repo/db db:studio
 
 db-init:
 	@echo "🗄️ Initializing database..."
@@ -180,8 +182,8 @@ db-init:
 # ==============================================================================
 
 clean: down-dev
-	@echo "🧹 Cleaning up Docker resources..."
-	docker system prune -a -f --volumes
+	@echo "🧹 This will remove all unused Docker data including volumes!"
+	@read -p "Proceed? (y/N): " confirm && [ "$$confirm" = "y" ] && docker system prune -a -f --volumes || echo "❌ Aborted"
 
 check-connections:
 	@echo "🔍 Checking connections between DB, API, and Frontend..."
@@ -193,6 +195,7 @@ health-check:
 	@docker ps --filter "name=monorepo-ecom" --format "table {{.Names}}\t{{.Status}}"
 
 deploy:
+	@command -v gh >/dev/null 2>&1 || { echo "❌ GitHub CLI (gh) not installed."; exit 1; }
 	gh workflow run deploy.yml
 
 # ==============================================================================
