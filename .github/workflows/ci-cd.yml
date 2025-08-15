@@ -1,0 +1,177 @@
+name: CI / Build / Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '**' ]
+  workflow_dispatch: {}
+
+env:
+  NODE_VERSION: '20'
+  REGISTRY: ${{ secrets.DOCKER_REGISTRY || 'ghcr.io' }}
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}
+
+jobs:
+  test-and-build:
+    name: Install, Test & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linters (if present)
+        run: pnpm -w -r lint --if-present
+
+      - name: Run tests (if present)
+        run: pnpm -w -r test --if-present
+
+      - name: Generate Prisma client (if package exists)
+        run: pnpm --filter @repo/db db:generate --if-present
+
+      - name: Build all projects
+        run: pnpm -w -r build --if-present
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifacts
+          path: |
+            apps/api/dist
+            apps/web/dist
+            packages/*/dist
+
+  docker-build-push:
+    name: Build & Push Docker images
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.event_name != 'pull_request'
+    env:
+      REGISTRY: ${{ env.REGISTRY }}
+      IMAGE_NAMESPACE: ${{ env.IMAGE_NAMESPACE }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ github.repository }}:api-${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ github.repository }}:api-latest
+          build-args: |
+            NODE_ENV=production
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          target: web
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ github.repository }}:web-${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ github.repository }}:web-latest
+          build-args: |
+            NODE_ENV=production
+
+  deploy:
+    name: Deploy to server (optional, SSH)
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+    if: ${{ secrets.HETZNER_SSH_PRIVATE_KEY != '' && secrets.HETZNER_HOST != '' }}
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.HETZNER_SSH_PRIVATE_KEY }}
+
+      - name: Prepare production env file on runner
+        run: |
+          mkdir -p ./tmp_deploy
+          cat > ./tmp_deploy/.env.production <<'EOF'
+POSTGRES_USER=${{ secrets.PROD_POSTGRES_USER }}
+POSTGRES_PASSWORD=${{ secrets.PROD_POSTGRES_PASSWORD }}
+POSTGRES_DB=${{ secrets.PROD_POSTGRES_DB }}
+DATABASE_URL=${{ secrets.PROD_DATABASE_URL }}
+JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
+JWT_REFRESH_SECRET=${{ secrets.PROD_JWT_REFRESH_SECRET }}
+CORS_ORIGIN=${{ secrets.PROD_CORS_ORIGIN }}
+AWS_ACCESS_KEY_ID=${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+AWS_SECRET_ACCESS_KEY=${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+S3_BACKUP_BUCKET=${{ secrets.PROD_S3_BACKUP_BUCKET }}
+SMTP_USER=${{ secrets.PROD_SMTP_USER }}
+SMTP_PASS=${{ secrets.PROD_SMTP_PASS }}
+EOF
+        shell: bash
+
+      - name: Upload .env.production to server
+        run: |
+          scp -o StrictHostKeyChecking=no ./tmp_deploy/.env.production ${{ secrets.HETZNER_SSH_USER }}@${{ secrets.HETZNER_HOST }}:~/deploy/.env.production
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HETZNER_SSH_USER }}@${{ secrets.HETZNER_HOST }} "chmod 600 ~/deploy/.env.production && ls -l ~/deploy/.env.production"
+        shell: bash
+
+      - name: Deploy via SSH - pull images and restart services
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HETZNER_SSH_USER }}@${{ secrets.HETZNER_HOST }} "
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ github.repository }}:api-latest || true && \
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ github.repository }}:web-latest || true && \
+            cd ~/deploy && docker compose -f docker-compose.prod.yml pull && \
+            cd ~/deploy && docker compose -f docker-compose.prod.yml up -d --remove-orphans
+          "
+
+      - name: Run post-deploy migrations (optional)
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HETZNER_SSH_USER }}@${{ secrets.HETZNER_HOST }} "
+            cd ~/deploy && docker compose -f docker-compose.prod.yml exec -T api pnpm --filter @repo/db prisma migrate deploy --schema=packages/db/schema.prisma || true
+          "
+
+      - name: Cleanup env file
+        if: always()
+        run: rm -rf ./tmp_deploy
+        shell: bash
+
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: always()
+    steps:
+      - name: Notify on failure or success
+        run: echo "Deployment finished with status ${{ job.status }}"

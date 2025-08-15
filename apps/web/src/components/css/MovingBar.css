@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap');
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.moving-bar {
+  background: #000;
+  color: #fff;
+  font-family: 'Teko', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  height: 36px;
+  overflow: hidden;
+  position: relative;
+}
+
+.moving-bar-inner {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  align-items: center;
+}
+
+.moving-bar-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  animation: marquee 24S linear infinite;
+}
+
+.moving-bar-content span {
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+}
+
+.moving-bar-content span::after {
+  content: "•";
+  margin-left: 1.5rem;
+}
+
+.moving-bar-content span:last-child::after {
+  display: none;
+}
+
+.moving-bar-pause-hover:hover .moving-bar-content {
+  animation-play-state: paused;
+}

@@ -3,6 +3,7 @@ import { ShoppingCart, User, Menu, Search } from 'lucide-react'
 import { Button } from '@mantine/core'
 import { useCart } from '../../../hooks/useCart'
 import { useAuthStore } from '../../../stores/auth'
+import MovingBar from '../../../../src/components/ui/MovingBar'
 
 export function Header() {
   const { data: cart } = useCart()
@@ -11,10 +12,11 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <MovingBar messages={["FREE SHIPPING ON ALL ORDERS OVER $50", "FREE SHIPPING ON ALL ORDERS OVER $50", "FREE SHIPPING ON ALL ORDERS OVER $50", "FREE SHIPPING ON ALL ORDERS OVER $50" ]}/>
       <div className="container mx-auto flex h-16 items-center px-4">
         <div className="mr-4 flex">
           <Link to="/" className="mr-6 flex items-center space-x-2">
-            <span className="text-xl font-bold text-blue-600">EcomStore</span>
+            <span className="text-xl font-bold text-blue-600"></span>
           </Link>
         </div>
         

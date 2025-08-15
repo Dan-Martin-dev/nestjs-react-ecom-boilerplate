@@ -129,7 +129,7 @@ build-dev:
 up-dev:
 	$(COMPOSE_DEV) up -d
 
-down-dev:
+down-dev:	
 	$(COMPOSE_DEV) down --remove-orphans
 
 down-dev-v:
