@@ -21,10 +21,15 @@ help:
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
-	@echo "Development:"
-	@echo "  dev               Start local development (non-Docker)"
-	@echo "  dev-docker        Start full Docker development environment"
+	@echo "Hybrid Development (Fast):"
+	@echo "  dev               Start all apps on host with DB/Redis in Docker (fastest)"
+	@echo "  dev-web           Run only frontend on host, API in Docker (fast web dev)"
+	@echo "  dev-api           Run only backend on host, DB/Redis in Docker (fast API dev)"
+	@echo ""
+	@echo "Docker Development:"
+	@echo "  dev-docker        Start full Docker development environment (all containers)"
 	@echo "  dev-setup         One-time setup for development environment"
+	@echo "  sync-deps         Sync dependencies after package.json changes"
 	@echo ""
 	@echo "Production:"
 	@echo "  prod-build        Build production Docker images"
@@ -34,7 +39,7 @@ help:
 	@echo ""
 	@echo "Docker Management:"
 	@echo "  up-dev            Start dev containers (detached)"
-	@echo "  down-dev          Stop dev containers"
+	@echo "  down-dev          Stop dev containers (preserves volumes/DB)"
 	@echo "  logs [service]    Follow logs (all services or specific: api, web, db)"
 	@echo "  shell [service]   Open shell in container (api or web)"
 	@echo ""
@@ -51,17 +56,85 @@ help:
 	@echo ""
 
 # ==============================================================================
-# DEVELOPMENT
+# DEVELOPMENT - HYBRID APPROACH (TURBOREPO + DOCKER)
 # ==============================================================================
 
-# Main development command - non-Docker
+# Main development command - Hybrid mode (DB in Docker, apps on host)
 dev:
-	@echo "🚀 Starting local development environment..."
+	@echo "🚀 Starting hybrid development environment..."
+	@echo "📊 Database and Redis in Docker, applications on host"
 	$(COMPOSE_DEV) up -d db redis
 	@sleep 3
+	@echo "🔄 Generating Prisma client..."
 	cd packages/db && pnpm db:generate
+	@echo "🏗️ Building shared packages..."
 	cd apps/api && pnpm build
+	@echo "🚀 Starting all applications with Turborepo..."
 	DOTENV_CONFIG_PATH=.env.dev pnpm turbo run dev
+
+# Run just the frontend with backend services in Docker
+dev-web:
+	@echo "🚀 Starting frontend development environment..."
+	@echo "📊 API, Database and Redis in Docker, web app on host"
+	$(COMPOSE_DEV) up -d db redis api
+	@sleep 5
+	@echo "🚀 Starting web application..."
+	cd apps/web && DOTENV_CONFIG_PATH=../../.env.dev pnpm dev
+
+# Run just the backend with services in Docker
+dev-api:
+	@echo "🚀 Starting backend development environment..."
+	@echo "📊 Database and Redis in Docker, API on host"
+	$(COMPOSE_DEV) up -d db redis
+	@sleep 3
+	@echo "🔄 Generating Prisma client..."
+	cd packages/db && pnpm db:generate
+	@echo "🚀 Starting API application..."
+	cd apps/api && DOTENV_CONFIG_PATH=../../.env.dev pnpm dev
+# ...existing code...
+build-dev:
+	$(COMPOSE_DEV) build
+
+up-dev:
+	$(COMPOSE_DEV) up -d
+
+# single-service safe restart targets
+rebuild-restart-api:
+	@echo "🔁 Rebuild and restart api (no deps, preserves volumes)..."
+	$(COMPOSE_DEV) build api
+	$(COMPOSE_DEV) up -d --no-deps --build api
+
+rebuild-restart-web:
+	@echo "🔁 Rebuild and restart web (no deps, preserves volumes)..."
+	$(COMPOSE_DEV) build web
+	$(COMPOSE_DEV) up -d --no-deps --build web
+
+restart-api:
+	@echo "♻️ Restart api container (no rebuild, no deps)..."
+	$(COMPOSE_DEV) up -d --no-deps api
+
+restart-web:
+	@echo "♻️ Restart web container (no rebuild, no deps)..."
+	$(COMPOSE_DEV) up -d --no-deps web
+
+force-restart-api:
+	@echo "⚠️ Force recreate api (rebuild + force recreate)..."
+	$(COMPOSE_DEV) up -d --no-deps --build --force-recreate api
+
+force-restart-web:
+	@echo "⚠️ Force recreate web (rebuild + force recreate)..."
+	$(COMPOSE_DEV) up -d --no-deps --build --force-recreate web
+
+# restart multiple services without dependencies
+restart-all-no-deps:
+	@echo "♻️ Restart api and web (no deps)..."
+	$(COMPOSE_DEV) up -d --no-deps api web
+
+down-dev:	
+	$(COMPOSE_DEV) down --remove-orphans
+
+down-dev-v:
+	$(COMPOSE_DEV) down -v --remove-orphans
 
 # Docker-based development
 docker-dev:
@@ -75,6 +148,14 @@ docker-dev:
 	@echo "│ 🗄️  Prisma Studio:     http://localhost:$$(bash scripts/detect_ports.sh | grep PRISMA_PORT | cut -d= -f2)                  │"
 	@echo "└───────────────────────────────────────────────────────────────┘"
 
+# Sync dependencies after package.json changes
+sync-deps:
+	@echo "🔄 Syncing dependencies in pnpm workspaces..."
+	pnpm install
+	@echo "📦 Syncing Docker volumes with current dependencies..."
+	@echo "Tip: If you have node_modules issues in containers, rebuild the images:"
+	@echo "  make rebuild-restart-web"
+	@echo "  make rebuild-restart-api"
 
 
 # One-time development setup
@@ -102,6 +183,11 @@ prod-deploy:
 
 prod-down:
 	@echo "🛑 Stopping production services..."
+	$(COMPOSE_PROD) down --remove-orphans
+
+
+prod-down-v:
+	@echo "🛑 Stopping production services..."
 	$(COMPOSE_PROD) down -v --remove-orphans
 
 prod-backup:
@@ -122,6 +208,12 @@ api-dev:
 
 web-dev:
 	$(COMPOSE_DEV) build web
+	
+db-dev:
+	$(COMPOSE_DEV) build db
+
+redis-dev:
+	$(COMPOSE_DEV) build redis
 
 build-dev:
 	$(COMPOSE_DEV) build
@@ -176,6 +268,48 @@ db-studio:
 db-init:
 	@echo "🗄️ Initializing database..."
 	@bash scripts/init_db.sh
+
+# ==============================================================================
+# TROUBLESHOOTING HELPERS
+# ==============================================================================
+
+# Fix web node_modules without affecting the database
+fix-web-modules:
+	@echo "🔧 Fixing web modules without affecting the database..."
+	@echo "1️⃣ Installing dependencies in monorepo root..."
+	pnpm install
+	@echo "2️⃣ Backing up any web volume node_modules if present..."
+	@CONTAINER_ID=$$(docker ps -qf "name=.*-web-.*"); \
+	if [ ! -z "$$CONTAINER_ID" ]; then \
+		docker exec $$CONTAINER_ID sh -c "if [ -d /app/apps/web/node_modules ]; then ls -la /app/apps/web/node_modules | wc -l; fi"; \
+	fi
+	@echo "3️⃣ Rebuilding web container image..."
+	$(COMPOSE_DEV) build web
+	@echo "4️⃣ Force recreating web container with fresh image..."
+	$(COMPOSE_DEV) up -d --force-recreate --no-deps web
+	@echo "5️⃣ Checking web logs..."
+	@sleep 3
+	@$(COMPOSE_DEV) logs --tail=20 web
+	@echo "✅ Web container rebuilt. Check make logs service=web for status"
+
+# Find and list all Docker volumes
+list-volumes:
+	@echo "📦 Listing all Docker volumes..."
+	@docker volume ls | grep monorepo-ecom || echo "No monorepo-ecom volumes found"
+	
+# Inspect web container 
+inspect-web:
+	@echo "🔍 Inspecting web container..."
+	@CONTAINER_ID=$$(docker ps -qf "name=.*-web-.*"); \
+	if [ -z "$$CONTAINER_ID" ]; then \
+		echo "❌ Web container not running!"; \
+	else \
+		echo "✅ Web container found: $$CONTAINER_ID"; \
+		echo "\n📂 Directory structure:"; \
+		docker exec $$CONTAINER_ID find /app/apps/web -maxdepth 2 -type d | sort; \
+		echo "\n📋 Node modules:"; \
+		docker exec $$CONTAINER_ID sh -c "if [ -d /app/apps/web/node_modules ]; then ls -la /app/apps/web/node_modules/@mantinex || echo 'No @mantinex directory found'; fi"; \
+	fi
 
 # ==============================================================================
 # MAINTENANCE
