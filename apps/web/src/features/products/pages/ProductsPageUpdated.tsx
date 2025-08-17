@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../../../components/ui/button';
 import { useProducts } from '../../../hooks/useProducts';
 import { useAddToCart } from '../../../hooks/useCart';
-import { useAuthStore } from '../../../stores/auth';
+import { useAuthStore } from '../../../stores';
 import type { Product, ProductImage } from '../../../types/api';
 
 export function ProductsPage() {

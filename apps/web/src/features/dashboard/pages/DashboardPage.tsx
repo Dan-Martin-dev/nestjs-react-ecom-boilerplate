@@ -1,4 +1,4 @@
-import { useAuthStore } from '../../auth/stores/authStore'
+import { useAuthStore } from '../../../stores'
 import { useCartStore } from '../../cart/stores/cartStore'
 import { Button } from '../../../components/ui/button'
 import { User, Package, ShoppingCart, LogOut } from 'lucide-react'

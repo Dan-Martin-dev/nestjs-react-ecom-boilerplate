@@ -1,6 +1,8 @@
 import type { ApiError } from '../types/api'
+import { notifications } from '@mantine/notifications'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1'
+const IS_DEV = import.meta.env.DEV
 
 export const API_ENDPOINTS = {
   // Auth
@@ -149,6 +151,15 @@ export class ApiClient {
       ...requestOptions,
     }
 
+    // Log requests in development
+    if (IS_DEV) {
+      console.log('🚀 API Request:', {
+        method: config.method || 'GET',
+        url,
+        data: config.body,
+      })
+    }
+
     try {
       const response = await fetch(url, config)
       
@@ -161,11 +172,29 @@ export class ApiClient {
       } else {
         responseData = await response.text()
       }
+
+      // Log responses in development
+      if (IS_DEV) {
+        console.log('✅ API Response:', {
+          status: response.status,
+          url,
+          data: responseData,
+        })
+      }
       
       if (!response.ok) {
         const errorMessage = (responseData as ApiError)?.message || 
                            (responseData as ApiError)?.error || 
                            `HTTP ${response.status}: ${response.statusText}`
+
+        // Handle 401 Unauthorized - token refresh logic
+        if (response.status === 401) {
+          await this.handleUnauthorized()
+        }
+
+        // Show user-friendly error notifications
+        this.handleErrorNotification(response.status, errorMessage)
+        
         throw new ApiClientError(
           response.status,
           response.statusText,
@@ -181,13 +210,89 @@ export class ApiClient {
       }
       
       // Network or other errors
-      console.error('API request failed:', error)
+      if (IS_DEV) {
+        console.error('❌ API request failed:', error)
+      }
+
+      // Show network error notification
+      notifications.show({
+        title: 'Connection Error',
+        message: 'Unable to connect to the server. Please check your internet connection.',
+        color: 'red',
+      })
+      
       throw new ApiClientError(
         0,
         'Network Error',
         error instanceof Error ? error.message : 'An unknown error occurred',
         undefined
       )
+    }
+  }
+
+  private async handleUnauthorized(): Promise<void> {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token')
+      if (refreshToken) {
+        const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          this.setToken(data.accessToken)
+          
+          // Also store refresh token if provided
+          if (data.refreshToken) {
+            localStorage.setItem('refresh_token', data.refreshToken)
+          }
+          return
+        }
+      }
+    } catch (error) {
+      console.error('Token refresh failed:', error)
+    }
+
+    // Refresh failed or no refresh token, clear auth state
+    this.setToken(null)
+    localStorage.removeItem('refresh_token')
+    
+    // Dispatch logout event for app-wide handling
+    window.dispatchEvent(new CustomEvent('auth:logout'))
+    
+    notifications.show({
+      title: 'Session Expired',
+      message: 'Please log in again to continue.',
+      color: 'orange',
+    })
+  }
+
+  private handleErrorNotification(status: number, message: string): void {
+    // Don't show notifications for validation errors (422) - forms will handle these
+    if (status === 422) return
+
+    // Don't show notifications for 401 - handled by token refresh
+    if (status === 401) return
+
+    // Show notification for client errors (4xx)
+    if (status >= 400 && status < 500) {
+      notifications.show({
+        title: 'Error',
+        message,
+        color: 'red',
+      })
+      return
+    }
+
+    // Show notification for server errors (5xx)
+    if (status >= 500) {
+      notifications.show({
+        title: 'Server Error',
+        message: 'Something went wrong on our end. Please try again later.',
+        color: 'red',
+      })
     }
   }
 
@@ -218,6 +323,75 @@ export class ApiClient {
 
   async delete<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: 'DELETE' })
+  }
+
+  async uploadFile<T>(
+    endpoint: string,
+    file: File,
+    onProgress?: (progress: number) => void,
+    additionalFields?: Record<string, string>
+  ): Promise<T> {
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    // Add any additional fields
+    if (additionalFields) {
+      Object.entries(additionalFields).forEach(([key, value]) => {
+        formData.append(key, value)
+      })
+    }
+
+    const xhr = new XMLHttpRequest()
+    
+    return new Promise((resolve, reject) => {
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable && onProgress) {
+          const progress = Math.round((e.loaded * 100) / e.total)
+          onProgress(progress)
+        }
+      })
+
+      xhr.addEventListener('load', () => {
+        try {
+          const response = JSON.parse(xhr.responseText)
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(response)
+          } else {
+            reject(new ApiClientError(
+              xhr.status,
+              xhr.statusText,
+              response.message || 'Upload failed',
+              response
+            ))
+          }
+        } catch {
+          reject(new ApiClientError(
+            xhr.status,
+            xhr.statusText,
+            'Invalid response format',
+            undefined
+          ))
+        }
+      })
+
+      xhr.addEventListener('error', () => {
+        reject(new ApiClientError(
+          0,
+          'Network Error',
+          'Upload failed due to network error',
+          undefined
+        ))
+      })
+
+      xhr.open('POST', `${this.baseUrl}${endpoint}`)
+      
+      const token = this.getToken()
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+      }
+
+      xhr.send(formData)
+    })
   }
 }
 

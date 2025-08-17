@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { useAddToCart } from '../../../hooks/useCart'
-import { useAuthStore } from '../../../stores/auth'
+import { useAuthStore } from '../../../stores'
 import { ArrowLeft, Star } from 'lucide-react'
 
 // Mock product data - would come from API based on productId

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card } from '../../../components/ui/card';
 import { useLogin } from '../../../hooks/useAuth';
-import { useAuthStore } from '../../../stores/auth';
+import { useAuthStore } from '../../../stores';
 import type { LoginDto } from '../../../types/api';
 
 export default function AuthLoginPage() {
