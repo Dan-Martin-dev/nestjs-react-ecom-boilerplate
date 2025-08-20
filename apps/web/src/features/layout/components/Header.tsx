@@ -1,92 +1,138 @@
-import { Link } from 'react-router-dom'
-import { ShoppingCart, User, Menu, Search } from 'lucide-react'
-import { Button } from '@mantine/core'
-import { useCart } from '../../../hooks/useCart'
-import { useAuthStore } from '../../../stores'
-import '../../../styles/MovingBar.css'
+import { Link } from "react-router-dom";
+import { ShoppingCart, User, Menu, Search, Heart } from "lucide-react";
+import { Button } from "@mantine/core";
+import { useCart } from "../../../hooks/useCart";
+import "../../../styles/MovingBar.css"; 
 
 export function Header() {
-  const { data: cart } = useCart()
-  const { isAuthenticated } = useAuthStore()
-  const itemCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
+  const { data: cart } = useCart();
+  const itemCount =
+    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      
       {/* Moving bar uses styles from MovingBar.css (global import above) */}
-      <div className="moving-bar moving-bar-pause-hover" aria-hidden="true">
+      <div className="bg_varels_orange moving-bar moving-bar-pause-hover" aria-hidden="true">
         <div className="moving-bar-inner">
-          <div className="moving-bar-content">
+          <div className="moving-bar-content font-teko">
             {[
-              'FREE SHIPPING ON ALL ORDERS OVER $50',
-              'FREE SHIPPING ON ALL ORDERS OVER $50',
-              'FREE SHIPPING ON ALL ORDERS OVER $50',
-              'FREE SHIPPING ON ALL ORDERS OVER $50'
+              "FREE SHIPPING ON ALL ORDERS OVER $50",
+              "FREE SHIPPING ON ALL ORDERS OVER $50",
+              "FREE SHIPPING ON ALL ORDERS OVER $50",
+              "FREE SHIPPING ON ALL ORDERS OVER $50",
             ].map((msg, idx) => (
               <span key={idx}>{msg}</span>
             ))}
           </div>
         </div>
       </div>
-      <div className="container mx-auto flex h-16 items-center px-4">
-        <div className="mr-4 flex">
-          <Link to="/" className="mr-6 flex items-center space-x-2">
-            <span className="text-xl font-bold text-blue-600"></span>
-          </Link>
-        </div>
-        
-        <nav className="flex items-center space-x-6 text-sm font-medium">
-          <Link
-            to="/products"
-            className="transition-colors hover:text-gray-800 text-gray-600"
-          >
-            Products
-          </Link>
-          <Link
-            to="/products"
-            className="transition-colors hover:text-gray-800 text-gray-600"
-          >
-            Categories
-          </Link>
-        </nav>
 
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <Button variant="outline" className="inline-flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              <span className="hidden md:inline-block">Search products...</span>
+      <div className="container mx-auto flex h-16 items-center px-4">
+
+        {/* Mobile: Hamburger + Search (left), Title (center), Heart + Cart (right) */}
+        <div className="flex w-full items-center justify-between md:hidden">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="subtle"
+              component={Link}
+              to="/menu"
+              className="p-2"
+            >
+              <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
+            </Button>
+            <Button
+              variant="subtle"
+              component={Link}
+              to="/search"
+              className="p-2"
+            >
+              <Search className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
           </div>
-          
-          <nav className="flex items-center space-x-2">
-            <Link to="/cart">
-              <Button variant="outline" className="relative">
-                <ShoppingCart className="h-4 w-4" />
-                {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-blue-600 text-xs text-white flex items-center justify-center">
-                    {itemCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-            
-            {isAuthenticated ? (
-              <Link to="/dashboard">
-                <Button variant="outline">
-                  <User className="h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/auth/login">
-                <Button variant="outline">Sign In</Button>
-              </Link>
-            )}
-            
-            <Button variant="outline" className="md:hidden">
-              <Menu className="h-4 w-4" />
+          <Link
+            to="/"
+            className="text-4xl font-teko tracking-widest text-black"
+          >
+            VARELS
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="subtle"
+              component={Link}
+              to="/wishlist"
+              className="p-2"
+            >
+              <Heart className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
-          </nav>
+            <Button
+              variant="subtle"
+              component={Link}
+              to="/cart"
+              className="relative p-2"
+            >
+              <ShoppingCart className="h-5 w-5 text-gray-950" strokeWidth={1} />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-blue-600 text-xs text-white flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
+
+        {/* Desktop: Title (left), Search (center), Sign In + Heart + Cart (right) */}
+        <div className="hidden w-full items-center justify-between md:flex">
+          <Link
+            to="/"
+            className="text-4xl font-teko font-bold tracking-widest text-black"
+          >
+            VARELS
+          </Link>
+          <div className="flex-1 px-8">
+            <form className="w-full">
+              <input
+                type="text"
+                placeholder="SEARCH FOR PRODUCTS..."
+                className="bg w-full rounded-md border text-sm font-inco text-black border-gray-300 px-4 py-2  focus:outline-none"
+              />
+            </form>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="filled"
+              component={Link}
+              to="/dashboard"
+              className="p-2"
+            >
+              <User className="h-5 w-5 text-gray-950" strokeWidth={1} />
+            </Button>
+            <Button
+              variant="subtle"
+              component={Link}
+              to="/wishlist"
+              className="p-2"
+            >
+              <Heart className="h-5 w-5 text-gray-950" strokeWidth={1} />
+            </Button>
+            <Button
+              variant="subtle"
+              component={Link}
+              to="/cart"
+              className="relative p-2"
+            >
+              <ShoppingCart className="h-5 w-5 text-gray-950" strokeWidth={1} />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-blue-600 text-xs text-white flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Button>
+          </div>
+        </div>
+
       </div>
+
     </header>
-  )
+  );
 }
