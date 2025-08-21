@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export function Footer() {
   const [email, setEmail] = useState("");
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const columns = [
     {
@@ -45,14 +46,22 @@ export function Footer() {
     setEmail("");
   }
 
+  // Accordion state for mobile (<= 765px). single-open behavior
+
+  function toggleIndex(i: number) {
+    setOpenIndex((prev) => (prev === i ? null : i));
+  }
+
   return (
     <div>
+
+      {/* Footer */}
       <footer className="bg_varels_pink  text-black">
-        <div className="bg_varels_pink container mx-auto px-6 py-12">
+        <div className="bg_varels_pink container mx-auto px-6 py-5 md:py-12">
 
           {/* Newsletter section */}
           <div className="max-w-3xl mx-auto text-center">
-            <h3 className="font-teko text-xl md:text-2xl lg:text-3xl font-light uppercase tracking-widest">
+            <h3 className="font-teko text-sm md:text-2xl lg:text-3xl font-light uppercase tracking-widest">
               Join the newsletter for exclusive updates
             </h3>
             <form
@@ -93,32 +102,47 @@ export function Footer() {
                   placeholder="YOUR EMAIL ADDRESS"
                   aria-label="Email address"
                   required
-                  className="w-full font-normal text-black bg-white rounded-md py-3 pl-5 pr-4 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/60"
+                  className="w-full text-xs md:text-sm font-normal text-black bg-white rounded-md py-3 pl-5 pr-4 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/60"
                 />
               </div>
             </form>
           </div>
 
           {/* Links area */}
-          <div className="bg_varels_pink mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
-            
-            {/* Newsletter */}
-            {columns.map((col) => (
+          <div className="bg_varels_pink mt-5 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
+            {columns.map((col, i) => (
               <div key={col.title} className="">
 
-                {/* Title items */}
-                <h4 className="font-inco text-xl md:text-base lg:text-xl font-medium uppercase mb-3">
-                  {col.title}
-                </h4>
-                <ul className="space-y-2">
+                {/* Mobile header row with toggle */}
+                <div className="flex items-center justify-between md:block">
+                  <h4 className="font-inco text-sm md:text-xl md:text-base lg:text-xl font-normal uppercase mb-3">
+                    {col.title}
+                  </h4>
 
-                  {/* List items*/}
+                  {/* toggle button only visible on mobile */}
+                  <button
+                    type="button"
+                    aria-expanded={openIndex === i}
+                    aria-controls={`col-${i}`}
+                    onClick={() => toggleIndex(i)}
+                    className="md:hidden ml-2 p-2 rounded-full bg-white/10"
+                    aria-label={`Toggle ${col.title}`}
+                  >
+                    <span className={`block text-black transform transition-transform ${openIndex === i ? 'rotate-45' : ''}`}>
+                      +
+                    </span>
+                  </button>
+                </div>
+
+                {/* List - collapsed on mobile, visible on md+ */}
+                <ul
+                  id={`col-${i}`}
+                  aria-hidden={openIndex !== i}
+                  className={`overflow-hidden transition-[max-height]   duration-300 md:visible md:max-h-full ${openIndex === i ? 'max-h-80' : 'max-h-0'} md:block md:mt-0 mt-3`}
+                >
                   {col.items.map((item) => (
                     <li key={item}>
-                      <Link
-                        to="#"
-                        className="font-inco text-sm md:text-sm lg:text-lg font-light opacity-90 hover:underline"
-                      >
+                      <Link to="#" className="font-inco text-sm md:text-sm lg:text-lg font-light opacity-90 hover:underline block py-1">
                         {item}
                       </Link>
                     </li>
@@ -236,6 +260,7 @@ export function Footer() {
         </div>
       </footer>
 
+      {/* Copyright */}
       <div className="bg-white p-4">
         <p className="font-teko text-center text-black text-md opacity-90">
           COPYRIGHT © 2025 VARELS – T-SHIRTS, CAPS, HEADWEAR
