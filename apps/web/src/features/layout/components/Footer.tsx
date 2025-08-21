@@ -6,24 +6,24 @@ export function Footer() {
 
   const columns = [
     {
-      title: "Shop",
-      items: ["t-shirts", "hoodies", "caps", "pants", "accessories"],
+      title: "COOL STUFF",
+      items: ["about us", "blog", "shop all", "new arivals", "hats and caps", "apparel", "accessories", "collabs", "rewards", "loop waitlist"],
     },
     {
-      title: "Company",
-      items: ["about us", "careers", "press", "affiliates", "blog"],
+      title: "BORING STUFF",
+      items: ["track us", "returns"],
     },
     {
-      title: "Help",
+      title: "LEGAL",
       items: ["contact", "shipping", "returns", "faq", "size guide"],
     },
     {
-      title: "Policies",
-      items: ["privacy", "terms", "security", "cookies", "accessibility"],
+      title: "LET'S CONNECT",
+      items: ["whatsapp", "email", "contact us"],
     },
     {
-      title: "Collections",
-      items: ["summer 2025", "basics", "limited", "collabs", "new arrivals"],
+      title: "STORE LOCATOR",
+      items: ["mumbai", "bangalore"],
     },
   ];
 
@@ -57,17 +57,18 @@ export function Footer() {
             </h3>
             <form
               onSubmit={handleSubscribe}
-              className="font-inco mt-4 flex items-center justify-center"
+              className="font-inco font-normal mt-4 flex items-center justify-center"
               aria-label="Subscribe to newsletter"
             >
               <div className="relative w-full max-w-xl">
+
                 {/* Left pill inside input */}
                 <div className="absolute right-0 top-0 bottom-0 flex items-center">
                   <button
                     type="submit"
                     className="h-10 md:h-12 ml-1 mr-3 rounded-md bg-white/10 text-white px-3 md:px-4 text-sm md:text-base flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/60"
                   >
-                    <span className="font-teko uppercase text-black font-semibold">Subscribe</span>
+                    <span className="font-teko uppercase text-black font-light">Subscribe</span>
                     {/* arrow svg */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +93,7 @@ export function Footer() {
                   placeholder="YOUR EMAIL ADDRESS"
                   aria-label="Email address"
                   required
-                  className="w-full bg-white text-black rounded-md py-3 pl-5 pr-4 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/60"
+                  className="w-full font-normal text-black bg-white rounded-md py-3 pl-5 pr-4 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/60"
                 />
               </div>
             </form>
@@ -106,7 +107,7 @@ export function Footer() {
               <div key={col.title} className="">
 
                 {/* Title items */}
-                <h4 className="font-teko text-xl md:text-base lg:text-3xl font-normal uppercase mb-3">
+                <h4 className="font-inco text-xl md:text-base lg:text-xl font-medium uppercase mb-3">
                   {col.title}
                 </h4>
                 <ul className="space-y-2">
@@ -116,7 +117,7 @@ export function Footer() {
                     <li key={item}>
                       <Link
                         to="#"
-                        className="font-inco text-sm md:text-sm lg:text-xl font-light opacity-90 hover:underline"
+                        className="font-inco text-sm md:text-sm lg:text-lg font-light opacity-90 hover:underline"
                       >
                         {item}
                       </Link>
