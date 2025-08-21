@@ -60,8 +60,8 @@ export function Footer() {
         <div className="bg_varels_pink container mx-auto px-6 py-5 md:py-12">
 
           {/* Newsletter section */}
-          <div className="max-w-3xl mx-auto text-center">
-            <h3 className="font-teko text-sm md:text-2xl lg:text-3xl font-light uppercase tracking-widest">
+          <div className="max-w-3xl mx-auto md:text-center">
+            <h3 className="font-inco text-sm md:text-2xl lg:text-3xl font-semibold uppercase tracking-widest">
               Join the newsletter for exclusive updates
             </h3>
             <form
@@ -77,7 +77,7 @@ export function Footer() {
                     type="submit"
                     className="h-10 md:h-12 ml-1 mr-3 rounded-md bg-white/10 text-white px-3 md:px-4 text-sm md:text-base flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/60"
                   >
-                    <span className="font-teko uppercase text-black font-light">Subscribe</span>
+                    <span className="font-inco uppercase text-black font-light">Subscribe</span>
                     {/* arrow svg */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +109,7 @@ export function Footer() {
           </div>
 
           {/* Links area */}
-          <div className="bg_varels_pink mt-5 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
+          <div className="bg_varels_pink mt-5 grid grid-cols-1 gap-3 md:gap-6 md:grid-cols-3 lg:grid-cols-5">
             {columns.map((col, i) => (
               <div key={col.title} className="">
 
@@ -138,7 +138,7 @@ export function Footer() {
                 <ul
                   id={`col-${i}`}
                   aria-hidden={openIndex !== i}
-                  className={`overflow-hidden transition-[max-height]   duration-300 md:visible md:max-h-full ${openIndex === i ? 'max-h-80' : 'max-h-0'} md:block md:mt-0 mt-3`}
+                  className={`overflow-hidden transition-[max-height] duration-300 md:visible md:max-h-full ${openIndex === i ? 'max-h-48 pb-2' : 'max-h-0'} md:block md:mt-0 mt-1`}
                 >
                   {col.items.map((item) => (
                     <li key={item}>
