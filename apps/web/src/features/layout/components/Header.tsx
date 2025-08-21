@@ -13,9 +13,9 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       
       {/* Moving bar uses styles from MovingBar.css (global import above) */}
-      <div className="bg_varels_orange moving-bar moving-bar-pause-hover" aria-hidden="true">
+      <div className="bg_varels_pink moving-bar moving-bar-pause-hover" aria-hidden="true">
         <div className="moving-bar-inner">
-          <div className="moving-bar-content font-teko">
+          <div className="font-thin text- moving-bar-content text-black font-teko">
             {[
               "FREE SHIPPING ON ALL ORDERS OVER $50",
               "FREE SHIPPING ON ALL ORDERS OVER $50",

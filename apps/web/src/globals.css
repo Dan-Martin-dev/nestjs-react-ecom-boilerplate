@@ -8,6 +8,9 @@
   background-color: rgb(224, 146, 36);
 ;
 }
+.bg_varels_pink {
+  background-color: #F2F2F2;
+}
 @theme {
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(240 10% 3.9%);
