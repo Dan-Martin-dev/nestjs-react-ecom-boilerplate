@@ -150,15 +150,21 @@ export function Header() {
                     </button>
                   </div>
 
-                  {openIndex === idx && (
-                    <ul className="mt-3 pl-2 space-y-2 font-inco text-sm text-gray-700">
+                  {/* Expanded panel: titles remain visible. Use max-height expand to open slowly; no opacity fade on titles. */}
+                  <div
+                    className={`mt-3 pl-2 font-inco text-sm text-gray-700 overflow-hidden transition-all duration-700 ease-in-out ${
+                      openIndex === idx ? 'max-h-[600px]' : 'max-h-0'
+                    }`}
+                    aria-hidden={openIndex !== idx}
+                  >
+                    <ul className="space-y-2">
                       {s.items.map((it) => (
                         <li key={it}>
                           <Link to="#" className="block py-1">{it}</Link>
                         </li>
                       ))}
                     </ul>
-                  )}
+                  </div>
                 </div>
               ))}
             </nav>
