@@ -4,6 +4,7 @@ import { ShoppingCart, User, Menu, Search, Heart, X, Plus } from "lucide-react";
 import { Button } from "@mantine/core";
 import { useCart } from "../../../hooks/useCart";
 import "../../../styles/MovingBar.css"; 
+import { createPortal } from "react-dom";
 
 export function Header() {
   const { data: cart } = useCart();
@@ -85,8 +86,92 @@ export function Header() {
     setOpenIndex(openIndex === idx ? null : idx);
   }
 
+  // Precompute portal markup to avoid parsing issues in JSX expression
+  const portal = (typeof document !== 'undefined') ? createPortal(
+    <>
+      <div
+        className={`fixed inset-0 bg-black transition-opacity duration-300 motion-reduce:transition-none ${drawerOpen ? 'opacity-80 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ zIndex: 99998 }}
+        onClick={() => setDrawerOpen(false)}
+        aria-hidden="true"
+      />
+
+      <aside
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="drawer-title"
+        className={`fixed top-0 left-0 h-full shadow-lg w-full md:w-[360px] lg:w-[360px] transform transition-transform duration-300 motion-reduce:transition-none ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ willChange: 'transform', zIndex: 99999, overflow: 'visible' }}
+      >
+        <div className="h-full flex flex-col bg-white">
+          <div className="flex items-center justify-between px-4 pt-4">
+            <h2 id="drawer-title" className="text-xl font-teko">Menu</h2>
+            <button
+              aria-label="Close menu"
+              onClick={() => setDrawerOpen(false)}
+              className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <X className="h-5 w-5 text-gray-900" />
+            </button>
+          </div>
+
+          <div className="px-4 pt-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="SEARCH FOR PRODUCTS..."
+                className="w-full rounded-md border-0 bg-[#F2F2F2] text-sm font-inco text-black px-4 py-3 pr-12 focus:outline-none"
+                aria-label="Drawer search"
+              />
+              <button
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-black text-white p-3 rounded-r-md"
+                aria-label="Search"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="px-4 pt-6 overflow-y-auto flex-1 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <nav className="pr-2">
+              {sections.map((s, idx) => (
+                <div key={s.title} className="border-b border-gray-100 py-3">
+                  <div className="flex items-center justify-between">
+                    <button
+                      className="text-left w-full flex items-center justify-between font-teko text-base"
+                      onClick={() => toggleSection(idx)}
+                      aria-expanded={openIndex === idx}
+                    >
+                      <span className="font-teko text-sm">{s.title}</span>
+                      <span className="ml-2">
+                        <Plus className={`h-4 w-4 transition-transform ${openIndex === idx ? 'rotate-45' : ''}`} />
+                      </span>
+                    </button>
+                  </div>
+
+                  {openIndex === idx && (
+                    <ul className="mt-3 pl-2 space-y-2 font-inco text-sm text-gray-700">
+                      {s.items.map((it) => (
+                        <li key={it}>
+                          <Link to="#" className="block py-1">{it}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </aside>
+    </>,
+    document.body
+  ) : null;
+
   return (
-    <header className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <>
+      <header className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       
       {/* Moving bar uses styles from MovingBar.css (global import above) */}
       <div className="bg_varels_pink moving-bar moving-bar-pause-hover" aria-hidden="true">
@@ -165,6 +250,7 @@ export function Header() {
         {/* Desktop: Left = icons + title, Center = search, Right = Sign In + Heart + Cart */}
         <div className="hidden w-full items-center justify-between md:flex">
           <div className="flex items-center gap-3">
+            
             {/* Left icon group always visible on md+ */}
             <div className="flex items-center gap-2 pl-1">
               <Button
@@ -248,85 +334,9 @@ export function Header() {
       </div>
 
       {/* Drawer and backdrop */}
-      {/* Backdrop - darkens the rest of the page */}
-      <div
-        className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 motion-reduce:transition-none ${drawerOpen ? 'opacity-80 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-        onClick={() => setDrawerOpen(false)}
-        aria-hidden="true"
-      />
-
-      {/* Sliding drawer: present in DOM so we can animate translate-x */}
-      <aside
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="drawer-title"
-        className={`fixed top-0 left-0 h-full z-50 shadow-lg w-full md:w-[360px] lg:w-[360px] transform transition-transform duration-300 motion-reduce:transition-none ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      >
-        <div className="h-full flex flex-col bg-white">
-          <div className="flex items-center justify-between px-4 pt-4">
-            <h2 id="drawer-title" className="text-xl font-teko">Menu</h2>
-            <button
-              aria-label="Close menu"
-              onClick={() => setDrawerOpen(false)}
-              className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <X className="h-5 w-5 text-gray-900" />
-            </button>
-          </div>
-
-          {/* Search bar inside drawer */}
-          <div className="px-4 pt-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="SEARCH FOR PRODUCTS..."
-                className="w-full rounded-md border-0 bg-[#F2F2F2] text-sm font-inco text-black px-4 py-3 pr-12 focus:outline-none"
-                aria-label="Drawer search"
-              />
-              <button
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-black text-white p-3 rounded-r-md"
-                aria-label="Search"
-              >
-                <Search className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Accordion area: white background with its own scrollbar */}
-          <div className="px-4 pt-6 overflow-y-auto flex-1 bg-white">
-            <nav className="pr-2">
-              {sections.map((s, idx) => (
-                <div key={s.title} className="border-b border-gray-100 py-3">
-                  <div className="flex items-center justify-between">
-                    <button
-                      className="text-left w-full flex items-center justify-between font-teko text-base"
-                      onClick={() => toggleSection(idx)}
-                      aria-expanded={openIndex === idx}
-                    >
-                      <span className="font-teko text-sm">{s.title}</span>
-                      <span className="ml-2">
-                        <Plus className={`h-4 w-4 transition-transform ${openIndex === idx ? 'rotate-45' : ''}`} />
-                      </span>
-                    </button>
-                  </div>
-
-                  {openIndex === idx && (
-                    <ul className="mt-3 pl-2 space-y-2 font-inco text-sm text-gray-700">
-                      {s.items.map((it) => (
-                        <li key={it}>
-                          <Link to="#" className="block py-1">{it}</Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </nav>
-          </div>
-        </div>
-      </aside>
-
     </header>
-  );
+
+      {portal}
+     </>
+   );
 }
