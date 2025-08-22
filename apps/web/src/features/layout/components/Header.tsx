@@ -38,6 +38,7 @@ export function Header() {
               component={Link}
               to="/menu"
               className="p-2"
+              aria-label="Open menu"
             >
               <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
@@ -46,6 +47,7 @@ export function Header() {
               component={Link}
               to="/search"
               className="p-2"
+              aria-label="Open search"
             >
               <Search className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
@@ -62,6 +64,7 @@ export function Header() {
               component={Link}
               to="/wishlist"
               className="p-2"
+              aria-label="Wishlist"
             >
               <Heart className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
@@ -70,6 +73,7 @@ export function Header() {
               component={Link}
               to="/cart"
               className="relative p-2"
+              aria-label="Cart"
             >
               <ShoppingCart className="h-5 w-5 text-gray-950" strokeWidth={1} />
               {itemCount > 0 && (
@@ -81,29 +85,59 @@ export function Header() {
           </div>
         </div>
 
-        {/* Desktop: Title (left), Search (center), Sign In + Heart + Cart (right) */}
+        {/* Desktop: Left = icons + title, Center = search (shorter on lg), Right = Sign In + Heart + Cart */}
         <div className="hidden w-full items-center justify-between md:flex">
-          <Link
-            to="/"
-            className="text-4xl font-teko font-bold tracking-widest text-black"
-          >
-            VARELS
-          </Link>
-          <div className="flex-1 px-8">
-            <form className="w-full">
+          <div className="flex items-center gap-3">
+            {/* Left icon group always visible on md+ */}
+            <div className="flex items-center gap-2 pl-1">
+              <Button
+                variant="subtle"
+                component={Link}
+                to="/menu"
+                className="p-2"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
+              </Button>
+              <Button
+                variant="subtle"
+                component={Link}
+                to="/search"
+                className="p-2"
+                aria-label="Open search"
+              >
+                <Search className="h-5 w-5 text-gray-950" strokeWidth={1} />
+              </Button>
+            </div>
+
+            {/* Small gap between icons and title so they don't touch */}
+            <Link
+              to="/"
+              className="text-4xl font-teko font-bold tracking-widest text-black ml-2"
+            >
+              VARELS
+            </Link>
+          </div>
+
+          {/* Center search - responsive max widths (shorter on lg) */}
+          <div className="flex-1 flex justify-center px-4">
+            <form className="w-full max-w-[920px] lg:max-w-[720px]">
               <input
                 type="text"
                 placeholder="SEARCH FOR PRODUCTS..."
-                className="bg w-full rounded-md border text-sm font-inco text-black border-gray-300 px-4 py-2  focus:outline-none"
+                className="w-full rounded-md border text-sm font-inco text-black border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label="Search products"
               />
             </form>
           </div>
+
           <div className="flex items-center gap-2">
             <Button
               variant="filled"
               component={Link}
               to="/dashboard"
               className="p-2"
+              aria-label="Account"
             >
               <User className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
@@ -112,6 +146,7 @@ export function Header() {
               component={Link}
               to="/wishlist"
               className="p-2"
+              aria-label="Wishlist"
             >
               <Heart className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
@@ -120,6 +155,7 @@ export function Header() {
               component={Link}
               to="/cart"
               className="relative p-2"
+              aria-label="Cart"
             >
               <ShoppingCart className="h-5 w-5 text-gray-950" strokeWidth={1} />
               {itemCount > 0 && (
