@@ -1,5 +1,4 @@
 import type { ApiError } from '../types/api'
-import { notifications } from '@mantine/notifications'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1'
 const IS_DEV = import.meta.env.DEV
@@ -192,7 +191,7 @@ export class ApiClient {
           await this.handleUnauthorized()
         }
 
-        // Show user-friendly error notifications
+        // Show user-friendly error notifications via centralized event
         this.handleErrorNotification(response.status, errorMessage)
         
         throw new ApiClientError(
@@ -214,12 +213,16 @@ export class ApiClient {
         console.error('❌ API request failed:', error)
       }
 
-      // Show network error notification
-      notifications.show({
-        title: 'Connection Error',
-        message: 'Unable to connect to the server. Please check your internet connection.',
-        color: 'red',
-      })
+      // Dispatch centralized notification event instead of calling notifications.show here
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('app:notify', {
+          detail: {
+            title: 'Connection Error',
+            message: 'Unable to connect to the server. Please check your internet connection.',
+            color: 'red',
+          }
+        }))
+      }
       
       throw new ApiClientError(
         0,
@@ -262,11 +265,18 @@ export class ApiClient {
     // Dispatch logout event for app-wide handling
     window.dispatchEvent(new CustomEvent('auth:logout'))
     
-    notifications.show({
-      title: 'Session Expired',
-      message: 'Please log in again to continue.',
-      color: 'orange',
-    })
+    // Dispatch centralized notification event instead of calling notifications.show here
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('app:notify', {
+        detail: {
+          title: 'Session Expired',
+          message: 'Please log in again to continue.',
+          color: 'orange',
+          // optional marker to allow deduping or special handling by the listener
+          code: 'session-expired',
+        }
+      }))
+    }
   }
 
   private handleErrorNotification(status: number, message: string): void {
@@ -276,23 +286,28 @@ export class ApiClient {
     // Don't show notifications for 401 - handled by token refresh
     if (status === 401) return
 
-    // Show notification for client errors (4xx)
-    if (status >= 400 && status < 500) {
-      notifications.show({
-        title: 'Error',
-        message,
-        color: 'red',
-      })
-      return
-    }
+    // Dispatch notification events for client/server errors
+    if (typeof window !== 'undefined') {
+      if (status >= 400 && status < 500) {
+        window.dispatchEvent(new CustomEvent('app:notify', {
+          detail: {
+            title: 'Error',
+            message,
+            color: 'red',
+          }
+        }))
+        return
+      }
 
-    // Show notification for server errors (5xx)
-    if (status >= 500) {
-      notifications.show({
-        title: 'Server Error',
-        message: 'Something went wrong on our end. Please try again later.',
-        color: 'red',
-      })
+      if (status >= 500) {
+        window.dispatchEvent(new CustomEvent('app:notify', {
+          detail: {
+            title: 'Server Error',
+            message: 'Something went wrong on our end. Please try again later.',
+            color: 'red',
+          }
+        }))
+      }
     }
   }
 
