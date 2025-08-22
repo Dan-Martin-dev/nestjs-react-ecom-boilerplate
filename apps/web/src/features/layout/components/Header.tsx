@@ -1,5 +1,6 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, User, Menu, Search, Heart } from "lucide-react";
+import { ShoppingCart, User, Menu, Search, Heart, X, Plus } from "lucide-react";
 import { Button } from "@mantine/core";
 import { useCart } from "../../../hooks/useCart";
 import "../../../styles/MovingBar.css"; 
@@ -8,6 +9,81 @@ export function Header() {
   const { data: cart } = useCart();
   const itemCount =
     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+  // Drawer state and refs
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const hamburgerRef = useRef<HTMLButtonElement | null>(null);
+  const previouslyFocused = useRef<Element | null>(null);
+
+  const sections = [
+    { title: "Categories", items: ["Clothing", "Shoes", "Accessories"] },
+    { title: "Company", items: ["About", "Careers", "Press"] },
+    { title: "Help", items: ["Shipping", "Returns", "Contact"] },
+  ];
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (!drawerOpen) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setDrawerOpen(false);
+      }
+      if (e.key === "Tab") {
+        // simple focus trap inside panel
+        const container = panelRef.current;
+        if (!container) return;
+        const focusable = container.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement as HTMLElement | null;
+        if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+        if (e.shiftKey && active === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      }
+    }
+
+    // capture hamburger ref at effect start so cleanup uses a stable value
+    const hamAtStart = hamburgerRef.current;
+
+    if (drawerOpen) {
+      previouslyFocused.current = document.activeElement;
+      setTimeout(() => {
+        // focus first interactive element inside panel
+        const container = panelRef.current;
+        const focusable = container?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable && focusable.length > 0) focusable[0].focus();
+      }, 0);
+      document.body.style.overflow = "hidden"; // prevent background scroll
+      window.addEventListener("keydown", onKeyDown);
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+      // return focus
+      if (previouslyFocused.current instanceof HTMLElement) {
+        previouslyFocused.current.focus();
+      } else if (hamAtStart instanceof HTMLElement) {
+        hamAtStart.focus();
+      }
+    };
+  }, [drawerOpen]);
+
+  function toggleSection(idx: number) {
+    setOpenIndex(openIndex === idx ? null : idx);
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -35,10 +111,11 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Button
               variant="subtle"
-              component={Link}
-              to="/menu"
               className="p-2"
               aria-label="Open menu"
+              onClick={() => setDrawerOpen(true)}
+              aria-expanded={drawerOpen}
+              ref={hamburgerRef}
             >
               <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
@@ -85,17 +162,18 @@ export function Header() {
           </div>
         </div>
 
-        {/* Desktop: Left = icons + title, Center = search (shorter on lg), Right = Sign In + Heart + Cart */}
+        {/* Desktop: Left = icons + title, Center = search, Right = Sign In + Heart + Cart */}
         <div className="hidden w-full items-center justify-between md:flex">
           <div className="flex items-center gap-3">
             {/* Left icon group always visible on md+ */}
             <div className="flex items-center gap-2 pl-1">
               <Button
                 variant="subtle"
-                component={Link}
-                to="/menu"
                 className="p-2"
                 aria-label="Open menu"
+                onClick={() => setDrawerOpen(true)}
+                aria-expanded={drawerOpen}
+                ref={hamburgerRef}
               >
                 <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
               </Button>
@@ -119,7 +197,7 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Center search - responsive max widths (shorter on lg) */}
+          {/* Center search - existing search left untouched visually */}
           <div className="flex-1 flex justify-center px-4">
             <form className="w-full max-w-[920px] lg:max-w-[720px]">
               <input
@@ -168,6 +246,86 @@ export function Header() {
         </div>
 
       </div>
+
+      {/* Drawer and backdrop */}
+      {/* Backdrop - darkens the rest of the page */}
+      <div
+        className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 motion-reduce:transition-none ${drawerOpen ? 'opacity-80 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setDrawerOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Sliding drawer: present in DOM so we can animate translate-x */}
+      <aside
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="drawer-title"
+        className={`fixed top-0 left-0 h-full z-50 shadow-lg w-full md:w-[360px] lg:w-[360px] transform transition-transform duration-300 motion-reduce:transition-none ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <div className="h-full flex flex-col bg-white">
+          <div className="flex items-center justify-between px-4 pt-4">
+            <h2 id="drawer-title" className="text-xl font-teko">Menu</h2>
+            <button
+              aria-label="Close menu"
+              onClick={() => setDrawerOpen(false)}
+              className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <X className="h-5 w-5 text-gray-900" />
+            </button>
+          </div>
+
+          {/* Search bar inside drawer */}
+          <div className="px-4 pt-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="SEARCH FOR PRODUCTS..."
+                className="w-full rounded-md border-0 bg-[#F2F2F2] text-sm font-inco text-black px-4 py-3 pr-12 focus:outline-none"
+                aria-label="Drawer search"
+              />
+              <button
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-black text-white p-3 rounded-r-md"
+                aria-label="Search"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Accordion area: white background with its own scrollbar */}
+          <div className="px-4 pt-6 overflow-y-auto flex-1 bg-white">
+            <nav className="pr-2">
+              {sections.map((s, idx) => (
+                <div key={s.title} className="border-b border-gray-100 py-3">
+                  <div className="flex items-center justify-between">
+                    <button
+                      className="text-left w-full flex items-center justify-between font-teko text-base"
+                      onClick={() => toggleSection(idx)}
+                      aria-expanded={openIndex === idx}
+                    >
+                      <span className="font-teko text-sm">{s.title}</span>
+                      <span className="ml-2">
+                        <Plus className={`h-4 w-4 transition-transform ${openIndex === idx ? 'rotate-45' : ''}`} />
+                      </span>
+                    </button>
+                  </div>
+
+                  {openIndex === idx && (
+                    <ul className="mt-3 pl-2 space-y-2 font-inco text-sm text-gray-700">
+                      {s.items.map((it) => (
+                        <li key={it}>
+                          <Link to="#" className="block py-1">{it}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </aside>
 
     </header>
   );
