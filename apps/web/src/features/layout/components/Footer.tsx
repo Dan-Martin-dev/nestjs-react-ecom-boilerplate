@@ -57,7 +57,7 @@ export function Footer() {
 
       {/* Footer */}
       <footer className="bg_varels_pink text-black">
-        <div className="bg_varels_pink container mx-auto px-6 py-5 md:py-12">
+        <div className="bg_varels_pink container mx-auto px-6 lg:px-4 py-5 md:py-12">
 
           {/* Newsletter section */}
           <div className="max-w-3xl mx-auto text-center">
@@ -158,7 +158,7 @@ export function Footer() {
               </h4>
 
               {/* Simple svg icons with accessible labels */}
-              <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+              <div className="flex items-center gap-3 mb-6 md:mb-8 justify-center md:justify-start">
                 <a
                   href="#"
                   aria-label="Facebook"
@@ -253,13 +253,14 @@ export function Footer() {
                 </a>
               </div>
 
-              <h4 className="font-teko text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-3">
+              <h4 className="font-teko text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-2 md:mb-3">
                 Popular searches
               </h4>
-              <ul className="flex flex-wrap gap-2 justify-center md:justify-start">
+              {/* Horizontal list that stays on one line at lg (no wrap) */}
+              <ul className="flex flex-wrap items-center gap-3 mt-3 md:mt-4 justify-center md:justify-start lg:flex-nowrap">
                 {popularSearches.map((p) => (
-                  <li key={p} className="w-1/2">
-                    <Link to="#" className="font-inco text-sm underline opacity-90">
+                  <li key={p} className="inline-block">
+                    <Link to="#" className="font-inco text-sm underline opacity-90 px-2 py-0.5 whitespace-nowrap">
                       {p}
                     </Link>
                   </li>
