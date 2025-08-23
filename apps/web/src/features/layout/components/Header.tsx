@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, User, Menu, Search, Heart, X, Plus } from "lucide-react";
 import { Button } from "@mantine/core";
@@ -18,8 +18,6 @@ export function Header() {
   const hamburgerRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocused = useRef<Element | null>(null);
 
-  // Mount guard to avoid SSR/hydration flicker and prevent focus/accordion state on first render
-  const [mounted, setMounted] = useState(false);
   // track whether drawer has ever been opened to avoid creating portal on initial load
   const [hasOpened, setHasOpened] = useState(false);
 
@@ -28,12 +26,6 @@ export function Header() {
     { title: "Company", items: ["About", "Careers", "Press"] },
     { title: "Help", items: ["Shipping", "Returns", "Contact"] },
   ];
-
-  useLayoutEffect(() => {
-    // set mounted synchronously before paint to avoid FOUC
-    setMounted(true);
-    setOpenIndex(null);
-  }, []);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -114,8 +106,8 @@ export function Header() {
     }
   }
 
-  // Only create portal on client after mount to avoid hydration/focus issues
-  const portal = (typeof document !== 'undefined' && mounted && (drawerOpen || hasOpened)) ? createPortal(
+  // Only create portal on client after document is available and the drawer has been interacted with
+  const portal = (typeof document !== 'undefined' && (drawerOpen || hasOpened)) ? createPortal(
     <>
       <div
         className={`fixed inset-0 bg-black transition-opacity duration-300 motion-reduce:transition-none ${drawerOpen ? 'opacity-80 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -180,13 +172,13 @@ export function Header() {
 
                   {/* Expanded panel: titles remain visible. Use max-height expand to open slowly; no opacity fade on titles. */}
                   <div
-                    className={`mt-3 pl-2 font-inco text-sm text-gray-700 overflow-hidden ${mounted ? 'transition-all duration-700 ease-in-out' : 'transition-none'} ${
-                      (mounted && drawerOpen && openIndex === idx) ? 'max-h-[600px]' : 'max-h-0'
+                    className={`mt-3 pl-2 font-inco text-sm text-gray-700 overflow-hidden transition-all duration-700 ease-in-out ${
+                      (drawerOpen && openIndex === idx) ? 'max-h-[600px]' : 'max-h-0'
                     }`}
-                    aria-hidden={!(mounted && drawerOpen && openIndex === idx)}
+                    aria-hidden={!(drawerOpen && openIndex === idx)}
                     role="region"
                   >
-                    {mounted && drawerOpen && openIndex === idx ? (
+                    {drawerOpen && openIndex === idx ? (
                       <ul className="space-y-2">
                         {s.items.map((it) => (
                           <li key={it}>
@@ -211,7 +203,6 @@ export function Header() {
     <>
       <header
         className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
-        style={{ opacity: mounted ? 1 : 0, transition: 'opacity 200ms ease-in' }}
       >
       
       {/* Moving bar uses styles from MovingBar.css (global import above) */}
