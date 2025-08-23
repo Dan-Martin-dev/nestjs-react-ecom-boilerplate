@@ -206,9 +206,13 @@ export function Header() {
     document.body
   ) : null;
 
+  // Prevent FOUC: hide header via inline style until client mount completes
   return (
     <>
-      <header className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <header
+        className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
+        style={{ opacity: mounted ? 1 : 0, transition: 'opacity 200ms ease-in' }}
+      >
       
       {/* Moving bar uses styles from MovingBar.css (global import above) */}
       <div className="bg_varels_pink moving-bar moving-bar-pause-hover" aria-hidden="true">
