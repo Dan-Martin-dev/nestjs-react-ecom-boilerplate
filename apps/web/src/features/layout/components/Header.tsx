@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, User, Menu, Search, Heart, X, Plus } from "lucide-react";
 import { Button } from "@mantine/core";
@@ -18,11 +18,22 @@ export function Header() {
   const hamburgerRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocused = useRef<Element | null>(null);
 
+  // Mount guard to avoid SSR/hydration flicker and prevent focus/accordion state on first render
+  const [mounted, setMounted] = useState(false);
+  // track whether drawer has ever been opened to avoid creating portal on initial load
+  const [hasOpened, setHasOpened] = useState(false);
+
   const sections = [
     { title: "Categories", items: ["Clothing", "Shoes", "Accessories"] },
     { title: "Company", items: ["About", "Careers", "Press"] },
     { title: "Help", items: ["Shipping", "Returns", "Contact"] },
   ];
+
+  useLayoutEffect(() => {
+    // set mounted synchronously before paint to avoid FOUC
+    setMounted(true);
+    setOpenIndex(null);
+  }, []);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -57,6 +68,8 @@ export function Header() {
     const hamAtStart = hamburgerRef.current;
 
     if (drawerOpen) {
+      // note that drawer has been opened at least once
+      setHasOpened(true);
       previouslyFocused.current = document.activeElement;
       setTimeout(() => {
         // focus first interactive element inside panel
@@ -86,8 +99,8 @@ export function Header() {
     setOpenIndex(openIndex === idx ? null : idx);
   }
 
-  // Precompute portal markup to avoid parsing issues in JSX expression
-  const portal = (typeof document !== 'undefined') ? createPortal(
+  // Only create portal on client after mount to avoid hydration/focus issues
+  const portal = (typeof document !== 'undefined' && mounted && (drawerOpen || hasOpened)) ? createPortal(
     <>
       <div
         className={`fixed inset-0 bg-black transition-opacity duration-300 motion-reduce:transition-none ${drawerOpen ? 'opacity-80 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -110,7 +123,7 @@ export function Header() {
             <button
               aria-label="Close menu"
               onClick={() => setDrawerOpen(false)}
-              className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+              className="p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <X className="h-5 w-5 text-gray-900" />
             </button>
@@ -152,18 +165,21 @@ export function Header() {
 
                   {/* Expanded panel: titles remain visible. Use max-height expand to open slowly; no opacity fade on titles. */}
                   <div
-                    className={`mt-3 pl-2 font-inco text-sm text-gray-700 overflow-hidden transition-all duration-700 ease-in-out ${
-                      openIndex === idx ? 'max-h-[600px]' : 'max-h-0'
+                    className={`mt-3 pl-2 font-inco text-sm text-gray-700 overflow-hidden ${mounted ? 'transition-all duration-700 ease-in-out' : 'transition-none'} ${
+                      (mounted && drawerOpen && openIndex === idx) ? 'max-h-[600px]' : 'max-h-0'
                     }`}
-                    aria-hidden={openIndex !== idx}
+                    aria-hidden={!(mounted && drawerOpen && openIndex === idx)}
+                    role="region"
                   >
-                    <ul className="space-y-2">
-                      {s.items.map((it) => (
-                        <li key={it}>
-                          <Link to="#" className="block py-1">{it}</Link>
-                        </li>
-                      ))}
-                    </ul>
+                    {mounted && drawerOpen && openIndex === idx ? (
+                      <ul className="space-y-2">
+                        {s.items.map((it) => (
+                          <li key={it}>
+                            <Link to="#" className="block py-1">{it}</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -202,7 +218,7 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Button
               variant="subtle"
-              className="p-2"
+              className="p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
               aria-label="Open menu"
               onClick={() => setDrawerOpen(true)}
               aria-expanded={drawerOpen}
@@ -261,7 +277,7 @@ export function Header() {
             <div className="flex items-center gap-2 pl-1">
               <Button
                 variant="subtle"
-                className="p-2"
+                className="p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                 aria-label="Open menu"
                 onClick={() => setDrawerOpen(true)}
                 aria-expanded={drawerOpen}
