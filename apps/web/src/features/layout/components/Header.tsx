@@ -99,6 +99,21 @@ export function Header() {
     setOpenIndex(openIndex === idx ? null : idx);
   }
 
+  // Open drawer in two steps on first use: mount portal first, then open to allow CSS transition
+  function openDrawer() {
+    if (!hasOpened) {
+      setHasOpened(true);
+      // wait a frame so portal renders with closed state, then open to trigger transition
+      if (typeof requestAnimationFrame !== 'undefined') {
+        requestAnimationFrame(() => setDrawerOpen(true));
+      } else {
+        setTimeout(() => setDrawerOpen(true), 16);
+      }
+    } else {
+      setDrawerOpen(true);
+    }
+  }
+
   // Only create portal on client after mount to avoid hydration/focus issues
   const portal = (typeof document !== 'undefined' && mounted && (drawerOpen || hasOpened)) ? createPortal(
     <>
@@ -220,7 +235,7 @@ export function Header() {
               variant="subtle"
               className="p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
               aria-label="Open menu"
-              onClick={() => setDrawerOpen(true)}
+              onClick={openDrawer}
               aria-expanded={drawerOpen}
               ref={hamburgerRef}
             >
@@ -279,7 +294,7 @@ export function Header() {
                 variant="subtle"
                 className="p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                 aria-label="Open menu"
-                onClick={() => setDrawerOpen(true)}
+                onClick={openDrawer}
                 aria-expanded={drawerOpen}
                 ref={hamburgerRef}
               >
