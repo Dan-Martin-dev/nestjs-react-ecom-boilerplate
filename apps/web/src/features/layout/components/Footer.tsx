@@ -8,23 +8,23 @@ export function Footer() {
   const columns = [
     {
       title: "COOL STUFF",
-      items: ["about us", "blog", "shop all", "new arivals", "hats and caps", "apparel", "accessories", "collabs", "rewards", "loop waitlist"],
+      items: ["ABOUT US", "BLOG", "SHOP ALL", "NEW ARRIVALS", "HATS AND CAPS", "APPAREL", "ACCESSORIES", "COLLABS", "REWARDS", "LOOP WAITLIST"],
     },
     {
       title: "BORING STUFF",
-      items: ["track us", "returns"],
+      items: ["TRACK US", "RETURNS"],
     },
     {
       title: "LEGAL",
-      items: ["contact", "shipping", "returns", "faq", "size guide"],
+      items: ["CONTACT", "SHIPPING", "RETURNS", "FAQ", "SIZE GUIDE"],
     },
     {
       title: "LET'S CONNECT",
-      items: ["whatsapp", "email", "contact us"],
+      items: ["WHATSAPP", "EMAIL", "CONTACT US"],
     },
     {
       title: "STORE LOCATOR",
-      items: ["mumbai", "bangalore"],
+      items: ["MUMBAI", "BANGALORE"],
     },
   ];
 
@@ -148,6 +148,7 @@ export function Footer() {
                     </li>
                   ))}
                 </ul>
+                
               </div>
             ))}
 
@@ -269,6 +270,7 @@ export function Footer() {
             </div>
 
           </div>
+
         </div>
       </footer>
 

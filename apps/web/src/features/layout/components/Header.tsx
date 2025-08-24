@@ -22,9 +22,9 @@ export function Header() {
   const [hasOpened, setHasOpened] = useState(false);
 
   const sections = [
-    { title: "Categories", items: ["Clothing", "Shoes", "Accessories"] },
-    { title: "Company", items: ["About", "Careers", "Press"] },
-    { title: "Help", items: ["Shipping", "Returns", "Contact"] },
+    { title: "CATEGORIES", items: ["CLOTHING", "SHOES", "ACCESSORIES"] },
+    { title: "COMPANY", items: ["ABOUT", "CAREERS", "PRESS"] },
+    { title: "HELP", items: ["SHIPPING", "RETURNS", "CONTACT"] },
   ];
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function Header() {
         e.preventDefault();
         setDrawerOpen(false);
       }
-      if (e.key === "Tab") {
+      if (e.key === "Tab") {     
         // simple focus trap inside panel
         const container = panelRef.current;
         if (!container) return;
@@ -126,7 +126,7 @@ export function Header() {
       >
         <div className="h-full flex flex-col bg-white">
           <div className="flex items-center justify-between px-4 pt-4">
-            <h2 id="drawer-title" className="text-xl font-teko">Menu</h2>
+            <h2 id="drawer-title" className="text-xl font-teko"></h2>
             <button
               aria-label="Close menu"
               onClick={() => setDrawerOpen(false)}
@@ -156,7 +156,7 @@ export function Header() {
           <div className="px-4 pt-6 overflow-y-auto flex-1 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
             <nav className="pr-2">
               {sections.map((s, idx) => (
-                <div key={s.title} className="border-b border-gray-100 py-3">
+                <div key={s.title} className="font-inco font-light border-b border-gray-100 py-3">
                   <div className="flex items-center justify-between">
                     <button
                       className="text-left w-full flex items-center justify-between font-teko text-base"
@@ -370,5 +370,5 @@ export function Header() {
 
       {portal}
      </>
-   );
+  );
 }
