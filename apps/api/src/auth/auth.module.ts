@@ -25,13 +25,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
       }),
     }),
     ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          limit: 5,
-          ttl: 60,
-        },
-      ],
-    }),
+      ttl: 60, // seconds
+      limit: 5, // max requests per ttl
+    } as any),
   ],
   controllers: [AuthController],
   providers: [
