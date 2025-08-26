@@ -72,6 +72,7 @@ dev:
 	@echo "🚀 Starting all applications with Turborepo..."
 	DOTENV_CONFIG_PATH=.env.dev pnpm turbo run dev
 
+
 # Run just the frontend with backend services in Docker
 dev-web:
 	@echo "🚀 Starting frontend development environment..."
@@ -80,6 +81,7 @@ dev-web:
 	@sleep 5
 	@echo "🚀 Starting web application..."
 	cd apps/web && DOTENV_CONFIG_PATH=../../.env.dev pnpm dev
+
 
 # Run just the backend with services in Docker
 dev-api:

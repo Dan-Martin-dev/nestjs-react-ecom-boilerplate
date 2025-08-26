@@ -29,10 +29,16 @@ import { MetricsModule } from './metrics/metrics.module';
 @Module({
   imports: [
     // --- Configuration and infrastructure modules ---
+
     ConfigModule.forRoot({ isGlobal: true }),
     CacheConfigModule,
     LoggerModule,
     MetricsModule,
+    ThrottlerModule.forRoot([{
+      ttl: 60,  
+      limit: 5,  
+    }]),
+
     // --- Register all modules here ---
     PrismaModule,
     AuthModule,
@@ -44,10 +50,6 @@ import { MetricsModule } from './metrics/metrics.module';
     AddressesModule,
     ReviewsModule,
     DiscountsModule,
-    ThrottlerModule.forRoot([{
-      ttl: 60000, // 60 seconds (1 minute)
-      limit: 20,  // 20 requests per `ttl` per IP
-    }]),
     // Make sure AuthGuardModule is imported at the app level
   ],
   controllers: [AppController], // Keep the basic app controller for root health checks

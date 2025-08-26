@@ -8,7 +8,6 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from '../prisma/prisma.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -24,10 +23,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
         },
       }),
     }),
-    ThrottlerModule.forRoot({
-      ttl: 60, // seconds
-      limit: 5, // max requests per ttl
-    } as any),
   ],
   controllers: [AuthController],
   providers: [
