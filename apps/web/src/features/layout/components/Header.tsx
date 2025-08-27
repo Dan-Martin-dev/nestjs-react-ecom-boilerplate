@@ -21,11 +21,20 @@ export function Header() {
   // track whether drawer has ever been opened to avoid creating portal on initial load
   const [hasOpened, setHasOpened] = useState(false);
 
-  const sections = [
+  type SectionItem = string | { label: string; to: string };
+  type Section = { title: string; items: SectionItem[] };
+
+  const sections: Section[] = [
     { title: "CATEGORIES", items: ["CLOTHING", "SHOES", "ACCESSORIES"] },
     { title: "COMPANY", items: ["ABOUT", "CAREERS", "PRESS"] },
     { title: "HELP", items: ["SHIPPING", "RETURNS", "CONTACT"] },
   ];
+
+  // Account footer section (rendered separately so it stays at the bottom)
+  const accountSection: Section = {
+    title: 'ACCOUNT',
+    items: [{ label: 'Sign Up', to: '/signup' }, { label: 'Log In', to: '/login' }],
+  };
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -187,17 +196,37 @@ export function Header() {
                   >
                     {drawerOpen && openIndex === idx ? (
                       <ul className="space-y-2">
-                        {s.items.map((it) => (
-                          <li key={it}>
-                            <Link to="#" className="block py-1">{it}</Link>
-                          </li>
-                        ))}
+                        {s.items.map((it: SectionItem) => {
+                          const label = typeof it === 'string' ? it : it.label;
+                          const to = typeof it === 'string' ? '#' : it.to;
+                          return (
+                            <li key={label}>
+                              <Link to={to} className="block py-1">{label}</Link>
+                            </li>
+                          );
+                        })}
                       </ul>
                     ) : null}
                   </div>
                 </div>
               ))}
+
+              {/* end nav */}
             </nav>
+          </div>
+          {/* Fixed footer inside drawer with account links */}
+          <div className="px-4 py-4 border-t bg-white">
+            <div className="flex items-center justify-center gap-6">
+              {accountSection.items.map((it: SectionItem) => (
+                <Link
+                  key={typeof it === 'string' ? it : it.label}
+                  to={typeof it === 'string' ? '#' : it.to}
+                  className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
+                >
+                  {typeof it === 'string' ? it : it.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
