@@ -214,6 +214,7 @@ export function Header() {
               {/* end nav */}
             </nav>
           </div>
+          
           {/* Fixed footer inside drawer with account links */}
           <div className="px-4 py-4 border-t bg-white">
             <div className="flex items-center justify-center gap-6">
@@ -242,7 +243,7 @@ export function Header() {
         className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
       >
       
-      {/* Moving bar uses styles from MovingBar.css (global import above) */}
+      {/* MOVING BAR */}
       <div className="bg_varels_pink moving-bar moving-bar-pause-hover" aria-hidden="true">
         <div className="moving-bar-inner">
           <div className="font-thin text- moving-bar-content text-black font-teko">
@@ -258,9 +259,13 @@ export function Header() {
         </div>
       </div>
 
+      {/* 
+        Mobile: Hamburger + Search (left), 
+        Title (center), Heart + Cart (right)
+      */}
       <div className="container mx-auto flex h-16 items-center px-4">
 
-        {/* Mobile: Hamburger + Search (left), Title (center), Heart + Cart (right) */}
+        {/* DESKTOP */}
         <div className="flex w-full items-center justify-between md:hidden">
           <div className="flex items-center gap-2">
             <Button
@@ -272,15 +277,6 @@ export function Header() {
               ref={hamburgerRef}
             >
               <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
-            </Button>
-            <Button
-              variant="subtle"
-              component={Link}
-              to="/search"
-              className="p-2"
-              aria-label="Open search"
-            >
-              <Search className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
           </div>
           <Link
@@ -316,7 +312,10 @@ export function Header() {
           </div>
         </div>
 
-        {/* Desktop: Left = icons + title, Center = search, Right = Sign In + Heart + Cart */}
+        {/* 
+          Desktop: Left = icons + title, Center = search,
+          Right = Sign In + Heart + Cart
+        */}
         <div className="hidden w-full items-center justify-between md:flex">
           <div className="flex items-center gap-3">
             
@@ -331,15 +330,6 @@ export function Header() {
                 ref={hamburgerRef}
               >
                 <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
-              </Button>
-              <Button
-                variant="subtle"
-                component={Link}
-                to="/search"
-                className="p-2"
-                aria-label="Open search"
-              >
-                <Search className="h-5 w-5 text-gray-950" strokeWidth={1} />
               </Button>
             </div>
 
