@@ -45,7 +45,7 @@ services:
       - "3001:3001"
       - "5555:5555"
     env_file:
-      - .env.dev
+      - .env
     environment:
       - NODE_ENV=development
       - NODE_PATH=/app/node_modules
@@ -85,7 +85,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - .env.dev
+      - .env
     environment:
       - NODE_ENV=development
       - NODE_PATH=/app/node_modules

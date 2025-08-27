@@ -24,7 +24,6 @@ RUN pnpm install --frozen-lockfile
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN cp .env.dev .env
 
 # Generate Prisma client
 RUN pnpm --filter @repo/db db:generate
@@ -44,8 +43,8 @@ COPY packages/db/package.json ./packages/db/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/ui/package.json ./packages/ui/
 
-# Copy .env.dev file first so it's available for installation
-COPY .env.dev ./
+# Copy .env file so it's available for installation
+COPY .env ./
 
 # Copy Prisma schema
 COPY packages/db/schema.prisma ./packages/db/
@@ -92,8 +91,8 @@ COPY packages/db/package.json ./packages/db/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/ui/package.json ./packages/ui/
 
-# Copy .env.dev file first
-COPY .env.dev ./
+# Copy .env file first
+COPY .env ./
 
 # Copy Prisma schema
 COPY packages/db/schema.prisma ./packages/db/
