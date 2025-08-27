@@ -106,6 +106,7 @@ export function Header() {
     }
   }
 
+  /* Hamburger menu */
   // Only create portal on client after document is available and the drawer has been interacted with
   const portal = (typeof document !== 'undefined' && (drawerOpen || hasOpened)) ? createPortal(
     <>
@@ -125,17 +126,20 @@ export function Header() {
         style={{ willChange: 'transform', zIndex: 99999, overflow: 'visible' }}
       >
         <div className="h-full flex flex-col bg-white">
+
+          {/* Accordion Header */}
           <div className="flex items-center justify-between px-4 pt-4">
             <h2 id="drawer-title" className="text-xl font-teko"></h2>
             <button
               aria-label="Close menu"
               onClick={() => setDrawerOpen(false)}
-              className="p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <X className="h-5 w-5 text-gray-900" />
+                className="p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <X className="h-5 w-5 text-gray-900" />
             </button>
           </div>
 
+          {/* Accordion Search bar */}
           <div className="px-4 pt-4">
             <div className="relative">
               <input
@@ -153,17 +157,20 @@ export function Header() {
             </div>
           </div>
 
+          {/* Accordion Categories  */}
           <div className="px-4 pt-6 overflow-y-auto flex-1 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
             <nav className="pr-2">
               {sections.map((s, idx) => (
-                <div key={s.title} className="font-inco font-light border-b border-gray-100 py-3">
+
+                /* Title */
+                <div key={s.title} className="font-inco font-normal text-sm md:text-xl md:text-base lg:text-xl  uppercase font- border-b border-gray-100 py-3">
                   <div className="flex items-center justify-between">
                     <button
                       className="text-left w-full flex items-center justify-between font-teko text-base"
                       onClick={() => toggleSection(idx)}
                       aria-expanded={openIndex === idx}
                     >
-                      <span className="font-teko text-sm">{s.title}</span>
+                      <span className="font-inco font-normal text-sm md:text-md  uppercase border-b border-gray-100">{s.title}</span>
                       <span className="ml-2">
                         <Plus className={`h-4 w-4 transition-transform ${openIndex === idx ? 'rotate-45' : ''}`} />
                       </span>
@@ -193,6 +200,7 @@ export function Header() {
             </nav>
           </div>
         </div>
+
       </aside>
     </>,
     document.body
