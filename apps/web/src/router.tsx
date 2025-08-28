@@ -9,8 +9,8 @@ const ProductDetailPage = lazy(() => import('./features/products/pages/ProductDe
 const NotFoundPage = lazy(() => import('./features/layout/pages/NotFoundPage'));
 // Uncomment if these pages exist
 // const HomePage = lazy(() => import('./features/layout/pages/HomePage'));
-// const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
-// const RegisterPage = lazy(() => import('./features/auth/pages/RegisterPage'));
+const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
+const RegisterPage = lazy(() => import('./features/auth/pages/RegisterPage'));
 
 const router = createBrowserRouter([
   {
@@ -59,27 +59,26 @@ const router = createBrowserRouter([
           </ErrorBoundary>
         )
       },
-      // Uncomment if Login/Register pages exist
-      // {
-      //   path: 'login',
-      //   element: (
-      //     <ErrorBoundary>
-      //       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
-      //         <LoginPage />
-      //       </Suspense>
-      //     </ErrorBoundary>
-      //   )
-      // },
-      // {
-      //   path: 'register',
-      //   element: (
-      //     <ErrorBoundary>
-      //       <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
-      //         <RegisterPage />
-      //       </Suspense>
-      //     </ErrorBoundary>
-      //   )
-      // },
+      {
+        path: 'login',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+              <LoginPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'register',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+              <RegisterPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
       {
         path: '*',
         element: (

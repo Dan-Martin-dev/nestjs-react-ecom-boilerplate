@@ -263,7 +263,7 @@ export function Header() {
         Mobile: Hamburger + Search (left), 
         Title (center), Heart + Cart (right)
       */}
-  <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
+      <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
 
         {/* MOBILE */}
         <div className="flex w-full items-center justify-between md:hidden relative">
@@ -325,7 +325,7 @@ export function Header() {
             <div className="flex items-center">
               <Button
                 variant="subtle"
-                className="p-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                className="p-2.5 focus:outline-none "
                 aria-label="Open menu"
                 onClick={openDrawer}
                 aria-expanded={drawerOpen}
