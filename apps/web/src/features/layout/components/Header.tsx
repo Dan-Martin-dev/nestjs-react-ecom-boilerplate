@@ -263,14 +263,14 @@ export function Header() {
         Mobile: Hamburger + Search (left), 
         Title (center), Heart + Cart (right)
       */}
-      <div className="container mx-auto flex h-16 items-center px-4">
+  <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
 
-        {/* DESKTOP */}
-        <div className="flex w-full items-center justify-between md:hidden">
-          <div className="flex items-center gap-2">
+        {/* MOBILE */}
+        <div className="flex w-full items-center justify-between md:hidden relative">
+          <div className="flex items-center w-28">
             <Button
               variant="subtle"
-              className="p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+              className="p-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
               aria-label="Open menu"
               onClick={openDrawer}
               aria-expanded={drawerOpen}
@@ -279,18 +279,20 @@ export function Header() {
               <Menu className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
           </div>
+
           <Link
             to="/"
-            className="text-4xl font-teko tracking-widest text-black"
+            className="absolute left-1/2 transform -translate-x-1/2 text-4xl font-teko tracking-widest text-black"
           >
             VARELS
           </Link>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center justify-end gap-2 w-28 pr-1">
             <Button
               variant="subtle"
               component={Link}
               to="/wishlist"
-              className="p-2"
+              className="p-2.5"
               aria-label="Wishlist"
             >
               <Heart className="h-5 w-5 text-gray-950" strokeWidth={1} />
@@ -299,7 +301,7 @@ export function Header() {
               variant="subtle"
               component={Link}
               to="/cart"
-              className="relative p-2"
+              className="relative p-2.5"
               aria-label="Cart"
             >
               <ShoppingCart className="h-5 w-5 text-gray-950" strokeWidth={1} />
@@ -317,13 +319,13 @@ export function Header() {
           Right = Sign In + Heart + Cart
         */}
         <div className="hidden w-full items-center justify-between md:flex">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             
-            {/* Left icon group always visible on md+ */}
-            <div className="flex items-center gap-2 pl-1">
+            {/* Left icon group always visible on md+ (flush to left corner) */}
+            <div className="flex items-center">
               <Button
                 variant="subtle"
-                className="p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                className="p-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
                 aria-label="Open menu"
                 onClick={openDrawer}
                 aria-expanded={drawerOpen}
@@ -336,7 +338,7 @@ export function Header() {
             {/* Small gap between icons and title so they don't touch */}
             <Link
               to="/"
-              className="text-4xl font-teko font-bold tracking-widest text-black ml-2"
+              className="text-4xl font-teko font-bold tracking-widest text-black ml-3"
             >
               VARELS
             </Link>
@@ -354,7 +356,7 @@ export function Header() {
             </form>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button
               variant="filled"
               component={Link}
