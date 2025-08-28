@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, User, Menu, Search, Heart, X, Plus } from "lucide-react";
 import { Button } from "@mantine/core";
 import { useCart } from "../../../hooks/useCart";
+import useAuthStore from '../../../stores/auth.store';
+import { trackEvent } from '../../../lib/analytics';
 import "../../../styles/MovingBar.css"; 
 import { createPortal } from "react-dom";
 
@@ -30,10 +32,19 @@ export function Header() {
     { title: "HELP", items: ["SHIPPING", "RETURNS", "CONTACT"] },
   ];
 
+  const navigate = useNavigate();
+
+  // Auth state from store
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  // user is available via store if needed: useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout);
+
   // Account footer section (rendered separately so it stays at the bottom)
   const accountSection: Section = {
     title: 'ACCOUNT',
-    items: [{ label: 'Sign Up', to: '/signup' }, { label: 'Log In', to: '/login' }],
+    items: isAuthenticated
+      ? [{ label: 'Dashboard', to: '/dashboard' }]
+      : [{ label: 'Sign Up', to: '/register' }, { label: 'Log In', to: '/login' }],
   };
 
   useEffect(() => {
@@ -227,6 +238,35 @@ export function Header() {
                   {typeof it === 'string' ? it : it.label}
                 </Link>
               ))}
+
+              {/* Sign in / Sign out action */}
+              {isAuthenticated ? (
+                <button
+                  onClick={async () => {
+                    // small confirmation before logout
+                    const ok = typeof window !== 'undefined' ? window.confirm('Sign out?') : true;
+                    if (!ok) return;
+                    trackEvent('auth:sign_out', { method: 'drawer' });
+                    await logout();
+                    navigate('/');
+                    setDrawerOpen(false);
+                  }}
+                  className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
+                >
+                  SIGN OUT
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => {
+                    trackEvent('auth:click_sign_in', { location: 'drawer' });
+                    setDrawerOpen(false);
+                  }}
+                  className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
+                >
+                  SIGN IN
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -360,9 +400,10 @@ export function Header() {
             <Button
               variant="filled"
               component={Link}
-              to="/dashboard"
+              to={isAuthenticated ? '/dashboard' : '/login'}
               className="p-2"
               aria-label="Account"
+              onClick={() => trackEvent(isAuthenticated ? 'auth:click_profile' : 'auth:click_login', { location: 'header' })}
             >
               <User className="h-5 w-5 text-gray-950" strokeWidth={1} />
             </Button>
