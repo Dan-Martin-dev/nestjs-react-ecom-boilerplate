@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import { RootLayout } from './features/layout/components/RootLayoutV6';
+import { RootLayout } from './features/layout/pages/RootLayoutV6';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const ProductsPage = lazy(() => import('./features/products/pages/ProductsPage'));
