@@ -76,7 +76,7 @@ const RegisterPage: React.FC = () => {
         <div>
           <button
             type="submit"
-            className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60"
+            className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60 w-full"
             disabled={loading}
           >
             {loading ? 'Creating…' : 'Create account'}
