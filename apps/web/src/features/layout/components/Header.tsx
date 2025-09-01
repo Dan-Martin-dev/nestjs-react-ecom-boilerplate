@@ -44,7 +44,7 @@ export function Header() {
     title: 'ACCOUNT',
     items: isAuthenticated
       ? [{ label: 'Dashboard', to: '/dashboard' }]
-      : [{ label: 'Sign Up', to: '/register' }, { label: 'Log In', to: '/login' }],
+      : [{ label: 'REGISTRARSE', to: '/register' }, { label: 'INICIAR SESION', to: '/login' }],
   };
 
   useEffect(() => {
@@ -212,7 +212,7 @@ export function Header() {
                           const to = typeof it === 'string' ? '#' : it.to;
                           return (
                             <li key={label}>
-                              <Link to={to} className="block py-1">{label}</Link>
+                              <Link to={to} className="block py-1" onClick={() => setDrawerOpen(false)}>{label}</Link>
                             </li>
                           );
                         })}
@@ -234,6 +234,7 @@ export function Header() {
                   key={typeof it === 'string' ? it : it.label}
                   to={typeof it === 'string' ? '#' : it.to}
                   className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
+                  onClick={() => setDrawerOpen(false)}
                 >
                   {typeof it === 'string' ? it : it.label}
                 </Link>
@@ -253,7 +254,7 @@ export function Header() {
                   }}
                   className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
                 >
-                  SIGN OUT
+                  CERRAR SESION
                 </button>
               ) : (
                 <Link
@@ -264,11 +265,11 @@ export function Header() {
                   }}
                   className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
                 >
-                  SIGN IN
                 </Link>
               )}
             </div>
           </div>
+
         </div>
 
       </aside>
