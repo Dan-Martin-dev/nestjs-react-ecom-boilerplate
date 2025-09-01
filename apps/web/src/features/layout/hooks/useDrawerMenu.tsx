@@ -17,7 +17,7 @@ export interface UseDrawerMenuOptions {
   isAuthenticated: boolean;
   onLogout: () => Promise<void>;
   onNavigate: (path: string) => void;
-  onTrackEvent: (event: string, data?: any) => void;
+  onTrackEvent: (event: string, data?: Record<string, unknown>) => void;
 }
 
 export interface UseDrawerMenuReturn {
@@ -27,8 +27,8 @@ export interface UseDrawerMenuReturn {
   hasOpened: boolean;
 
   // Refs
-  panelRef: React.RefObject<HTMLDivElement>;
-  hamburgerRef: React.RefObject<HTMLButtonElement>;
+  panelRef: React.RefObject<HTMLDivElement | null>;
+  hamburgerRef: React.RefObject<HTMLButtonElement | null>;
 
   // Functions
   openDrawer: () => void;
@@ -116,10 +116,14 @@ export function useDrawerMenu({
       setHasOpened(true);
       previouslyFocused.current = document.activeElement;
       setTimeout(() => {
-        // focus first interactive element inside panel
+        // focus first interactive element inside panel, but skip the close button
         const container = panelRef.current;
         const focusable = container?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS);
-        if (focusable && focusable.length > 0) focusable[0].focus();
+        if (focusable && focusable.length > 0) {
+          // Skip the close button (first element) and focus the next element (search input)
+          const targetElement = focusable.length > 1 ? focusable[1] : focusable[0];
+          targetElement.focus();
+        }
       }, 0);
       document.body.style.overflow = "hidden"; // prevent background scroll
       window.addEventListener("keydown", handleKeyDown);
@@ -163,7 +167,7 @@ export function useDrawerMenu({
             <button
               aria-label="Close menu"
               onClick={closeDrawer}
-              className="p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="drawer-close-button p-2 rounded bg-transparent hover:bg-gray-100"
             >
               <X className="h-5 w-5 text-gray-900" />
             </button>
@@ -245,8 +249,8 @@ export function useDrawerMenu({
                 </Link>
               ))}
 
-              {/* Sign in / Sign out action */}
-              {isAuthenticated ? (
+              {/* Sign out action for authenticated users */}
+              {isAuthenticated && (
                 <button
                   onClick={async () => {
                     const ok = typeof window !== 'undefined' ? window.confirm('Sign out?') : true;
@@ -260,17 +264,6 @@ export function useDrawerMenu({
                 >
                   CERRAR SESION
                 </button>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => {
-                    onTrackEvent('auth:click_sign_in', { location: 'drawer' });
-                    closeDrawer();
-                  }}
-                  className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
-                >
-                  INICIAR SESION
-                </Link>
               )}
             </div>
           </div>

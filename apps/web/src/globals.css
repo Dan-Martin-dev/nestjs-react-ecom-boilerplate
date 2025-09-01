@@ -12,3 +12,18 @@
   background-color: #F2F2F2;
 }
 
+/* Drawer close button styles */
+.drawer-close-button {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.drawer-close-button:focus,
+.drawer-close-button:focus-visible,
+.drawer-close-button:active {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
