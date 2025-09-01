@@ -1,0 +1,45 @@
+// src/router.tsx updates - Insert this code to add password reset route and protected routes
+
+// In the imports section:
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import PasswordResetPage from './features/auth/pages/PasswordResetPage';
+
+// Add password reset route to the router array:
+{
+  path: 'password-reset',
+  element: (
+    <ErrorBoundary>
+      <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+        <PasswordResetPage />
+      </Suspense>
+    </ErrorBoundary>
+  )
+},
+
+// Example of how to protect routes:
+{
+  path: 'account',
+  element: (
+    <ErrorBoundary>
+      <ProtectedRoute>
+        <Suspense fallback={<div className="p-8 text-center">Loading account...</div>}>
+          <AccountPage />
+        </Suspense>
+      </ProtectedRoute>
+    </ErrorBoundary>
+  )
+},
+
+// Admin routes with admin requirement:
+{
+  path: 'admin/dashboard',
+  element: (
+    <ErrorBoundary>
+      <ProtectedRoute requireAdmin={true}>
+        <Suspense fallback={<div className="p-8 text-center">Loading admin dashboard...</div>}>
+          <AdminDashboardPage />
+        </Suspense>
+      </ProtectedRoute>
+    </ErrorBoundary>
+  )
+},

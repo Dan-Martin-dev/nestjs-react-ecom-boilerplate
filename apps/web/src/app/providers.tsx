@@ -14,10 +14,24 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   const checkAuth = useAuthStore((state) => state.checkAuth);
-
+  
   // Check authentication on app start
   useEffect(() => {
+    // Try to restore auth state from storage
     checkAuth();
+    
+    // Setup token refresh interval (refreshes token before it expires)
+    const refreshInterval = setInterval(() => {
+      const state = useAuthStore.getState();
+      // Only refresh if authenticated
+      if (state.isAuthenticated && state.token) {
+        state.refreshAuth().catch((error) => {
+          console.error('Token refresh failed:', error);
+        });
+      }
+    }, 14 * 60 * 1000); // Refresh token every 14 minutes (assuming 15 min expiry)
+    
+    return () => clearInterval(refreshInterval);
   }, [checkAuth]);
 
   // Centralized listener for app-level notification events (dispatched by api client)
