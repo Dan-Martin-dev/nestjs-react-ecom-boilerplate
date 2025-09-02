@@ -17,7 +17,7 @@ export interface UseDrawerMenuOptions {
   isAuthenticated: boolean;
   onLogout: () => Promise<void>;
   onNavigate: (path: string) => void;
-  onTrackEvent: (event: string, data?: any) => void;
+  onTrackEvent: (event: string, data?: unknown) => void;
 }
 
 export interface UseDrawerMenuReturn {
@@ -27,8 +27,8 @@ export interface UseDrawerMenuReturn {
   hasOpened: boolean;
 
   // Refs
-  panelRef: React.RefObject<HTMLDivElement>;
-  hamburgerRef: React.RefObject<HTMLButtonElement>;
+  panelRef: React.RefObject<HTMLDivElement | null>;
+  hamburgerRef: React.RefObject<HTMLButtonElement | null>;
 
   // Functions
   openDrawer: () => void;
@@ -62,11 +62,12 @@ export function useDrawerMenu({
     setDrawerOpen(false);
   }, []);
 
+  // stable key handler — it will be added/removed only when drawerOpen changes
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (!drawerOpen) return;
     if (e.key === "Escape") {
       e.preventDefault();
       closeDrawer();
+      return;
     }
     if (e.key === "Tab") {
       // simple focus trap inside panel
@@ -86,25 +87,28 @@ export function useDrawerMenu({
         last.focus();
       }
     }
-  }, [drawerOpen, closeDrawer]);
+  }, [closeDrawer]);
 
   const toggleSection = useCallback((idx: number) => {
-    setOpenIndex(openIndex === idx ? null : idx);
-  }, [openIndex]);
+    setOpenIndex((prev) => (prev === idx ? null : idx));
+  }, []);
 
   const openDrawer = useCallback(() => {
-    if (!hasOpened) {
-      setHasOpened(true);
-      // wait a frame so portal renders with closed state, then open to trigger transition
-      if (typeof requestAnimationFrame !== 'undefined') {
-        requestAnimationFrame(() => setDrawerOpen(true));
-      } else {
-        setTimeout(() => setDrawerOpen(true), 16);
+    setHasOpened((prev) => {
+      if (!prev) {
+        // first time: set hasOpened then open next frame to trigger transitions
+        if (typeof requestAnimationFrame !== 'undefined') {
+          requestAnimationFrame(() => setDrawerOpen(true));
+        } else {
+          setTimeout(() => setDrawerOpen(true), 16);
+        }
+        return true;
       }
-    } else {
+      // already opened before
       setDrawerOpen(true);
-    }
-  }, [hasOpened]);
+      return prev;
+    });
+  }, []);
 
   // Effects
   useEffect(() => {
