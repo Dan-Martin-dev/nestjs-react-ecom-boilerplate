@@ -28,8 +28,8 @@ const LoginPage: React.FC = () => {
   } = useLoginForm();
 
   return (
-    <main className="max-w-md mx-auto py-12 px-4">
-      <h1 className="text-2xl font-bold mb-4">Sign in</h1>
+    <main className="max-w-md mx-auto py-12 px-4 font-tico">
+      <h1 className="text-2xl font-tico font-semibold text-gray-900 mb-4">Sign in</h1>
 
       {loginAttempts > 2 && loginAttempts < 5 && (
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">
@@ -41,12 +41,12 @@ const LoginPage: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block">
-          <span className="text-sm font-medium">Email</span>
+          <span className="text-sm font-tico font-medium text-gray-700">Email</span>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2"
+            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-tico text-sm text-gray-800"
             required
             disabled={isLocked || isSubmitting}
             autoComplete="email"
@@ -55,13 +55,13 @@ const LoginPage: React.FC = () => {
 
         <div className="relative">
           <label className="block">
-            <span className="text-sm font-medium">Password</span>
+            <span className="text-sm font-tico font-medium text-gray-700">Password</span>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10"
+                className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10 font-tico text-sm text-gray-800"
                 required
                 disabled={isLocked || isSubmitting}
                 autoComplete="current-password"
@@ -85,7 +85,7 @@ const LoginPage: React.FC = () => {
           <Switch
             checked={rememberMe}
             onChange={(event) => setRememberMe(event.currentTarget.checked)}
-            label="Remember me"
+            label={<span className="font-tico text-sm text-gray-700">Remember me</span>}
             color="dark"
             size="sm"
           />
@@ -94,7 +94,7 @@ const LoginPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60"
+            className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60 font-tico font-medium"
             disabled={isLocked || isSubmitting}
           >
             {isSubmitting ? (
@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
             )}
           </button>
 
-          <Link to="/password-reset" className="text-sm text-gray-600">
+          <Link to="/password-reset" className="text-sm font-tico text-gray-600">
             Forgot password?
           </Link>
         </div>
@@ -127,11 +127,11 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-3">
+    <div className="mt-6 grid grid-cols-3 gap-3">
           <button
             type="button"
             onClick={() => handleSocialLogin('google')}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+      className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-tico font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
             <IconBrandGoogle size={18} />
             Google
@@ -140,7 +140,7 @@ const LoginPage: React.FC = () => {
           <button
             type="button"
             onClick={() => handleSocialLogin('facebook')}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-tico font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
             <IconBrandFacebook size={18} />
             Facebook
@@ -149,7 +149,7 @@ const LoginPage: React.FC = () => {
           <button
             type="button"
             onClick={() => handleSocialLogin('instagram')}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-tico font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
             <IconBrandInstagram size={18} />
             Instagram
@@ -157,9 +157,9 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
 
-      <p className="mt-6 text-sm text-gray-700">
+      <p className="mt-6 text-sm font-tico text-gray-700">
         Don't have an account?{' '}
-        <Link to="/register" className="text-blue-600 underline">
+        <Link to="/register" className="text-blue-600 font-tico font-medium underline">
           Create one
         </Link>
       </p>
