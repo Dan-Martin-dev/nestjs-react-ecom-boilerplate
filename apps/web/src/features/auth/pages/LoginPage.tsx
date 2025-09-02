@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLoginForm } from '../hooks';
 import { Switch } from '@mantine/core';
 import { EyeIcon, EyeOffIcon, Lock } from 'lucide-react';
-import { IconBrandGoogle, IconBrandGithub } from '@tabler/icons-react';
+import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 
 const LoginPage: React.FC = () => {
   const {
@@ -127,7 +127,7 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-6 grid grid-cols-3 gap-3">
           <button
             type="button"
             onClick={() => handleSocialLogin('google')}
@@ -139,11 +139,20 @@ const LoginPage: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => handleSocialLogin('github')}
+            onClick={() => handleSocialLogin('facebook')}
             className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
           >
-            <IconBrandGithub size={18} />
-            GitHub
+            <IconBrandFacebook size={18} />
+            Facebook
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('instagram')}
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            <IconBrandInstagram size={18} />
+            Instagram
           </button>
         </div>
       </div>

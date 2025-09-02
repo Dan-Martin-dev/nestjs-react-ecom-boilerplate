@@ -93,11 +93,16 @@ enum DiscountType {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String   // Store hashed password
+  password  String?  // Made optional for OAuth users
   name      String?
   role      Role     @default(CUSTOMER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // OAuth fields
+  provider   String?  // 'google', 'facebook', 'instagram'
+  providerId String?  // OAuth provider's user ID
+  picture    String?  // Profile picture URL from OAuth provider
 
   addresses Address[]
   orders    Order[]
@@ -107,6 +112,8 @@ model User {
 
   // DB-backed refresh tokens for secure rotation/revocation
   RefreshToken RefreshToken[]
+
+  @@index([provider, providerId])
 }
 
 model Address {

@@ -22,7 +22,7 @@ interface UseLoginFormReturn {
 
   // Actions
   handleSubmit: (e: React.FormEvent) => Promise<void>;
-  handleSocialLogin: (provider: 'google' | 'github') => void;
+  handleSocialLogin: (provider: 'google' | 'facebook' | 'instagram') => void;
 }
 
 export const useLoginForm = (): UseLoginFormReturn => {
@@ -125,14 +125,10 @@ export const useLoginForm = (): UseLoginFormReturn => {
   };
 
   // Handle social login
-  const handleSocialLogin = (provider: 'google' | 'github') => {
-    // In real implementation, redirect to OAuth provider
-    notifications.show({
-      title: 'Social Login',
-      message: `Redirecting to ${provider} login...`,
-      color: 'blue'
-    });
-    // Redirect would happen here using window.location
+  const handleSocialLogin = (provider: 'google' | 'facebook' | 'instagram') => {
+    // Redirect to backend OAuth endpoint
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5555';
+    window.location.href = `${apiUrl}/auth/${provider}`;
   };
 
   return {

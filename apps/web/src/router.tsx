@@ -11,6 +11,7 @@ const NotFoundPage = lazy(() => import('./features/layout/pages/NotFoundPage'));
 // const HomePage = lazy(() => import('./features/layout/pages/HomePage'));
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./features/auth/pages/RegisterPage'));
+const AuthCallbackPage = lazy(() => import('./features/auth/pages/AuthCallbackPage'));
 
 const router = createBrowserRouter([
   {
@@ -75,6 +76,16 @@ const router = createBrowserRouter([
           <ErrorBoundary>
             <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
               <RegisterPage />
+            </Suspense>
+          </ErrorBoundary>
+        )
+      },
+      {
+        path: 'auth/callback',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+              <AuthCallbackPage />
             </Suspense>
           </ErrorBoundary>
         )

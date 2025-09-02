@@ -96,7 +96,7 @@ export class AuthService {
       where: { email: loginDto.email },
     });
 
-    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
+    if (!user || !user.password || !(await bcrypt.compare(loginDto.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -172,5 +172,78 @@ export class AuthService {
     if (!existing) return { ok: true };
     await (this.prisma as any).refreshToken.update({ where: { id: existing.id }, data: { revoked: true } });
     return { ok: true };
+  }
+
+  // Handle OAuth login/signup
+  async validateOAuthUser(oauthUser: any) {
+    const { provider, providerId, email, firstName, lastName, picture } = oauthUser;
+
+    // Try to find existing user by provider and providerId
+    let user = await this.prisma.user.findFirst({
+      where: {
+        AND: [
+          { provider },
+          { providerId },
+        ],
+      },
+    });
+
+    // If not found by provider, try to find by email (for account linking)
+    if (!user && email) {
+      user = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      // If user exists with same email but different provider, we could handle account linking here
+      // For now, we'll create a new user or update the existing one
+    }
+
+    if (user) {
+      // Update user info from OAuth provider
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          name: firstName && lastName ? `${firstName} ${lastName}` : user.name,
+          picture: picture || user.picture,
+          provider,
+          providerId,
+        },
+      });
+    } else {
+      // Create new user
+      user = await this.prisma.user.create({
+        data: {
+          email: email || `${providerId}@${provider}.local`, // Fallback for providers without email
+          name: firstName && lastName ? `${firstName} ${lastName}` : firstName || `${provider} User`,
+          picture,
+          provider,
+          providerId,
+          password: null, // OAuth users don't have passwords
+        },
+      });
+    }
+
+    // Generate tokens
+    const payload = { sub: user.id, email: user.email, role: user.role };
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRATION_TIME', '3600s'),
+    });
+
+    const refreshToken = await this.createAndStoreRefreshToken(user.id);
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
+        role: user.role,
+        provider: user.provider,
+      },
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
   }
 }
