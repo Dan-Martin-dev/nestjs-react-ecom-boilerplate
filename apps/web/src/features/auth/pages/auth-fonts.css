@@ -1,0 +1,27 @@
+.auth-font-inco, .auth-font-inco * {
+  /* Import Inconsolata locally for auth pages and apply it to all children */
+  @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;400;700;900&display=swap');
+  font-family: 'Inconsolata', monospace !important;
+}
+
+.font-inco {
+  font-family: 'Inconsolata', monospace !important;
+}
+
+/* Local uppercase utility for auth pages */
+.auth-uppercase {
+  text-transform: uppercase !important;
+}
+
+/* Apply uppercase to headings, labels, buttons and links inside the wrapper */
+.auth-uppercase h1,
+.auth-uppercase h2,
+.auth-uppercase h3,
+.auth-uppercase h4,
+.auth-uppercase label,
+.auth-uppercase button,
+.auth-uppercase a,
+.auth-uppercase .text-sm,
+.auth-uppercase .font-inco {
+  text-transform: uppercase !important;
+}

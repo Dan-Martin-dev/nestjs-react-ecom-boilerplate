@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useRegisterForm } from '../hooks';
 import { Progress, Switch } from '@mantine/core';
 import { EyeIcon, EyeOffIcon, UserPlusIcon } from 'lucide-react';
+import './auth-fonts.css';
 
 // Password strength indicators
 const PasswordStrength = {
@@ -49,18 +50,18 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <main className="max-w-md mx-auto py-12 px-4 font-tico">
-      <h1 className="text-2xl font-tico font-semibold text-gray-900 mb-4">Create account</h1>
+    <main className="max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
+      <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4">Create account</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name field */}
         <label className="block">
-          <span className="text-sm font-tico font-medium text-gray-700">Full Name</span>
+          <span className="text-sm font-inco font-medium text-gray-700">Full Name</span>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-tico text-sm text-gray-800 ${
+            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 ${
               errors.name ? 'border-red-500' : ''
             }`}
             disabled={isSubmitting}
@@ -73,12 +74,12 @@ const RegisterPage: React.FC = () => {
 
         {/* Email field */}
         <label className="block">
-          <span className="text-sm font-tico font-medium text-gray-700">Email</span>
+          <span className="text-sm font-inco font-medium text-gray-700">Email</span>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-tico text-sm text-gray-800 ${
+            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 ${
               errors.email ? 'border-red-500' : ''
             }`}
             disabled={isSubmitting}
@@ -92,13 +93,13 @@ const RegisterPage: React.FC = () => {
         {/* Password field with strength indicator */}
         <div className="relative">
           <label className="block">
-            <span className="text-sm font-tico font-medium text-gray-700">Password</span>
+            <span className="text-sm font-inco font-medium text-gray-700">Password</span>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10 font-tico text-sm text-gray-800 ${
+                className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10 font-inco text-sm text-gray-800 ${
                   errors.password ? 'border-red-500' : ''
                 }`}
                 disabled={isSubmitting}
@@ -148,12 +149,12 @@ const RegisterPage: React.FC = () => {
 
         {/* Confirm password field */}
         <label className="block">
-          <span className="text-sm font-tico font-medium text-gray-700">Confirm password</span>
+          <span className="text-sm font-inco font-medium text-gray-700">Confirm password</span>
           <input
             type={showPassword ? "text" : "password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-tico text-sm text-gray-800 ${
+            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 ${
               errors.confirmPassword ? 'border-red-500' : ''
             }`}
             disabled={isSubmitting}
@@ -169,7 +170,7 @@ const RegisterPage: React.FC = () => {
           <Switch
             checked={acceptTerms}
             onChange={(event) => setAcceptTerms(event.currentTarget.checked)}
-            label={<span className="font-tico text-sm text-gray-700">I accept the terms and conditions</span>}
+            label={<span className="font-inco text-sm text-gray-700">I accept the terms and conditions</span>}
             color="dark"
             size="sm"
           />
@@ -181,7 +182,7 @@ const RegisterPage: React.FC = () => {
         <div>
           <button
             type="submit"
-            className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60 w-full font-tico font-medium"
+            className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60 w-full font-inco font-medium"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
@@ -199,9 +200,9 @@ const RegisterPage: React.FC = () => {
         </div>
       </form>
 
-      <p className="mt-6 text-sm font-tico text-gray-700">
+      <p className="mt-6 text-sm font-inco text-gray-700">
         Already have an account?{' '}
-        <Link to="/login" className="text-blue-600 font-tico font-medium underline">
+        <Link to="/login" className="text-blue-600 font-inco font-medium underline">
           Sign in
         </Link>
       </p>
