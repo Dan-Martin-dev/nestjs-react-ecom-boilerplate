@@ -189,8 +189,8 @@ export class AuthService {
   async validateOAuthUser(oauthUser: OAuthUser) {
     const { provider, providerId, email, firstName, lastName, picture } = oauthUser;
 
-    // Try to find existing user by provider and providerId
-    let user = await this.prisma.user.findFirst({
+  // Try to find existing user by provider and providerId
+  let user: any = await this.prisma.user.findFirst({
       where: {
         provider: provider,
         providerId: providerId,
