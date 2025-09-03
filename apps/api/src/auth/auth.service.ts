@@ -189,8 +189,8 @@ export class AuthService {
   async validateOAuthUser(oauthUser: OAuthUser) {
     const { provider, providerId, email, firstName, lastName, picture } = oauthUser;
 
-  // Try to find existing user by provider and providerId
-  let user: any = await this.prisma.user.findFirst({
+    // Try to find existing user by provider and providerId
+    let user: any = await (this.prisma as any).user.findFirst({
       where: {
         provider: provider,
         providerId: providerId,
@@ -210,7 +210,7 @@ export class AuthService {
 
     // If not found by provider, try to find by email (for account linking)
     if (!user && email) {
-      user = await this.prisma.user.findUnique({
+      user = await (this.prisma as any).user.findUnique({
         where: { email },
         select: {
           id: true,
@@ -231,7 +231,7 @@ export class AuthService {
       const name = firstName && lastName ? `${firstName} ${lastName}` : user.name;
       
       // Update user with explicitly defined fields
-      user = await this.prisma.user.update({
+      user = await (this.prisma as any).user.update({
         where: { id: user.id },
         data: {
           name,
@@ -251,7 +251,7 @@ export class AuthService {
       });
     } else {
       // Create new user
-      user = await this.prisma.user.create({
+      user = await (this.prisma as any).user.create({
         data: {
           email: email || `${providerId}@${provider}.local`, // Fallback for providers without email
           name: firstName && lastName ? `${firstName} ${lastName}` : firstName || `${provider} User`,
