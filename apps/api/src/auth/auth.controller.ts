@@ -7,7 +7,12 @@ import { LoginDto, LoginSchema } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { Request, Response } from 'express';
+import { Request as ExpressRequest, Response } from 'express';
+
+// Extend the Express Request interface to include the user property
+interface RequestWithUser extends ExpressRequest {
+  user: any;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -40,7 +45,7 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+  async googleAuthCallback(@Req() req: RequestWithUser, @Res() res: Response) {
     try {
       const result = await this.authService.validateOAuthUser(req.user);
       // Redirect to frontend with tokens
@@ -62,7 +67,7 @@ export class AuthController {
 
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuthCallback(@Req() req: Request, @Res() res: Response) {
+  async facebookAuthCallback(@Req() req: RequestWithUser, @Res() res: Response) {
     try {
       const result = await this.authService.validateOAuthUser(req.user);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -83,7 +88,7 @@ export class AuthController {
 
   @Get('instagram/callback')
   @UseGuards(AuthGuard('instagram'))
-  async instagramAuthCallback(@Req() req: Request, @Res() res: Response) {
+  async instagramAuthCallback(@Req() req: RequestWithUser, @Res() res: Response) {
     try {
       const result = await this.authService.validateOAuthUser(req.user);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';

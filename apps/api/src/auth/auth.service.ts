@@ -12,6 +12,17 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
+import { User, Prisma } from '@repo/db';
+
+// Define interface for OAuth user data structure
+interface OAuthUser {
+  provider: string;
+  providerId: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  picture?: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -175,39 +186,68 @@ export class AuthService {
   }
 
   // Handle OAuth login/signup
-  async validateOAuthUser(oauthUser: any) {
+  async validateOAuthUser(oauthUser: OAuthUser) {
     const { provider, providerId, email, firstName, lastName, picture } = oauthUser;
 
     // Try to find existing user by provider and providerId
     let user = await this.prisma.user.findFirst({
       where: {
-        AND: [
-          { provider },
-          { providerId },
-        ],
+        provider: provider,
+        providerId: providerId,
       },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        password: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        provider: true,
+        providerId: true,
+      }
     });
 
     // If not found by provider, try to find by email (for account linking)
     if (!user && email) {
       user = await this.prisma.user.findUnique({
         where: { email },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          password: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+          provider: true,
+          providerId: true,
+        }
       });
-
-      // If user exists with same email but different provider, we could handle account linking here
-      // For now, we'll create a new user or update the existing one
     }
 
     if (user) {
       // Update user info from OAuth provider
+      const name = firstName && lastName ? `${firstName} ${lastName}` : user.name;
+      
+      // Update user with explicitly defined fields
       user = await this.prisma.user.update({
         where: { id: user.id },
         data: {
-          name: firstName && lastName ? `${firstName} ${lastName}` : user.name,
-          picture: picture || user.picture,
+          name,
           provider,
           providerId,
         },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+          provider: true,
+          providerId: true,
+        }
       });
     } else {
       // Create new user
@@ -215,15 +255,28 @@ export class AuthService {
         data: {
           email: email || `${providerId}@${provider}.local`, // Fallback for providers without email
           name: firstName && lastName ? `${firstName} ${lastName}` : firstName || `${provider} User`,
-          picture,
           provider,
           providerId,
-          password: null, // OAuth users don't have passwords
+          password: '', // OAuth users use empty string password instead of null
         },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+          provider: true,
+          providerId: true,
+        }
       });
     }
 
     // Generate tokens
+    if (!user) {
+      throw new InternalServerErrorException('Failed to create or update user');
+    }
+
     const payload = { sub: user.id, email: user.email, role: user.role };
 
     const accessToken = await this.jwtService.signAsync(payload, {
@@ -233,14 +286,15 @@ export class AuthService {
 
     const refreshToken = await this.createAndStoreRefreshToken(user.id);
 
+    // Return only the fields we know are present
     return {
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
-        picture: user.picture,
         role: user.role,
         provider: user.provider,
+        providerId: user.providerId,
       },
       access_token: accessToken,
       refresh_token: refreshToken,

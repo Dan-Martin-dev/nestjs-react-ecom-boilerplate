@@ -14,10 +14,18 @@
   "devDependencies": {
     "@tanstack/router-cli": "^1.130.15",
     "@types/node": "^22.10.7",
+    "@types/passport-facebook": "^3.0.3",
+    "@types/passport-google-oauth20": "^2.0.16",
+    "@types/passport-instagram": "^1.0.5",
     "dotenv-cli": "^8.0.0",
     "prettier": "^3.2.5",
     "turbo": "^2.5.5",
     "typescript": "^5.4.5"
   },
-  "packageManager": "pnpm@9.1.4"
+  "packageManager": "pnpm@9.1.4",
+  "dependencies": {
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-instagram": "^1.0.0"
+  }
 }

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useRegisterForm } from '../hooks';
 import { Progress, Switch } from '@mantine/core';
 import { EyeIcon, EyeOffIcon, UserPlusIcon } from 'lucide-react';
-import './auth-fonts.css';
+import '../styles/auth-fonts.css';
+
 
 // Password strength indicators
 const PasswordStrength = {

@@ -4,7 +4,7 @@ import { useLoginForm } from '../hooks';
 import { Switch } from '@mantine/core';
 import { EyeIcon, EyeOffIcon, Lock } from 'lucide-react';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
-import './auth-fonts.css';
+import '../styles/auth-fonts.css';
 
 const LoginPage: React.FC = () => {
   const {
