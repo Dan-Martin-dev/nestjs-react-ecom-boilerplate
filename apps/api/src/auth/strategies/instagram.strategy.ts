@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-instagram';
+const InstagramPassportStrategy = require('passport-instagram').Strategy;
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class InstagramStrategy extends PassportStrategy(Strategy, 'instagram') {
+export class InstagramStrategy extends PassportStrategy(InstagramPassportStrategy, 'instagram') {
   constructor(private configService: ConfigService) {
     super({
       clientID: configService.get<string>('INSTAGRAM_CLIENT_ID') || '',
