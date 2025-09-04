@@ -1,11 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-const InstagramPassportStrategy = require('passport-instagram').Strategy;
 import { ConfigService } from '@nestjs/config';
 
+let InstagramPassportStrategy: any = null;
+try {
+  InstagramPassportStrategy = require('passport-instagram').Strategy;
+} catch (e) {
+  // optional dependency may be missing in some deploys
+}
+
+const InstagramBase: any = InstagramPassportStrategy ? PassportStrategy(InstagramPassportStrategy, 'instagram') : class {};
+
 @Injectable()
-export class InstagramStrategy extends PassportStrategy(InstagramPassportStrategy, 'instagram') {
+export class InstagramStrategy extends InstagramBase {
   constructor(private configService: ConfigService) {
+    if (!InstagramPassportStrategy) {
+      console.warn('passport-instagram not installed — Instagram OAuth disabled');
+      super();
+      return;
+    }
+
     super({
       clientID: configService.get<string>('INSTAGRAM_CLIENT_ID') || '',
       clientSecret: configService.get<string>('INSTAGRAM_CLIENT_SECRET') || '',
@@ -19,6 +33,8 @@ export class InstagramStrategy extends PassportStrategy(InstagramPassportStrateg
     profile: any,
     done: (error: any, user?: any) => void,
   ): Promise<any> {
+    if (!InstagramPassportStrategy) return done(null, null);
+
     const { id, displayName, username, photos } = profile;
 
     const user = {

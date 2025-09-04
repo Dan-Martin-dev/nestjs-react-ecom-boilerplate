@@ -1,11 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-const FacebookPassportStrategy = require('passport-facebook').Strategy;
 import { ConfigService } from '@nestjs/config';
 
+let FacebookPassportStrategy: any = null;
+try {
+  FacebookPassportStrategy = require('passport-facebook').Strategy;
+} catch (e) {
+  // optional dependency may be missing in some deploys
+}
+
+const FacebookBase: any = FacebookPassportStrategy ? PassportStrategy(FacebookPassportStrategy, 'facebook') : class {};
+
 @Injectable()
-export class FacebookStrategy extends PassportStrategy(FacebookPassportStrategy, 'facebook') {
+export class FacebookStrategy extends FacebookBase {
   constructor(private configService: ConfigService) {
+    if (!FacebookPassportStrategy) {
+      console.warn('passport-facebook not installed — Facebook OAuth disabled');
+      super();
+      return;
+    }
+
     super({
       clientID: configService.get<string>('FACEBOOK_APP_ID') || '',
       clientSecret: configService.get<string>('FACEBOOK_APP_SECRET') || '',
@@ -21,6 +35,8 @@ export class FacebookStrategy extends PassportStrategy(FacebookPassportStrategy,
     profile: any,
     done: (error: any, user?: any) => void,
   ): Promise<any> {
+    if (!FacebookPassportStrategy) return done(null, null);
+
     const { id, displayName, emails, photos, name } = profile;
 
     const user = {
