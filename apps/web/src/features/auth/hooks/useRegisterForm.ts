@@ -39,6 +39,7 @@ interface UseRegisterFormReturn {
   // Actions
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   validateForm: () => boolean;
+  handleSocialLogin: (provider: 'google' | 'facebook' | 'instagram') => void;
 }
 
 export const useRegisterForm = (): UseRegisterFormReturn => {
@@ -172,6 +173,13 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
     }
   };
 
+  // Handle social login (redirect to backend OAuth endpoint)
+  const handleSocialLogin = (provider: 'google' | 'facebook' | 'instagram') => {
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5555';
+    // backend route expects /auth/:provider
+    window.location.href = `${apiUrl}/auth/${provider}`;
+  };
+
   return {
     // Form state
     name,
@@ -197,6 +205,7 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
 
     // Actions
     handleSubmit,
+    handleSocialLogin,
     validateForm,
   };
 };

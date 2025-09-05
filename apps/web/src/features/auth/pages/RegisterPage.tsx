@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useRegisterForm } from '../hooks';
 import { Progress, Switch } from '@mantine/core';
 import { EyeIcon, EyeOffIcon, UserPlusIcon } from 'lucide-react';
+import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import '../styles/auth-fonts.css';
 
 
@@ -40,6 +41,7 @@ const RegisterPage: React.FC = () => {
 
     // Actions
     handleSubmit,
+  handleSocialLogin,
   } = useRegisterForm();
 
   // Password strength progress color
@@ -200,6 +202,47 @@ const RegisterPage: React.FC = () => {
           </button>
         </div>
       </form>
+
+      {/* Social login options (same as login page) */}
+      <div className="mt-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('google')}
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-inco font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            <IconBrandGoogle size={18} />
+            Google
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('facebook')}
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-inco font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            <IconBrandFacebook size={18} />
+            Facebook
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('instagram')}
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-inco font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            <IconBrandInstagram size={18} />
+            Instagram
+          </button>
+        </div>
+      </div>
 
       <p className="mt-6 text-sm font-inco text-gray-700">
         Already have an account?{' '}
