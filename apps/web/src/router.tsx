@@ -15,6 +15,8 @@ const RegisterPage = lazy(() => import('./features/auth/pages/RegisterPage'));
 const AuthCallbackPage = lazy(() => import('./features/auth/pages/AuthCallbackPage'));
 
 const router = createBrowserRouter([
+
+  // main route
   {
     path: '/',
     element: <RootLayout />,
