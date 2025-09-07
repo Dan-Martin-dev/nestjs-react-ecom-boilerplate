@@ -30,7 +30,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <main className="max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
-      <h1 className="text-2xl font-tico font-semibold text-gray-900 mb-4">Sign in</h1>
+  <h1 className="text-2xl font-tico font-semibold text-gray-900 mb-4 text-center md:text-left">Sign in</h1>
 
       {loginAttempts > 2 && loginAttempts < 5 && (
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">

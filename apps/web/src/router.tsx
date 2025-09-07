@@ -16,7 +16,7 @@ const AuthCallbackPage = lazy(() => import('./features/auth/pages/AuthCallbackPa
 
 const router = createBrowserRouter([
 
-  // main route
+  // main routes with RootLayout (header/footer)
   {
     path: '/',
     element: <RootLayout />,

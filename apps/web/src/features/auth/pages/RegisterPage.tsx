@@ -54,7 +54,7 @@ const RegisterPage: React.FC = () => {
 
   return (
     <main className="max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
-      <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4">Create account</h1>
+  <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left">Create account</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name field */}
