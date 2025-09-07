@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { RootLayout } from './features/layout/pages/RootLayoutV6';
+import AuthLayout from './features/layout/pages/AuthLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const ProductsPage = lazy(() => import('./features/products/pages/ProductsPage'));
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
     children: [
       // Uncomment if HomePage exists
       // { path: '', element: <Suspense fallback={<div>Loading...</div>}><HomePage /></Suspense> },
+      
       { 
         path: '', 
         element: (
@@ -30,6 +32,7 @@ const router = createBrowserRouter([
           </ErrorBoundary>
         )
       },
+
       {
         path: 'products',
         element: (
@@ -40,6 +43,7 @@ const router = createBrowserRouter([
           </ErrorBoundary>
         )
       },
+
       {
         path: 'products/:productId',
         element: (
@@ -50,6 +54,7 @@ const router = createBrowserRouter([
           </ErrorBoundary>
         )
       },
+
       {
         path: 'cart',
         element: (
@@ -60,6 +65,18 @@ const router = createBrowserRouter([
           </ErrorBoundary>
         )
       },
+
+  // auth routes intentionally handled by a separate top-level route so
+  // RootLayout (header/footer) does not render for auth pages.
+      
+    ],
+  },
+
+  // Top-level auth routes (render without RootLayout header/footer)
+  {
+    path: '/auth',
+    element: <AuthLayout />,
+    children: [
       {
         path: 'login',
         element: (
@@ -68,7 +85,7 @@ const router = createBrowserRouter([
               <LoginPage />
             </Suspense>
           </ErrorBoundary>
-        )
+        ),
       },
       {
         path: 'register',
@@ -78,30 +95,33 @@ const router = createBrowserRouter([
               <RegisterPage />
             </Suspense>
           </ErrorBoundary>
-        )
+        ),
       },
       {
-        path: 'auth/callback',
+        path: 'callback',
         element: (
           <ErrorBoundary>
             <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
               <AuthCallbackPage />
             </Suspense>
           </ErrorBoundary>
-        )
-      },
-      {
-        path: '*',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
-              <NotFoundPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
+        ),
       },
     ],
   },
+
+  // Global not-found catch-all (top-level) so it doesn't shadow other top-level routes
+  {
+    path: '*',
+    element: (
+      <ErrorBoundary>
+        <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+          <NotFoundPage />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  },
+
 ]);
 
 export { router };

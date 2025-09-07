@@ -244,9 +244,9 @@ const RegisterPage: React.FC = () => {
         </div>
       </div>
 
-      <p className="mt-6 text-sm font-inco text-gray-700">
+        <p className="mt-6 text-sm font-inco text-gray-700">
         Already have an account?{' '}
-        <Link to="/login" className="text-blue-600 font-inco font-medium underline">
+        <Link to="/auth/login" className="text-blue-600 font-inco font-medium underline">
           Sign in
         </Link>
       </p>

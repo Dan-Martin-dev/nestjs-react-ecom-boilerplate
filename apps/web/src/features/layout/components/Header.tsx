@@ -39,7 +39,7 @@ export function Header() {
     title: 'ACCOUNT',
     items: isAuthenticated
       ? [{ label: 'Dashboard', to: '/dashboard' }]
-      : [{ label: 'REGISTRARSE', to: '/register' }, { label: 'INICIAR SESION', to: '/login' }],
+      : [{ label: 'REGISTRARSE', to: '/auth/register' }, { label: 'INICIAR SESION', to: '/auth/login' }],
   };
 
   // Use the custom drawer menu hook
@@ -176,7 +176,7 @@ export function Header() {
             <Button
               variant="filled"
               component={Link}
-              to={isAuthenticated ? '/dashboard' : '/login'}
+              to={isAuthenticated ? '/dashboard' : '/auth/login'}
               className="p-2"
               aria-label="Account"
               onClick={() => trackEvent(isAuthenticated ? 'auth:click_profile' : 'auth:click_login', { location: 'header' })}

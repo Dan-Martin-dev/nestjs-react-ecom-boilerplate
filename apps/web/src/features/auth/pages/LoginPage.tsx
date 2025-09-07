@@ -160,7 +160,7 @@ const LoginPage: React.FC = () => {
 
       <p className="mt-6 text-sm font-inco text-gray-700">
         Don't have an account?{' '}
-        <Link to="/register" className="text-blue-600 font-inco font-medium underline">
+        <Link to="/auth/register" className="text-blue-600 font-inco font-medium underline">
           Create one
         </Link>
       </p>

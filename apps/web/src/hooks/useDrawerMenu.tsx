@@ -266,7 +266,7 @@ export function useDrawerMenu({
                 </button>
               ) : (
                 <Link
-                  to="/login"
+                  to="/auth/login"
                   onClick={() => {
                     onTrackEvent('auth:click_sign_in', { location: 'drawer' });
                     closeDrawer();
