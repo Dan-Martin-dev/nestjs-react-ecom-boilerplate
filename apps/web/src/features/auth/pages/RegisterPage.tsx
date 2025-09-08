@@ -2,9 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRegisterForm } from '../hooks';
 import { Progress, Switch } from '@mantine/core';
-import { EyeIcon, EyeOffIcon, UserPlusIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, UserPlusIcon, ChevronLeft } from 'lucide-react';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import '../styles/auth-fonts.css';
+import useAuthNavigation from '../hooks/useAuthNavigation';
 
 
 // Password strength indicators
@@ -52,9 +53,21 @@ const RegisterPage: React.FC = () => {
     return 'green';
   };
 
+  const { goBack } = useAuthNavigation();
+
   return (
-    <main className="max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
-  <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left">Create account</h1>
+    <main className="relative max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
+      <button
+        type="button"
+        onClick={goBack}
+        aria-label="Go back to homepage"
+        className="fixed left-3 top-3 z-50 flex items-center gap-2 p-2 md:p-3 rounded-md text-gray-700 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500"
+      >
+        <ChevronLeft className="h-5 w-5" />
+        <span className="text-sm font-inco">Back</span>
+      </button>
+
+      <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left">Create account</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name field */}
