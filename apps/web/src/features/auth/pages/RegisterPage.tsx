@@ -57,15 +57,7 @@ const RegisterPage: React.FC = () => {
 
   return (
     <main className="relative max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
-      <button
-        type="button"
-        onClick={goBack}
-        aria-label="Go back to homepage"
-        className="fixed left-3 top-3 z-50 flex items-center gap-2 p-2 md:p-3 rounded-md text-gray-700 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500"
-      >
-        <ChevronLeft className="h-5 w-5" />
-        <span className="text-sm font-inco">Back</span>
-      </button>
+  {/* Back button moved below the bottom auth link (see wrapper near the end of the file) */}
 
       <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left">Create account</h1>
 
@@ -257,12 +249,37 @@ const RegisterPage: React.FC = () => {
         </div>
       </div>
 
-        <p className="mt-6 text-sm font-inco text-gray-700">
-        Already have an account?{' '}
-        <Link to="/auth/login" className="text-blue-600 font-inco font-medium underline">
-          Sign in
-        </Link>
-      </p>
+      <div className="mt-6 text-sm font-inco text-gray-700 relative">
+        <div className="flex items-center justify-between">
+          <span>Already have an account?</span>
+          <Link to="/auth/login" className="text-blue-600 font-inco font-medium underline mr-6">
+            Sign in
+          </Link>
+        </div>
+
+        {/* small screens (< md): absolute button 30px below the link */}
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label="Back to homepage"
+          className="absolute right-6 flex items-center gap-2 text-gray-700 md:hidden"
+          style={{ top: 'calc(100% + 30px)' }}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span className="text-sm font-inco">Back</span>
+        </button>
+
+        {/* md+: fixed top-left, hidden on small screens */}
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label="Back to homepage"
+          className="hidden md:flex fixed left-3 top-3 z-50 items-center gap-2 p-2 md:p-3 rounded-md text-gray-700 hover:bg-white/5 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500"
+        >
+          <ChevronLeft className="h-5 w-5" />
+          <span className="text-sm font-inco">Back</span>
+        </button>
+      </div>
     </main>
   );
 };
