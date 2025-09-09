@@ -1,8 +1,8 @@
-// monorepo-ecom/backend/src/products/products.service.ts
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto } from '../common/validators';
 import { ProductFilterDto } from './dto/product-filter.dto';
+import { ProductDtoSchema } from '@repo/shared/src/schemas/product';
 
 @Injectable()
 export class ProductsService {
@@ -277,6 +277,67 @@ export class ProductsService {
         deletedAt: new Date(),
         isActive: false,
       },
+    });
+  }
+  
+  async getBestsellers(limit = 10) {
+    // In a real app, this would be based on sales data
+    // For now, we'll just return the most recently added products
+    const products = await this.prisma.product.findMany({
+      take: limit,
+      where: {
+        isActive: true,
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        images: true,
+        variants: {
+          take: 1,
+        },
+        _count: {
+          select: {
+            reviews: true,
+          },
+        },
+      },
+    });
+
+    // Map the database entities to DTOs
+    return products.map(product => {
+      // Map to DTO structure
+      const productDto = {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        description: product.description || undefined,
+        price: product.price,
+        isActive: product.isActive,
+        metaTitle: product.metaTitle || undefined,
+        metaDescription: product.metaDescription || undefined,
+        images: product.images.map((img: any) => ({
+          id: img.id,
+          url: img.url,
+          altText: img.altText || undefined,
+          isDefault: img.isDefault,
+        })),
+        // For validation, convert any to proper type
+        variants: product.variants.map((variant: any) => ({
+          id: variant.id,
+          name: variant.name,
+          sku: variant.sku,
+          price: variant.price,
+          stockQuantity: variant.stockQuantity
+        })),
+        _count: product._count,
+        createdAt: product.createdAt.toISOString(),
+        updatedAt: product.updatedAt.toISOString(),
+      };
+
+      // Validate with Zod schema
+      return ProductDtoSchema.parse(productDto);
     });
   }
 }

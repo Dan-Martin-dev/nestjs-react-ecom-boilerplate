@@ -4,62 +4,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../auth/styles/auth-fonts.css';
-
-// -------------------------
-// Types
-// -------------------------
-type Product = {
-  id: string;
-  title: string;
-  href: string;
-  img: string;
-  alt?: string;
-  price?: string;
-  badge?: string;
-};
-
-// -------------------------
-// Sample product data (placeholder)
-// Replace with real product data when wiring to API
-// -------------------------
-const SAMPLE_PRODUCTS: Product[] = [
-  {
-    id: '1009-black',
-  title: '1009 HEAVYWEIGHT T-SHIRT',
-    href: '/products/heavyweight-t-shirt-black',
-    img: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_01_2.jpg?v=1726516822&width=360',
-    alt: 'WHITE',
-    price: '$35',
-    badge: 'BUY 3 - SAVE 10%',
-  },
-  {
-    id: '1009-white',
-  title: '1009 HEAVYWEIGHT T-SHIRT',
-    href: '/products/heavyweight-t-shirt-white',
-    img: 'https://www.houseofblanks.com/cdn/shop/files/MidweightTshirt_White_01.jpg?v=1726669963&width=360',
-    alt: 'WHITE',
-    price: '$35',
-    badge: 'BUY 3 - SAVE 10%',
-  },
-  {
-    id: '1008-white',
-  title: '1008 MIDWEIGHT T-SHIRT',
-    href: '/products/midweight-t-shirt-white',
-    img: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_HeatherGrey_01_2.jpg?v=1726511909&width=360',
-    alt: 'HEATHER GREY',
-    price: '$30',
-    badge: 'BUY 3 - SAVE 10%',
-  },
-  {
-    id: '1009-grey',
-  title: '1009 HEAVYWEIGHT T-SHIRT',
-    href: '/products/heavyweight-t-shirt-heather-grey',
-    img: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_02_1.jpg?v=1726516823&width=360',
-    alt: 'WHITE',
-    price: '$35',
-    badge: 'BUY 3 - SAVE 10%',
-  },
-];
+import { SAMPLE_UI_PRODUCTS } from '../utils/productMapper';
+import type { UiProduct } from '../utils/productMapper';
 
 const BestsellersPage: React.FC = () => {
   return (
@@ -75,7 +21,7 @@ const BestsellersPage: React.FC = () => {
       {/* Product grid */}
       {/* ------------------------- */}
       <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-        {SAMPLE_PRODUCTS.map((p) => (
+  {SAMPLE_UI_PRODUCTS.map((p: UiProduct) => (
 
           /* ------------------------- */
           /* Single product */

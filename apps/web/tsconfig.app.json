@@ -24,8 +24,8 @@
     "noUncheckedSideEffectImports": true
     ,"baseUrl": ".",
     "paths": {
-      "@repo/shared": ["../../packages/shared/dist"],
-      "@repo/shared/*": ["../../packages/shared/dist/*"]
+      "@repo/shared": ["../../packages/db/shared/dist"],
+      "@repo/shared/*": ["../../packages/db/shared/dist/*"]
     }
   },
   "include": ["src"]

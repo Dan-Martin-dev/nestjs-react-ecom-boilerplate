@@ -1,4 +1,3 @@
-// monorepo-ecom/backend/src/products/products.controller.ts
 import { 
   Controller, 
   Get, 
@@ -17,7 +16,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@repo/db';
-import { CreateProductDto, CreateProductSchema } from './dto/create-product.dto';
+// Import shared schemas
+import { CreateProductSchema } from '@repo/shared/src/schemas/product';
+import { CreateProductDto } from '../common/validators';
 import { ProductFilterDto, ProductFilterSchema } from './dto/product-filter.dto';
 
 @Controller('products')
@@ -36,6 +37,11 @@ export class ProductsController {
   @UsePipes(new ZodValidationPipe(ProductFilterSchema))
   findAll(@Query() filterDto: ProductFilterDto): Promise<{ data: import('@repo/db').Product[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
     return this.productsService.findAll(filterDto);
+  }
+
+  @Get('bestsellers')
+  getBestsellers(@Query('limit') limit = '10') {
+    return this.productsService.getBestsellers(parseInt(limit, 10));
   }
 
   @Get(':id')
