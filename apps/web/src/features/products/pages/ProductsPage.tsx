@@ -60,7 +60,7 @@ const ProductsPage = () => {
           <div className="h-8 w-48 bg-muted animate-pulse rounded mb-2"></div>
           <div className="h-4 w-96 bg-muted animate-pulse rounded mb-6"></div>
           <div className="flex gap-2 mb-6">
-            <div className="h-10 w-32 bg-muted animate-pulse rounded"></div>
+            <div className="h-10 w-32 bg-muted animate-pulse rounded">asd</div>
             <div className="h-10 w-32 bg-muted animate-pulse rounded"></div>
             <div className="h-10 w-32 bg-muted animate-pulse rounded"></div>
           </div>

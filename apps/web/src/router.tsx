@@ -2,7 +2,10 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { RootLayout } from './features/layout/pages/RootLayoutV6';
 import AuthLayout from './features/layout/pages/AuthLayout';
+import ProductsLayout from './features/layout/pages/ProductsLayout';
+import CartLayout from './features/layout/pages/CartLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import Loadable from './utils/Loadable';
 
 const ProductsPage = lazy(() => import('./features/products/pages/ProductsPage'));
 const CartPage = lazy(() => import('./features/cart/pages/CartPage'));
@@ -14,58 +17,62 @@ const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./features/auth/pages/RegisterPage'));
 const AuthCallbackPage = lazy(() => import('./features/auth/pages/AuthCallbackPage'));
 
+
 const router = createBrowserRouter([
 
-  // main routes with RootLayout (header/footer)
+  // RootLayout (header/footer)
   {
     path: '/',
     element: <RootLayout />,
     children: [
-      // Uncomment if HomePage exists
-      // { path: '', element: <Suspense fallback={<div>Loading...</div>}><HomePage /></Suspense> },
-      
-      { 
-        path: '', 
+      // Index route -> home (products listing)
+      {
+        index: true,
         element: (
-          <ErrorBoundary>
-            <Suspense fallback={<div className="p-8 text-center">Loading products...</div>}>
-              <ProductsPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
+          <Loadable>
+            <ProductsPage />
+          </Loadable>
+        ),
       },
 
+      // Product routes grouped under ProductsLayout for future filters/sidebars
       {
         path: 'products',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<div className="p-8 text-center">Loading products...</div>}>
-              <ProductsPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
+        element: <ProductsLayout />,
+        children: [
+          {
+            index: true,
+            element: (
+              <Loadable>
+                <ProductsPage />
+              </Loadable>
+            )
+          },
+          {
+            path: ':productId',
+            element: (
+              <Loadable fallback={<div className="p-8 text-center">Loading product details...</div>}>
+                <ProductDetailPage />
+              </Loadable>
+            )
+          }
+        ]
       },
 
-      {
-        path: 'products/:productId',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<div className="p-8 text-center">Loading product details...</div>}>
-              <ProductDetailPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
-      },
-
+      // Cart/checkout grouped under CartLayout
       {
         path: 'cart',
-        element: (
-          <ErrorBoundary>
-            <Suspense fallback={<div className="p-8 text-center">Loading cart...</div>}>
-              <CartPage />
-            </Suspense>
-          </ErrorBoundary>
-        )
+        element: <CartLayout />,
+        children: [
+          {
+            index: true,
+            element: (
+              <Loadable fallback={<div className="p-8 text-center">Loading cart...</div>}>
+                <CartPage />
+              </Loadable>
+            )
+          }
+        ]
       },
 
   // auth routes intentionally handled by a separate top-level route so
