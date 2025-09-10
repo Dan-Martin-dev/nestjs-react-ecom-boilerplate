@@ -3,7 +3,7 @@ import { Prisma } from '@repo/db';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from '../common/validators';
 import { ProductFilterDto } from './dto/product-filter.dto';
-import { ProductDtoSchema } from '@repo/shared/src/schemas/product';
+import { ProductDtoSchema } from '@repo/shared';
 
 @Injectable()
 export class ProductsService {

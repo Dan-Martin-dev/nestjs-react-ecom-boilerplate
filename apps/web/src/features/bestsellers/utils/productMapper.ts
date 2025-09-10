@@ -1,7 +1,7 @@
 // Mapper between shared backend Product shape and the UI product shape.
 // Place mapping logic here (data layer) so components stay simple and focused.
 
-import type { Product as SharedProduct } from '@repo/shared/src/types/product';
+import type { Product as SharedProduct } from '@repo/shared';
 
 export type UiProduct = {
   id: string;
