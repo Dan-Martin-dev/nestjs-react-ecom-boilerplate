@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@repo/db';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from '../common/validators';
 import { ProductFilterDto } from './dto/product-filter.dto';
@@ -280,34 +281,85 @@ export class ProductsService {
     });
   }
   
-  async getBestsellers(limit = 10) {
-    // In a real app, this would be based on sales data
-    // For now, we'll just return the most recently added products
-    const products = await this.prisma.product.findMany({
-      take: limit,
+  // Simple in-memory TTL cache for bestsellers. In production use Redis or another distributed cache.
+  private static _bestsellersCache: Map<string, { ts: number; data: any[] }> = new Map();
+  private static _BestsellersCacheTTL = 1000 * 60 * 10; // 10 minutes
+
+  async getBestsellers(limit = 10, daysWindow?: number) {
+    const cacheKey = `bestsellers:limit=${limit}:days=${daysWindow ?? 'all'}`;
+
+    // Return from cache if fresh
+    const cached = ProductsService._bestsellersCache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < ProductsService._BestsellersCacheTTL) {
+      return cached.data;
+    }
+
+    // Build order filter: only count completed/confirmed orders
+    const orderWhere: any = {
+      status: { in: ['SHIPPED', 'DELIVERED'] },
+    };
+    if (daysWindow && Number.isFinite(daysWindow)) {
+      orderWhere.createdAt = { gte: new Date(Date.now() - daysWindow * 24 * 60 * 60 * 1000) };
+    }
+
+    // Aggregate order items by productVariantId and sum quantities.
+    // The schema stores productVariantId on OrderItem, so we group by that and then roll up to product totals.
+    const groups = await this.prisma.orderItem.groupBy({
+      by: [Prisma.OrderItemScalarFieldEnum.productVariantId],
       where: {
-        isActive: true,
-        deletedAt: null,
+        order: orderWhere,
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      _sum: { quantity: true },
+      orderBy: { _sum: { quantity: 'desc' } },
+      take: limit * 5, // fetch more variants to account for multiple variants per product
+    });
+
+    const variantIds = groups.map(g => g.productVariantId).filter(Boolean) as string[];
+    if (variantIds.length === 0) {
+      ProductsService._bestsellersCache.set(cacheKey, { ts: Date.now(), data: [] });
+      return [];
+    }
+
+    // Fetch variants to resolve productId for each variant
+    const variants = await this.prisma.productVariant.findMany({
+      where: { id: { in: variantIds } },
+      include: { product: true },
+    });
+
+    // Roll up variant totals into product totals
+    const productTotals = new Map<string, number>();
+    for (const g of groups) {
+      const vid = g.productVariantId as string | null;
+      const qty = (g._sum?.quantity ?? 0) as number;
+      if (!vid) continue;
+      const variant = variants.find(v => v.id === vid);
+      const pid = variant?.productId;
+      if (!pid) continue;
+      productTotals.set(pid, (productTotals.get(pid) ?? 0) + qty);
+    }
+
+    // Sort products by total quantity desc and take top `limit`
+    const sortedProductIds = Array.from(productTotals.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([pid]) => pid);
+
+    // Fetch product details preserving includes
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: sortedProductIds }, isActive: true, deletedAt: null },
       include: {
         images: true,
-        variants: {
-          take: 1,
-        },
-        _count: {
-          select: {
-            reviews: true,
-          },
-        },
+        variants: { take: 1 },
+        _count: { select: { reviews: true } },
       },
     });
 
-    // Map the database entities to DTOs
-    return products.map(product => {
-      // Map to DTO structure
+    // Map products by id to preserve aggregate ordering
+    const productsMap = new Map(products.map(p => [p.id, p]));
+    const ordered = sortedProductIds.map(id => productsMap.get(id)).filter(Boolean) as any[];
+
+    // Map to DTOs and validate using Zod
+    const dtos = ordered.map(product => {
       const productDto = {
         id: product.id,
         name: product.name,
@@ -317,27 +369,18 @@ export class ProductsService {
         isActive: product.isActive,
         metaTitle: product.metaTitle || undefined,
         metaDescription: product.metaDescription || undefined,
-        images: product.images.map((img: any) => ({
-          id: img.id,
-          url: img.url,
-          altText: img.altText || undefined,
-          isDefault: img.isDefault,
-        })),
-        // For validation, convert any to proper type
-        variants: product.variants.map((variant: any) => ({
-          id: variant.id,
-          name: variant.name,
-          sku: variant.sku,
-          price: variant.price,
-          stockQuantity: variant.stockQuantity
-        })),
+        images: product.images.map((img: any) => ({ id: img.id, url: img.url, altText: img.altText || undefined, isDefault: img.isDefault })),
+        variants: (product.variants || []).map((v: any) => ({ id: v.id, name: v.name, sku: v.sku, price: v.price, stockQuantity: v.stockQuantity })),
         _count: product._count,
-        createdAt: product.createdAt.toISOString(),
-        updatedAt: product.updatedAt.toISOString(),
+        createdAt: product.createdAt?.toISOString?.(),
+        updatedAt: product.updatedAt?.toISOString?.(),
       };
-
-      // Validate with Zod schema
       return ProductDtoSchema.parse(productDto);
     });
+
+    // Cache result
+    ProductsService._bestsellersCache.set(cacheKey, { ts: Date.now(), data: dtos });
+
+    return dtos;
   }
 }

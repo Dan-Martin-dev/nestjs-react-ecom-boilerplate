@@ -10,6 +10,24 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Prevent the browser from restoring scroll position on navigation/reload
+      try {
+        if ('scrollRestoration' in history) {
+          history.scrollRestoration = 'manual';
+        }
+      } catch (e) {
+        // ignore in restrictive environments
+      }
+
+      // Ensure we start at the top on initial load and after resources finish loading
+      try {
+        window.scrollTo(0, 0);
+        window.addEventListener('load', () => window.scrollTo(0, 0));
+      } catch (e) {
+        // ignore if window isn't available
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
