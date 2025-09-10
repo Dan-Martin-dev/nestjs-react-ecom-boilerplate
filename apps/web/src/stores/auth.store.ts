@@ -54,15 +54,18 @@ export const useAuthStore = create<AuthState>()(
               password,
             })
 
-            const { user, access_token, refresh_token } = response
-            
+            const { user, access_token, refresh_token, token } = response as AuthResponse
+
+            // Prefer explicit access_token then token; ensure setToken gets string|null
+            const authToken = access_token ?? token ?? null
+
             // Update API client token
-            apiClient.setToken(access_token)
-            
+            apiClient.setToken(authToken)
+
             set({
               user,
-              token: access_token,
-              refreshToken: refresh_token,
+              token: authToken,
+              refreshToken: refresh_token ?? null,
               isAuthenticated: true,
               isLoading: false,
             })
@@ -92,15 +95,15 @@ export const useAuthStore = create<AuthState>()(
             
             const response = await apiClient.post<AuthResponse>('/auth/register', registerData)
             
-            const { user, access_token, refresh_token } = response
-            
-            // Update API client token
-            apiClient.setToken(access_token)
-            
+            const { user, access_token, refresh_token, token } = response as AuthResponse
+
+            const authToken = access_token ?? token ?? null
+            apiClient.setToken(authToken)
+
             set({
               user,
-              token: access_token,
-              refreshToken: refresh_token,
+              token: authToken,
+              refreshToken: refresh_token ?? null,
               isAuthenticated: true,
               isLoading: false,
             })
@@ -146,15 +149,15 @@ export const useAuthStore = create<AuthState>()(
               refreshToken,
             })
 
-            const { user, access_token, refresh_token: newRefreshToken } = response
-            
-            // Update API client token
-            apiClient.setToken(access_token)
-            
+            const { user, access_token, refresh_token: newRefreshToken, token } = response as AuthResponse
+
+            const authToken = access_token ?? token ?? null
+            apiClient.setToken(authToken)
+
             set({
               user,
-              token: access_token,
-              refreshToken: newRefreshToken,
+              token: authToken,
+              refreshToken: newRefreshToken ?? null,
               isAuthenticated: true,
             })
 

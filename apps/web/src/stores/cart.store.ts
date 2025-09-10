@@ -83,34 +83,38 @@ export const useCartStore = create<CartState>()(
                 })
               } else {
                 // Add new item (temporary, will be replaced by server response)
-                const tempItem: CartItem = {
-                  id: `temp-${Date.now()}`,
-                  productVariantId,
-                  quantity,
-                  priceAtAddition: '0', // Will be set by server
-                  cartId: currentCart.id,
-                  productVariant: {
-                    // Temporary placeholder, will be populated by server
-                    id: '',
-                    name: '',
-                    sku: '',
-                    price: '0',
-                    stockQuantity: 0,
-                    product: {
-                      id: '',
-                      name: '',
-                      slug: '',
-                      images: [],
-                    },
-                  },
-                }
-                
-                set({
-                  cart: {
-                    ...currentCart,
-                    items: [...(currentCart.items || []), tempItem],
-                  }
-                })
+                        // Create a lightweight temporary item compatible with CartItem shape
+                const createTempItem = (pvId: string, cartId?: string) => {
+                          return {
+                            id: `temp-${Date.now()}`,
+                            productVariantId: pvId,
+                            quantity,
+                            priceAtAddition: '0',
+                  cartId: cartId ?? `temp-cart-${Date.now()}`,
+                            productVariant: {
+                              id: '',
+                              name: '',
+                              sku: '',
+                              price: '0',
+                              stockQuantity: 0,
+                              product: {
+                                id: '',
+                                name: '',
+                                slug: '',
+                                images: [],
+                              },
+                            },
+                          } as unknown as CartItem
+                        }
+
+                        const tempItem = createTempItem(productVariantId, currentCart.id)
+
+                        set({
+                          cart: {
+                            ...currentCart,
+                            items: [...(currentCart.items || []), tempItem],
+                          }
+                        })
               }
             }
             
