@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin, useIsAuthenticated } from '../../../hooks/useAuth';
-import { notifications } from '@mantine/notifications';
+import { toast } from 'sonner'
 
 interface UseLoginFormReturn {
   // Form state
@@ -51,11 +51,7 @@ export const useLoginForm = (): UseLoginFormReturn => {
       }, 60000); // 1 minute lockout
       setLockTimer(timer);
 
-      notifications.show({
-        title: 'Account Temporarily Locked',
-        message: 'Too many login attempts. Please try again in 1 minute.',
-        color: 'red'
-      });
+  toast.error('Too many login attempts. Try again in 1 minute.')
     }
 
     return () => {
@@ -83,21 +79,13 @@ export const useLoginForm = (): UseLoginFormReturn => {
     e.preventDefault();
 
     if (isLocked) {
-      notifications.show({
-        title: 'Account Locked',
-        message: 'Please wait before trying again',
-        color: 'red'
-      });
+  toast.error('Account locked. Please wait before trying again.')
       return;
     }
 
     // Basic validation
     if (!email || !password) {
-      notifications.show({
-        title: 'Missing Information',
-        message: 'Please enter both email and password',
-        color: 'orange'
-      });
+  toast.error('Please enter both email and password')
       return;
     }
 

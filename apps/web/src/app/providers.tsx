@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications, showNotification } from '@mantine/notifications';
+import { Toaster } from 'sonner'
 import { queryClient } from '../lib/react-query';
 import { mantineTheme } from './mantineTheme.ts';
 import { useAuthStore } from '../stores';
@@ -86,6 +87,7 @@ export function Providers({ children }: ProvidersProps) {
       <MantineProvider theme={mantineTheme} defaultColorScheme="auto">
         <ModalsProvider>
           <Notifications position="top-right" zIndex={1000} />
+          <Toaster position="top-right" richColors />
           {children}
         </ModalsProvider>
       </MantineProvider>

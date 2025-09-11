@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useRegisterForm } from '../hooks';
 import { Progress, Switch } from '@mantine/core';
 import { EyeIcon, EyeOffIcon, UserPlusIcon, ChevronLeft } from 'lucide-react';
+import Spinner from '../../../components/Spinner';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import '../styles/auth-fonts.css';
 import useAuthNavigation from '../hooks/useAuthNavigation';
@@ -60,6 +61,13 @@ const RegisterPage: React.FC = () => {
   {/* Back button moved below the bottom auth link (see wrapper near the end of the file) */}
 
       <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left">Create account</h1>
+
+      {isSubmitting && (
+        <div className="mb-4 flex items-center gap-2 text-sm text-gray-700">
+          <Spinner className="animate-spin" />
+          <span>Creating account…</span>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name field */}
@@ -188,23 +196,25 @@ const RegisterPage: React.FC = () => {
         )}
 
         <div>
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60 w-full font-inco font-medium"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="mr-2 animate-spin">⏳</span>
-                Creating Account...
-              </>
-            ) : (
-              <>
-                <UserPlusIcon className="h-4 w-4 mr-2" />
-                Create account
-              </>
-            )}
-          </button>
+          <fieldset disabled={isSubmitting}>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center rounded bg-black text-white px-4 py-2 disabled:opacity-60 w-full font-inco font-medium"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Spinner className="mr-2 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  <UserPlusIcon className="h-4 w-4 mr-2" />
+                  Create account
+                </>
+              )}
+            </button>
+          </fieldset>
         </div>
       </form>
 

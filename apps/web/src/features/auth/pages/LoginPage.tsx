@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLoginForm } from '../hooks';
 import { Switch } from '@mantine/core';
 import { EyeIcon, EyeOffIcon, Lock, ChevronLeft } from 'lucide-react';
+import Spinner from '../../../components/Spinner';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import '../styles/auth-fonts.css';
 import useAuthNavigation from '../hooks/useAuthNavigation';
@@ -46,6 +47,7 @@ const LoginPage: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        <fieldset disabled={isLocked || isSubmitting} className="space-y-4">
         <label className="block">
           <span className="text-sm font-inco font-medium text-gray-700">Email</span>
           <input
@@ -105,7 +107,7 @@ const LoginPage: React.FC = () => {
           >
             {isSubmitting ? (
               <>
-                <span className="mr-2 animate-spin">⏳</span>
+                <Spinner className="mr-2 animate-spin" />
                 Signing in…
               </>
             ) : (
@@ -120,6 +122,7 @@ const LoginPage: React.FC = () => {
             Forgot password?
           </Link>
         </div>
+        </fieldset>
       </form>
 
       {/* Social login options */}

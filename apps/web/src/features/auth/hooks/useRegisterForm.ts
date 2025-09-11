@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister, useIsAuthenticated } from '../../../hooks/useAuth';
-import { notifications } from '@mantine/notifications';
+import { toast } from 'sonner'
 
 // Password strength indicators
 const PasswordStrength = {
@@ -160,13 +160,8 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
         confirmPassword
       });
 
-      notifications.show({
-        title: 'Registration Successful',
-        message: 'Your account has been created. Welcome!',
-        color: 'green'
-      });
-
-      navigate('/', { replace: true });
+  toast.success('Registration successful — welcome!')
+  navigate('/', { replace: true });
     } catch (error) {
       // Error is handled by the mutation via notifications
       console.error('Registration failed:', error);
