@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister, useIsAuthenticated } from '../../../hooks/useAuth';
-import { toast } from 'sonner'
+import { notify } from '../../../lib/notify'
 
 // Password strength indicators
 const PasswordStrength = {
@@ -160,10 +160,22 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
         confirmPassword
       });
 
-  toast.success('Registration successful — welcome!')
-  navigate('/', { replace: true });
+      // show success toast then wait briefly so user can see it before redirect
+      notify.success('Registration successful — welcome!')
+      await new Promise((res) => setTimeout(res, 600))
+      navigate('/', { replace: true });
     } catch (error) {
-      // Error is handled by the mutation via notifications
+      const parsed = (() => {
+        if (!error) return 'Registration failed. Try again.';
+        if (typeof error === 'string') return error;
+        if (error instanceof Error) return error.message;
+        const errObj = error as Record<string, unknown>;
+        const response = errObj.response as Record<string, unknown> | undefined;
+        const data = response?.data as Record<string, unknown> | undefined;
+        const message = (data && (data.message as string | undefined)) ?? (errObj.message as string | undefined);
+        return String(message ?? 'Registration failed. Try again.');
+      })();
+      notify.error(parsed);
       console.error('Registration failed:', error);
     }
   };

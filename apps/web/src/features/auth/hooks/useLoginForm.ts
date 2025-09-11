@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin, useIsAuthenticated } from '../../../hooks/useAuth';
-import { toast } from 'sonner'
+import { notify } from '../../../lib/notify'
 
 interface UseLoginFormReturn {
   // Form state
@@ -49,9 +49,9 @@ export const useLoginForm = (): UseLoginFormReturn => {
         setIsLocked(false);
         setLoginAttempts(0);
       }, 60000); // 1 minute lockout
-      setLockTimer(timer);
+  setLockTimer(timer);
 
-  toast.error('Too many login attempts. Try again in 1 minute.')
+  notify.error('Too many login attempts. Try again in 1 minute.')
     }
 
     return () => {
@@ -79,13 +79,13 @@ export const useLoginForm = (): UseLoginFormReturn => {
     e.preventDefault();
 
     if (isLocked) {
-  toast.error('Account locked. Please wait before trying again.')
+      notify.error('Account locked. Please wait before trying again.')
       return;
     }
 
     // Basic validation
     if (!email || !password) {
-  toast.error('Please enter both email and password')
+      notify.error('Please enter both email and password')
       return;
     }
 
@@ -103,12 +103,26 @@ export const useLoginForm = (): UseLoginFormReturn => {
         localStorage.removeItem('remembered_email');
       }
 
-      navigate('/', { replace: true });
+  // show success toast then wait briefly so user can see it before redirect
+  notify.success('Signed in successfully')
+  await new Promise((res) => setTimeout(res, 600))
+  navigate('/', { replace: true });
     } catch (error) {
       // Increment login attempts for rate limiting
       setLoginAttempts(prev => prev + 1);
-      // Error is handled by the mutation and shows via notifications
-      console.error('Login failed:', error);
+        // Try to show a helpful message without using `any`
+        const parsed = (() => {
+          if (!error) return 'Login failed. Try again.';
+          if (typeof error === 'string') return error;
+          if (error instanceof Error) return error.message;
+          const errObj = error as Record<string, unknown>;
+          const response = errObj.response as Record<string, unknown> | undefined;
+          const data = response?.data as Record<string, unknown> | undefined;
+          const message = (data && (data.message as string | undefined)) ?? (errObj.message as string | undefined);
+          return String(message ?? 'Login failed. Try again.');
+        })();
+        notify.error(parsed);
+        console.error('Login failed:', error);
     }
   };
 
