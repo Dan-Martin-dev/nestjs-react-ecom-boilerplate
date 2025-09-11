@@ -6,6 +6,8 @@ import useAuthStore from '../../../stores/auth.store';
 import { trackEvent } from '../../../lib/analytics';
 import "../../../styles/MovingBar.css";
 import { useDrawerMenu, type Section } from "../hooks/useDrawerMenu";
+import CartDrawer from './CartDrawer'
+import { useState } from 'react'
 
 // Constants
 const MOVING_BAR_MESSAGES = [
@@ -56,6 +58,10 @@ export function Header() {
     onNavigate: navigate,
     onTrackEvent: trackEvent,
   });
+
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false)
+  const openCartDrawer = () => setCartDrawerOpen(true)
+  const closeCartDrawer = () => setCartDrawerOpen(false)
 
   // Prevent FOUC: hide header via inline style until client mount completes
   return (
@@ -115,8 +121,7 @@ export function Header() {
             </Button>
             <Button
               variant="subtle"
-              component={Link}
-              to="/cart"
+              onClick={openCartDrawer}
               className="relative p-2.5"
               aria-label="Cart"
             >
@@ -194,8 +199,7 @@ export function Header() {
             </Button>
             <Button
               variant="subtle"
-              component={Link}
-              to="/cart"
+              onClick={openCartDrawer}
               className="relative p-2"
               aria-label="Cart"
             >
@@ -213,8 +217,18 @@ export function Header() {
 
       {/* Drawer and backdrop */}
     </header>
+        {portal}
 
-      {portal}
+        <CartDrawer
+          open={cartDrawerOpen}
+          onClose={closeCartDrawer}
+          sections={sections}
+          accountSection={accountSection}
+          isAuthenticated={isAuthenticated}
+          onLogout={logout}
+          onNavigate={(p) => navigate(p)}
+          onTrackEvent={(e, d) => trackEvent(e, d)}
+        />
      </>
   );
 }
