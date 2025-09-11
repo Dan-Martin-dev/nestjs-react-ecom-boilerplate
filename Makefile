@@ -68,9 +68,9 @@ dev:
 	@echo "🔄 Generating Prisma client..."
 	cd packages/db && pnpm db:generate
 	@echo "🏗️ Building shared packages..."
-	cd apps/api && pnpm build
-	@echo "🚀 Starting all applications with Turborepo..."
-	DOTENV_CONFIG_PATH=.env.dev pnpm turbo run dev
+	pnpm --filter @repo/shared build
+	@echo "🚀 Starting all applications with Turborepo (excluding docker package)..."
+	DOTENV_CONFIG_PATH=.env pnpm turbo run dev --filter=!@repo/docker
 
 
 # Run just the frontend with backend services in Docker
