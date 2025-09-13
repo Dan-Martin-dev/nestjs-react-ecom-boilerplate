@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister, useIsAuthenticated } from '../../../hooks/useAuth';
-import { notify } from '../../../lib/notify'
+import { notify, formatApiError } from '../../../lib/notify'
 
 // Password strength indicators
 const PasswordStrength = {
@@ -142,7 +142,13 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const ok = Object.keys(newErrors).length === 0;
+    if (!ok) {
+      // show a short form-level toast for quick feedback
+      const summary = Object.values(newErrors)[0] || 'Please fix the highlighted fields';
+      notify.error(String(summary));
+    }
+    return ok;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -165,17 +171,7 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
       await new Promise((res) => setTimeout(res, 600))
       navigate('/', { replace: true });
     } catch (error) {
-      const parsed = (() => {
-        if (!error) return 'Registration failed. Try again.';
-        if (typeof error === 'string') return error;
-        if (error instanceof Error) return error.message;
-        const errObj = error as Record<string, unknown>;
-        const response = errObj.response as Record<string, unknown> | undefined;
-        const data = response?.data as Record<string, unknown> | undefined;
-        const message = (data && (data.message as string | undefined)) ?? (errObj.message as string | undefined);
-        return String(message ?? 'Registration failed. Try again.');
-      })();
-      notify.error(parsed);
+      notify.error(formatApiError(error));
       console.error('Registration failed:', error);
     }
   };

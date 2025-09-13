@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin, useIsAuthenticated } from '../../../hooks/useAuth';
-import { notify } from '../../../lib/notify'
+import { notify, formatApiError } from '../../../lib/notify'
 
 interface UseLoginFormReturn {
   // Form state
@@ -111,17 +111,7 @@ export const useLoginForm = (): UseLoginFormReturn => {
       // Increment login attempts for rate limiting
       setLoginAttempts(prev => prev + 1);
         // Try to show a helpful message without using `any`
-        const parsed = (() => {
-          if (!error) return 'Login failed. Try again.';
-          if (typeof error === 'string') return error;
-          if (error instanceof Error) return error.message;
-          const errObj = error as Record<string, unknown>;
-          const response = errObj.response as Record<string, unknown> | undefined;
-          const data = response?.data as Record<string, unknown> | undefined;
-          const message = (data && (data.message as string | undefined)) ?? (errObj.message as string | undefined);
-          return String(message ?? 'Login failed. Try again.');
-        })();
-        notify.error(parsed);
+    notify.error(formatApiError(error));
         console.error('Login failed:', error);
     }
   };
