@@ -2,16 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister, useIsAuthenticated } from '../../../hooks/useAuth';
 import { notify, formatApiError } from '../../../lib/notify'
+import { computePasswordStrength } from './usePasswordStrength';
+import { validateRegister } from './validateRegister';
+import type { RegisterValues } from './validateRegister';
+import { redirectToSocial } from './useSocialLogin';
 
-// Password strength indicators
-const PasswordStrength = {
-  Weak: 'weak',
-  Medium: 'medium',
-  Strong: 'strong',
-  VeryStrong: 'very-strong'
-} as const;
-
-type PasswordStrengthType = typeof PasswordStrength[keyof typeof PasswordStrength];
+type PasswordStrengthType = 'weak' | 'medium' | 'strong' | 'very-strong' | null;
 
 interface UseRegisterFormReturn {
   // Form state
@@ -60,44 +56,11 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrengthType | null>(null);
   const [strengthScore, setStrengthScore] = useState(0);
 
-  // Password strength calculation
+  // Password strength calculation (extracted)
   useEffect(() => {
-    if (!password) {
-      setPasswordStrength(null);
-      setStrengthScore(0);
-      return;
-    }
-
-    // Basic password strength calculation
-    let score = 0;
-
-    // Length check
-    if (password.length > 5) score += 10;
-    if (password.length > 8) score += 15;
-    if (password.length > 12) score += 15;
-
-    // Complexity checks
-    if (/[A-Z]/.test(password)) score += 10; // Has uppercase
-    if (/[a-z]/.test(password)) score += 10; // Has lowercase
-    if (/[0-9]/.test(password)) score += 10; // Has number
-    if (/[^A-Za-z0-9]/.test(password)) score += 15; // Has special char
-
-    // Variety check
-    const uniqueChars = new Set(password.split('')).size;
-    score += Math.min(uniqueChars * 2, 15); // More unique chars = better
-
-    // Determine strength level
-    setStrengthScore(Math.min(score, 100));
-
-    if (score < 30) {
-      setPasswordStrength(PasswordStrength.Weak);
-    } else if (score < 60) {
-      setPasswordStrength(PasswordStrength.Medium);
-    } else if (score < 80) {
-      setPasswordStrength(PasswordStrength.Strong);
-    } else {
-      setPasswordStrength(PasswordStrength.VeryStrong);
-    }
+    const { score, label } = computePasswordStrength(password);
+    setStrengthScore(score);
+    setPasswordStrength(label as PasswordStrengthType);
   }, [password]);
 
   // Redirect if already authenticated
@@ -108,43 +71,10 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
   }, [isAuthenticated, navigate]);
 
   const validateForm = useCallback((): boolean => {
-    const newErrors: { [key: string]: string } = {};
-
-    // Name validation
-    if (!name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-
-    // Email validation
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-
-    // Password validation
-    if (!password) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    } else if (strengthScore < 30) {
-      newErrors.password = 'Password is too weak';
-    }
-
-    // Confirm password
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    // Terms acceptance
-    if (!acceptTerms) {
-      newErrors.terms = 'You must accept the terms and conditions';
-    }
-
+    const values: RegisterValues = { name, email, password, confirmPassword, acceptTerms };
+    const { ok, errors: newErrors } = validateRegister(values, strengthScore);
     setErrors(newErrors);
-    const ok = Object.keys(newErrors).length === 0;
     if (!ok) {
-      // show a short form-level toast for quick feedback
       const summary = Object.values(newErrors)[0] || 'Please fix the highlighted fields';
       notify.error(String(summary));
     }
@@ -181,13 +111,11 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
       }
       console.error('Registration failed:', error);
     }
-  }, [email, password, name, confirmPassword, registerMutation, navigate]);
+  }, [email, password, name, confirmPassword, registerMutation, navigate, validateForm]);
 
   // Handle social login (redirect to backend OAuth endpoint)
   const handleSocialLogin = useCallback((provider: 'google' | 'facebook' | 'instagram') => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
-    // backend route expects /api/v1/auth/:provider
-    window.location.href = `${apiUrl}/auth/${provider}`;
+    redirectToSocial(provider);
   }, []);
 
   return {
