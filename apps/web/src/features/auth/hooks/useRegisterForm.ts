@@ -185,8 +185,8 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
 
   // Handle social login (redirect to backend OAuth endpoint)
   const handleSocialLogin = useCallback((provider: 'google' | 'facebook' | 'instagram') => {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5555';
-    // backend route expects /auth/:provider
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+    // backend route expects /api/v1/auth/:provider
     window.location.href = `${apiUrl}/auth/${provider}`;
   }, []);
 

@@ -43,7 +43,7 @@ const RegisterPage: React.FC = () => {
 
     // Actions
     handleSubmit,
-  handleSocialLogin,
+    handleSocialLogin,
   } = useRegisterForm();
 
   // Password strength progress color
@@ -70,6 +70,7 @@ const RegisterPage: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        
         {/* Name field */}
         <label className="block">
           <span className="text-sm font-inco font-medium text-gray-700">Full Name</span>
