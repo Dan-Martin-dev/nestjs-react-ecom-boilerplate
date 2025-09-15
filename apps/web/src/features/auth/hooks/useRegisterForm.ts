@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister, useIsAuthenticated } from '../../../hooks/useAuth';
 import { notify, formatApiError } from '../../../lib/notify'
@@ -107,7 +107,7 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
     }
   }, [isAuthenticated, navigate]);
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     const newErrors: { [key: string]: string } = {};
 
     // Name validation
@@ -149,39 +149,46 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
       notify.error(String(summary));
     }
     return ok;
-  };
+  }, [name, email, password, confirmPassword, acceptTerms, strengthScore]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
+    // prevent duplicate submits while mutation is pending
+    if (registerMutation.isPending) return;
+
     try {
       await registerMutation.mutateAsync({
         email,
         password,
         name,
-        confirmPassword
+        confirmPassword,
       });
 
       // show success toast then wait briefly so user can see it before redirect
-      notify.success('Registration successful — welcome!')
-      await new Promise((res) => setTimeout(res, 600))
+      notify.success('Registration successful — welcome!');
+      await new Promise((res) => setTimeout(res, 600));
       navigate('/', { replace: true });
     } catch (error) {
-      notify.error(formatApiError(error));
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        notify.error('Network error. Check your connection.');
+      } else {
+        notify.error(formatApiError(error));
+      }
       console.error('Registration failed:', error);
     }
-  };
+  }, [email, password, name, confirmPassword, registerMutation, navigate]);
 
   // Handle social login (redirect to backend OAuth endpoint)
-  const handleSocialLogin = (provider: 'google' | 'facebook' | 'instagram') => {
+  const handleSocialLogin = useCallback((provider: 'google' | 'facebook' | 'instagram') => {
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5555';
     // backend route expects /auth/:provider
     window.location.href = `${apiUrl}/auth/${provider}`;
-  };
+  }, []);
 
   return {
     // Form state

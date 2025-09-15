@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLogin, useIsAuthenticated } from '../../../hooks/useAuth';
 import { notify, formatApiError } from '../../../lib/notify'
@@ -40,24 +40,37 @@ export const useLoginForm = (): UseLoginFormReturn => {
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [lockTimer, setLockTimer] = useState<number | null>(null);
+  // stable ref for lock timer to avoid stale cleanup
+  const lockTimerRef = useRef<number | null>(null);
 
   // Rate limiting: Check if account is locked
   useEffect(() => {
     if (loginAttempts >= 5 && !isLocked) {
       setIsLocked(true);
-      const timer = window.setTimeout(() => {
+      const timerId = window.setTimeout(() => {
         setIsLocked(false);
         setLoginAttempts(0);
+        lockTimerRef.current = null;
+        setLockTimer(null);
       }, 60000); // 1 minute lockout
-  setLockTimer(timer);
+      lockTimerRef.current = timerId;
+      setLockTimer(timerId);
 
-  notify.error('Too many login attempts. Try again in 1 minute.')
+      notify.error('Too many login attempts. Try again in 1 minute.');
     }
 
+    // no immediate cleanup here; we clear on unmount below
+  }, [loginAttempts, isLocked]);
+
+  // cleanup on unmount
+  useEffect(() => {
     return () => {
-      if (lockTimer) clearTimeout(lockTimer);
+      if (lockTimerRef.current) {
+        window.clearTimeout(lockTimerRef.current);
+        lockTimerRef.current = null;
+      }
     };
-  }, [loginAttempts, isLocked, lockTimer]);
+  }, []);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -75,17 +88,20 @@ export const useLoginForm = (): UseLoginFormReturn => {
     }
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (isLocked) {
-      notify.error('Account locked. Please wait before trying again.')
+      notify.error('Account locked. Please wait before trying again.');
       return;
     }
 
+    // prevent duplicate submits while mutation is pending
+    if (loginMutation.isPending) return;
+
     // Basic validation
     if (!email || !password) {
-      notify.error('Please enter both email and password')
+      notify.error('Please enter both email and password');
       return;
     }
 
@@ -103,25 +119,31 @@ export const useLoginForm = (): UseLoginFormReturn => {
         localStorage.removeItem('remembered_email');
       }
 
-  // show success toast then wait briefly so user can see it before redirect
-  notify.success('Signed in successfully')
-  await new Promise((res) => setTimeout(res, 600))
-  navigate('/', { replace: true });
+      // show success toast then wait briefly so user can see it before redirect
+      notify.success('Signed in successfully');
+      await new Promise((res) => setTimeout(res, 600));
+      navigate('/', { replace: true });
     } catch (error) {
       // Increment login attempts for rate limiting
-      setLoginAttempts(prev => prev + 1);
-        // Try to show a helpful message without using `any`
-    notify.error(formatApiError(error));
-        console.error('Login failed:', error);
+      setLoginAttempts((prev) => prev + 1);
+
+      // Prefer explicit offline message
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        notify.error('Network error. Check your connection.');
+      } else {
+        notify.error(formatApiError(error));
+      }
+
+      console.error('Login failed:', error);
     }
-  };
+  }, [email, password, rememberMe, isLocked, loginMutation, navigate]);
 
   // Handle social login
-  const handleSocialLogin = (provider: 'google' | 'facebook' | 'instagram') => {
+  const handleSocialLogin = useCallback((provider: 'google' | 'facebook' | 'instagram') => {
     // Redirect to backend OAuth endpoint
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5555';
     window.location.href = `${apiUrl}/auth/${provider}`;
-  };
+  }, []);
 
   return {
     // Form state

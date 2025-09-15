@@ -58,7 +58,7 @@ const RegisterPage: React.FC = () => {
 
   return (
     <main className="relative max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
-  {/* Back button moved below the bottom auth link (see wrapper near the end of the file) */}
+      {/* Back button moved below the bottom auth link (see wrapper near the end of the file) */}
 
       <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left">Create account</h1>
 
@@ -191,6 +191,7 @@ const RegisterPage: React.FC = () => {
             size="sm"
           />
         </div>
+
         {errors.terms && (
           <p className="text-red-500 text-xs">{errors.terms}</p>
         )}
