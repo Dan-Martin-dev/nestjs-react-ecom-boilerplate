@@ -48,7 +48,7 @@ describe('Header auth interactions', () => {
     
     // Set up auth store mock
     const mockedStore = (authStoreModule.default as unknown as Mock)
-    mockedStore.mockImplementation((selector: (s: unknown) => unknown) =>
+    mockedStore.mockImplementation((selector: (s: any) => unknown) =>
       selector({ isAuthenticated: true, logout: logoutMock })
     )
 
