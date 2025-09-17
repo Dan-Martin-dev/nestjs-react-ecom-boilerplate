@@ -23,8 +23,9 @@ export class InstagramStrategy extends InstagramBase {
     super({
       clientID: configService.get<string>('INSTAGRAM_CLIENT_ID') || '',
       clientSecret: configService.get<string>('INSTAGRAM_CLIENT_SECRET') || '',
-      callbackURL: configService.get<string>('INSTAGRAM_CALLBACK_URL', 'http://localhost:3000/auth/instagram/callback'),
+      callbackURL: configService.get<string>('INSTAGRAM_CALLBACK_URL', 'http://localhost:3001/api/v1/auth/instagram/callback'),
     });
+
   }
 
   async validate(

@@ -29,7 +29,8 @@ export class GoogleStrategy extends GoogleBase {
     super({
       clientID: configService.get<string>('GOOGLE_CLIENT_ID') || '',
       clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET') || '',
-      callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL', 'http://localhost:3000/auth/google/callback'),
+      // Ensure callback points to the API route (NestJS global prefix 'api/v1') when running locally
+      callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL', 'http://localhost:3001/api/v1/auth/google/callback'),
       scope: ['email', 'profile'],
     });
   }

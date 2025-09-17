@@ -66,9 +66,7 @@ export function Header() {
   // Prevent FOUC: hide header via inline style until client mount completes
   return (
     <>
-      <header
-        className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
-      >
+      <header className="sticky top-0 z-50 w-full  bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       
       {/* MOVING BAR */}
       <div className="bg_varels_pink moving-bar moving-bar-pause-hover" aria-hidden="true">
@@ -81,10 +79,7 @@ export function Header() {
         </div>
       </div>
 
-      {/* 
-        Mobile: Hamburger + Search (left), 
-        Title (center), Heart + Cart (right)
-      */}
+      {/* Mobile: Hamburger + Search (left),  Title (center), Heart + Cart (right) */}
       <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
 
         {/* MOBILE */}
@@ -163,6 +158,7 @@ export function Header() {
             >
               VARELS
             </Link>
+
           </div>
 
           {/* Center search - existing search left untouched visually */}
@@ -215,8 +211,8 @@ export function Header() {
 
       </div>
 
-      {/* Drawer and backdrop */}
-    </header>
+    {/* Drawer and backdrop */}
+      </header>
         {portal}
 
         <CartDrawer
