@@ -5,8 +5,8 @@
 # Define variables
 DEV_COMPOSE_FILE = docker-compose.dev.yml
 PROD_COMPOSE_FILE = docker-compose.prod.yml
-COMPOSE_DEV = docker compose -f $(DEV_COMPOSE_FILE) --env-file=.env.dev
-COMPOSE_PROD = docker compose -f $(PROD_COMPOSE_FILE) --env-file=.env.production
+COMPOSE_DEV = docker compose -f $(DEV_COMPOSE_FILE) --env-file=.env
+COMPOSE_PROD = docker compose -f $(PROD_COMPOSE_FILE) --env-file=.env
 
 .DEFAULT_GOAL := help
 .PHONY: help dev dev-docker dev-setup build-dev up-dev down-dev \
@@ -72,6 +72,19 @@ dev:
 	@echo "🚀 Starting all applications with Turborepo (excluding docker package)..."
 	DOTENV_CONFIG_PATH=.env pnpm turbo run dev --filter=!@repo/docker
 
+# ...existing code...
+rebuild-dev:
+	@echo "🔁 Rebuilding dev packages and clients..."
+	@pnpm install --prefer-offline --silent
+	@echo "🏗️ Building shared and ui packages..."
+	@pnpm --filter @repo/shared build || true
+	@pnpm --filter @repo/ui build || true
+	@echo "🗄️ Generating Prisma client..."
+	@cd packages/db && pnpm db:generate
+	@echo "🏗️ Building API and Web packages..."
+	@pnpm --filter api build || true
+	@pnpm --filter web build || true
+	@echo "✅ Rebuild complete"
 
 # Run just the frontend with backend services in Docker
 dev-web:
@@ -80,7 +93,7 @@ dev-web:
 	$(COMPOSE_DEV) up -d db redis api
 	@sleep 5
 	@echo "🚀 Starting web application..."
-	cd apps/web && DOTENV_CONFIG_PATH=../../.env.dev pnpm dev
+	cd apps/web && DOTENV_CONFIG_PATH=../../.env pnpm dev
 
 
 # Run just the backend with services in Docker
@@ -92,7 +105,7 @@ dev-api:
 	@echo "🔄 Generating Prisma client..."
 	cd packages/db && pnpm db:generate
 	@echo "🚀 Starting API application..."
-	cd apps/api && DOTENV_CONFIG_PATH=../../.env.dev pnpm dev
+	cd apps/api && DOTENV_CONFIG_PATH=../../.env pnpm dev
 # ...existing code...
 build-dev:
 	$(COMPOSE_DEV) build
