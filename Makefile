@@ -4,6 +4,7 @@
 
 # Define variables
 DEV_COMPOSE_FILE = docker-compose.dev.yml
+export DOTENV_CONFIG_PATH := $(shell pwd)/.env
 PROD_COMPOSE_FILE = docker-compose.prod.yml
 COMPOSE_DEV = docker compose -f $(DEV_COMPOSE_FILE) --env-file=.env
 COMPOSE_PROD = docker compose -f $(PROD_COMPOSE_FILE) --env-file=.env

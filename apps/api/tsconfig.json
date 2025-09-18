@@ -24,4 +24,10 @@
       "@repo/*": ["../../packages/*/index"]
     }
   }
+  ,
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/types/**/*.d.ts"
+  ]
 }
