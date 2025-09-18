@@ -30,8 +30,6 @@ import { MetricsModule } from './metrics/metrics.module';
 @Module({
   imports: [
     // --- Configuration and infrastructure modules ---
-
-    ConfigModule.forRoot({ isGlobal: true }),
     ConfigModule.forRoot({
       isGlobal: true,
       // Prefer the repository root .env, fallback to packaged relative .env
