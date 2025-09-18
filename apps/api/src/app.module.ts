@@ -2,6 +2,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import path from 'path';
 
 // --- Import all your feature modules ---
 import { PrismaModule } from './prisma/prisma.module';
@@ -31,6 +32,15 @@ import { MetricsModule } from './metrics/metrics.module';
     // --- Configuration and infrastructure modules ---
 
     ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // Prefer the repository root .env, fallback to packaged relative .env
+      envFilePath: [
+        path.resolve(process.cwd(), '.env'),
+        path.resolve(__dirname, '../../../.env'),
+      ],
+      expandVariables: true,
+    }),
     CacheConfigModule,
     LoggerModule,
     MetricsModule,
