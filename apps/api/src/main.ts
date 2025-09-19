@@ -11,9 +11,19 @@ async function bootstrap() {
   // Enable compression
   app.use(compression());
 
-  // Enable CORS for frontend
+  // Enable CORS for frontend. Allow common local dev origins and any configured via CORS_ORIGIN.
+  const defaultOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
+  ];
+  const configured = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
+  const allowedOrigins = Array.from(new Set([...configured, ...defaultOrigins]));
+
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173'],
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

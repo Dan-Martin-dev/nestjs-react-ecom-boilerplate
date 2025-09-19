@@ -90,7 +90,7 @@ if docker compose -f docker-compose.dev.yml up -d > /dev/null 2>&1; then
     sleep 10
     
     # Test API health
-    if curl -f http://localhost:3000/health > /dev/null 2>&1; then
+    if curl -f http://localhost:3000/api/v1/health > /dev/null 2>&1 || curl -f http://localhost:3000/health > /dev/null 2>&1; then
         echo -e "${GREEN}✓${NC} API health check passed"
         ((TESTS_PASSED++))
     else

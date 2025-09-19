@@ -1,3 +1,12 @@
+Local development notes
+
+Create a local `.env` file in `apps/web/` or set `VITE_API_URL` in your environment to point the frontend at your running API.
+
+Example `.env` (do not commit):
+
+VITE_API_URL=http://localhost:3001/api/v1
+
+Vite will pick up `import.meta.env.VITE_API_URL` at build time.
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
