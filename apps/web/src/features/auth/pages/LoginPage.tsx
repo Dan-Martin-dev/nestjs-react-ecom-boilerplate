@@ -6,6 +6,7 @@ import { EyeIcon, EyeOffIcon, Lock, ChevronLeft } from 'lucide-react';
 import Spinner from '../../../components/Spinner';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import '../styles/auth-fonts.css';
+import '../styles/auth-inputs.css'; // Import the specific input styles
 import useAuthNavigation from '../hooks/useAuthNavigation';
 
 const LoginPage: React.FC = () => {
@@ -33,10 +34,10 @@ const LoginPage: React.FC = () => {
   const { goBack } = useAuthNavigation();
 
   return (
-    <main className="relative max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
+    <main className="relative max-w-md mx-auto py-12 px-4 auth-font-inco">
   {/* Back button moved below the bottom auth link (see wrapper near the end of the file) */}
 
-      <h1 className="text-2xl font-tico font-semibold text-gray-900 mb-4 text-center md:text-left">Sign in</h1>
+      <h1 className="text-2xl font-tico font-semibold text-gray-900 mb-4 text-center md:text-left uppercase">Sign in</h1>
 
       {loginAttempts > 2 && loginAttempts < 5 && (
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded mb-4">
@@ -49,12 +50,13 @@ const LoginPage: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <fieldset disabled={isLocked || isSubmitting} className="space-y-4">
         <label className="block">
-          <span className="text-sm font-inco font-medium text-gray-700">Email</span>
+          <span className="text-sm font-inco font-medium text-gray-700 uppercase">Email</span>
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800"
+            onChange={(e) => setEmail(e.target.value.toString())} /* toString to ensure no transform */
+            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 normal-case-input mixed-case"
+            style={{ textTransform: 'none' }}
             required
             disabled={isLocked || isSubmitting}
             autoComplete="email"
@@ -63,13 +65,14 @@ const LoginPage: React.FC = () => {
 
         <div className="relative">
           <label className="block">
-            <span className="text-sm font-inco font-medium text-gray-700">Password</span>
+            <span className="text-sm font-inco font-medium text-gray-700 uppercase">Password</span>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10 font-inco text-sm text-gray-800"
+                className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10 font-inco text-sm text-gray-800 normal-case-input"
+                style={{ textTransform: 'none' }}
                 required
                 disabled={isLocked || isSubmitting}
                 autoComplete="current-password"
@@ -93,7 +96,7 @@ const LoginPage: React.FC = () => {
           <Switch
             checked={rememberMe}
             onChange={(event) => setRememberMe(event.currentTarget.checked)}
-            label={<span className="font-inco text-sm text-gray-700">Remember me</span>}
+            label={<span className="font-inco text-sm text-gray-700 uppercase">Remember me</span>}
             color="dark"
             size="sm"
           />
@@ -118,7 +121,7 @@ const LoginPage: React.FC = () => {
             )}
           </button>
 
-          <Link to="/password-reset" className="text-sm font-inco text-gray-600">
+          <Link to="/password-reset" className="text-sm font-inco text-gray-600 uppercase">
             Forgot password?
           </Link>
         </div>
@@ -132,7 +135,7 @@ const LoginPage: React.FC = () => {
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            <span className="px-2 bg-white text-gray-500 uppercase">Or continue with</span>
           </div>
         </div>
 
@@ -168,8 +171,8 @@ const LoginPage: React.FC = () => {
 
       <div className="mt-6 text-sm font-inco text-gray-700 relative">
         <div className="flex items-center justify-between">
-          <span className='left-6'>Don't have an account?</span>
-          <Link to="/auth/register" className="text-blue-600 font-inco font-medium underline mr-6">
+          <span className='left-6 uppercase'>Don't have an account?</span>
+          <Link to="/auth/register" className="text-blue-600 font-inco font-medium underline mr-6 uppercase">
             Create one
           </Link>
         </div>

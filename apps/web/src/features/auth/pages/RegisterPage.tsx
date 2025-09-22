@@ -6,6 +6,7 @@ import { EyeIcon, EyeOffIcon, UserPlusIcon, ChevronLeft } from 'lucide-react';
 import Spinner from '../../../components/Spinner';
 import { IconBrandGoogle, IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import '../styles/auth-fonts.css';
+import '../styles/auth-inputs.css'; // Import the specific input styles
 import useAuthNavigation from '../hooks/useAuthNavigation';
 
 
@@ -57,10 +58,10 @@ const RegisterPage: React.FC = () => {
   const { goBack } = useAuthNavigation();
 
   return (
-    <main className="relative max-w-md mx-auto py-12 px-4 auth-font-inco auth-uppercase">
+    <main className="relative max-w-md mx-auto py-12 px-4 auth-font-inco">
       {/* Back button moved below the bottom auth link (see wrapper near the end of the file) */}
 
-      <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left">Create account</h1>
+      <h1 className="text-2xl font-inco font-semibold text-gray-900 mb-4 text-center md:text-left uppercase">Create account</h1>
 
       {isSubmitting && (
         <div className="mb-4 flex items-center gap-2 text-sm text-gray-700">
@@ -73,14 +74,15 @@ const RegisterPage: React.FC = () => {
         
         {/* Name field */}
         <label className="block">
-          <span className="text-sm font-inco font-medium text-gray-700">Full Name</span>
+          <span className="text-sm font-inco font-medium text-gray-700 uppercase">Full Name</span>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 ${
+            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 normal-case-input ${
               errors.name ? 'border-red-500' : ''
             }`}
+            style={{ textTransform: 'none' }}
             disabled={isSubmitting}
             autoComplete="name"
           />
@@ -91,14 +93,15 @@ const RegisterPage: React.FC = () => {
 
         {/* Email field */}
         <label className="block">
-          <span className="text-sm font-inco font-medium text-gray-700">Email</span>
+          <span className="text-sm font-inco font-medium text-gray-700 uppercase">Email</span>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 ${
+            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 normal-case-input ${
               errors.email ? 'border-red-500' : ''
             }`}
+            style={{ textTransform: 'none' }}
             disabled={isSubmitting}
             autoComplete="email"
           />
@@ -110,15 +113,16 @@ const RegisterPage: React.FC = () => {
         {/* Password field with strength indicator */}
         <div className="relative">
           <label className="block">
-            <span className="text-sm font-inco font-medium text-gray-700">Password</span>
+            <span className="text-sm font-inco font-medium text-gray-700 uppercase">Password</span>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10 font-inco text-sm text-gray-800 ${
+                className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 pr-10 font-inco text-sm text-gray-800 normal-case-input ${
                   errors.password ? 'border-red-500' : ''
                 }`}
+                style={{ textTransform: 'none' }}
                 disabled={isSubmitting}
                 autoComplete="new-password"
               />
@@ -166,14 +170,15 @@ const RegisterPage: React.FC = () => {
 
         {/* Confirm password field */}
         <label className="block">
-          <span className="text-sm font-inco font-medium text-gray-700">Confirm password</span>
+          <span className="text-sm font-inco font-medium text-gray-700 uppercase">Confirm password</span>
           <input
             type={showPassword ? "text" : "password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 ${
+            className={`mt-1 block w-full rounded-md border-gray-300 px-3 py-2 font-inco text-sm text-gray-800 normal-case-input ${
               errors.confirmPassword ? 'border-red-500' : ''
             }`}
+            style={{ textTransform: 'none' }}
             disabled={isSubmitting}
             autoComplete="new-password"
           />
@@ -187,7 +192,7 @@ const RegisterPage: React.FC = () => {
           <Switch
             checked={acceptTerms}
             onChange={(event) => setAcceptTerms(event.currentTarget.checked)}
-            label={<span className="font-inco text-sm text-gray-700">I accept the terms and conditions</span>}
+            label={<span className="font-inco text-sm text-gray-700 uppercase">I accept the terms and conditions</span>}
             color="dark"
             size="sm"
           />
@@ -227,7 +232,7 @@ const RegisterPage: React.FC = () => {
             <div className="w-full border-t border-gray-300"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            <span className="px-2 bg-white text-gray-500 uppercase">Or continue with</span>
           </div>
         </div>
 
@@ -263,8 +268,8 @@ const RegisterPage: React.FC = () => {
 
       <div className="mt-6 text-sm font-inco text-gray-700 relative">
         <div className="flex items-center justify-between">
-          <span>Already have an account?</span>
-          <Link to="/auth/login" className="text-blue-600 font-inco font-medium underline mr-6">
+          <span className="uppercase">Already have an account?</span>
+          <Link to="/auth/login" className="text-blue-600 font-inco font-medium underline mr-6 uppercase">
             Sign in
           </Link>
         </div>
