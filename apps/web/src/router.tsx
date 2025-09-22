@@ -6,6 +6,7 @@ import ProductsLayout from './features/layout/pages/ProductsLayout';
 import CartLayout from './features/layout/pages/CartLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Loadable from './utils/Loadable';
+import ProtectedRoute from './features/auth/components/ProtectedRoute';
 
 const ProductsPage = lazy(() => import('./features/products/pages/ProductsPage'));
 const CartPage = lazy(() => import('./features/cart/pages/CartPage'));
@@ -16,6 +17,13 @@ const NotFoundPage = lazy(() => import('./features/layout/pages/NotFoundPage'));
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./features/auth/pages/RegisterPage'));
 const AuthCallbackPage = lazy(() => import('./features/auth/pages/AuthCallbackPage'));
+
+// Dashboard routes
+const DashboardLayout = lazy(() => import('./features/dashboard/layouts/DashboardLayout'));
+const DashboardOverviewPage = lazy(() => import('./features/dashboard/pages/DashboardOverviewPage'));
+const AccountPage = lazy(() => import('./features/dashboard/pages/AccountPage'));
+const OrdersPage = lazy(() => import('./features/dashboard/pages/OrdersPage'));
+const AddressesPage = lazy(() => import('./features/dashboard/pages/AddressesPage'));
 
 
 const router = createBrowserRouter([
@@ -69,6 +77,52 @@ const router = createBrowserRouter([
             element: (
               <Loadable fallback={<div className="p-8 text-center">Loading cart...</div>}>
                 <CartPage />
+              </Loadable>
+            )
+          }
+        ]
+      },
+      
+      // Dashboard routes (protected)
+      {
+        path: 'dashboard',
+        element: (
+          <ProtectedRoute>
+            <Loadable fallback={<div className="p-8 text-center">Loading dashboard...</div>}>
+              <DashboardLayout />
+            </Loadable>
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <Loadable>
+                <DashboardOverviewPage />
+              </Loadable>
+            )
+          },
+          {
+            path: 'account',
+            element: (
+              <Loadable>
+                <AccountPage />
+              </Loadable>
+            )
+          },
+          {
+            path: 'orders',
+            element: (
+              <Loadable>
+                <OrdersPage />
+              </Loadable>
+            )
+          },
+          {
+            path: 'addresses',
+            element: (
+              <Loadable>
+                <AddressesPage />
               </Loadable>
             )
           }
