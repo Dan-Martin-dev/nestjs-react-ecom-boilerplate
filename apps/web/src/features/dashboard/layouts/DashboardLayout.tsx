@@ -97,7 +97,7 @@ const DashboardLayout: React.FC = () => {
               {/* Back button below Sign out (same typography/weight, grey instead of red) */}
               <button
                 type="button"
-                onClick={() => { setIsMobileMenuOpen(false); navigate(-1); }}
+                onClick={() => { setIsMobileMenuOpen(false); navigate('/'); }}
                 className="w-full flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50"
               >
                 <ChevronLeft className="w-5 h-5 mr-3" />
@@ -148,7 +148,7 @@ const DashboardLayout: React.FC = () => {
             {/* Back button below Sign out (same typography/weight, grey instead of red) */}
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/')}
               className="mt-2 flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50 w-full"
             >
               <ChevronLeft className="w-5 h-5 mr-3" />
