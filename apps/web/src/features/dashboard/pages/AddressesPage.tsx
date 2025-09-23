@@ -71,7 +71,7 @@ const AddressesPage: React.FC = () => {
 
       {/* Address Type Filter */}
       <div className="bg-white p-4 rounded-lg shadow-sm">
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
           <button
             onClick={() => setAddressType('ALL')}
             className={`px-4 py-2 text-sm font-medium rounded-md ${

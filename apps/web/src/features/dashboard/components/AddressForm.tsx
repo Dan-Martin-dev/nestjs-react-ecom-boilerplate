@@ -178,8 +178,8 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           {/* Street and Street Number */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="sm:col-span-2">
               <label htmlFor="street" className="block text-sm font-medium text-gray-700">
                 Street*
               </label>
@@ -213,7 +213,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
           </div>
           
           {/* City and Province */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="city" className="block text-sm font-medium text-gray-700">
                 City*
@@ -253,7 +253,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
           </div>
           
           {/* ZIP and Country */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700">
                 ZIP/Postal Code*
@@ -301,7 +301,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
           </div>
           
           {/* Neighborhood, Floor, Apartment */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label htmlFor="neighborhood" className="block text-sm font-medium text-gray-700">
                 Neighborhood

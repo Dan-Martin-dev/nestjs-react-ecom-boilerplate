@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
 import {
   HomeIcon, ShoppingCartIcon, UserIcon, MapPinIcon, LogOutIcon, MenuIcon, X 
 } from 'lucide-react';
@@ -93,6 +94,15 @@ const DashboardLayout: React.FC = () => {
               <LogOutIcon className="w-5 h-5 mr-3" />
               Sign out
             </button>
+              {/* Back button below Sign out (same typography/weight, grey instead of red) */}
+              <button
+                type="button"
+                onClick={() => { setIsMobileMenuOpen(false); navigate(-1); }}
+                className="w-full flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50"
+              >
+                <ChevronLeft className="w-5 h-5 mr-3" />
+                Back
+              </button>
           </nav>
         </div>
       )}
@@ -134,6 +144,15 @@ const DashboardLayout: React.FC = () => {
             >
               <LogOutIcon className="w-5 h-5 mr-3" />
               Sign out
+            </button>
+            {/* Back button below Sign out (same typography/weight, grey instead of red) */}
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="mt-2 flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50 w-full"
+            >
+              <ChevronLeft className="w-5 h-5 mr-3" />
+              Back
             </button>
           </div>
         </div>

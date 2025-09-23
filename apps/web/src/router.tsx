@@ -83,51 +83,8 @@ const router = createBrowserRouter([
         ]
       },
       
-      // Dashboard routes (protected)
-      {
-        path: 'dashboard',
-        element: (
-          <ProtectedRoute>
-            <Loadable fallback={<div className="p-8 text-center">Loading dashboard...</div>}>
-              <DashboardLayout />
-            </Loadable>
-          </ProtectedRoute>
-        ),
-        children: [
-          {
-            index: true,
-            element: (
-              <Loadable>
-                <DashboardOverviewPage />
-              </Loadable>
-            )
-          },
-          {
-            path: 'account',
-            element: (
-              <Loadable>
-                <AccountPage />
-              </Loadable>
-            )
-          },
-          {
-            path: 'orders',
-            element: (
-              <Loadable>
-                <OrdersPage />
-              </Loadable>
-            )
-          },
-          {
-            path: 'addresses',
-            element: (
-              <Loadable>
-                <AddressesPage />
-              </Loadable>
-            )
-          }
-        ]
-      },
+  /* dashboard routes removed from RootLayout children
+     (moved to top-level so they render without RootLayout header/footer) */
 
   // auth routes intentionally handled by a separate top-level route so
   // RootLayout (header/footer) does not render for auth pages.
@@ -183,6 +140,52 @@ const router = createBrowserRouter([
         </Suspense>
       </ErrorBoundary>
     )
+  },
+
+  // Top-level dashboard routes (render without RootLayout header/footer)
+  {
+    path: '/dashboard',
+    element: (
+      <ProtectedRoute>
+        <Loadable fallback={<div className="p-8 text-center">Loading dashboard...</div>}>
+          <DashboardLayout />
+        </Loadable>
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          <Loadable>
+            <DashboardOverviewPage />
+          </Loadable>
+        )
+      },
+      {
+        path: 'account',
+        element: (
+          <Loadable>
+            <AccountPage />
+          </Loadable>
+        )
+      },
+      {
+        path: 'orders',
+        element: (
+          <Loadable>
+            <OrdersPage />
+          </Loadable>
+        )
+      },
+      {
+        path: 'addresses',
+        element: (
+          <Loadable>
+            <AddressesPage />
+          </Loadable>
+        )
+      }
+    ]
   },
 
 ]);
