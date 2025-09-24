@@ -9,6 +9,9 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}=== Setting up development environment ===${NC}"
 
+# Ensure scripts and child processes use the repository .env by default
+export DOTENV_CONFIG_PATH="$(pwd)/.env"
+
 # Check if .env.dev exists, if not create it from example
 if [ ! -f ".env.dev" ]; then
   if [ -f ".env.dev.example" ]; then

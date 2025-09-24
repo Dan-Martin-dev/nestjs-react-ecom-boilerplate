@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../../../stores/auth.store';
+import { apiClient } from '../../../lib/api';
 import { notifications } from '@mantine/notifications';
 import { Loader, Center, Text } from '@mantine/core';
 
@@ -25,8 +26,8 @@ const AuthCallbackPage: React.FC = () => {
     }
 
     if (token) {
-      // Store the token in localStorage and set it in the API client
-      localStorage.setItem('auth_token', token);
+      // Set token in the API client (this also persists to localStorage under the app key)
+      apiClient.setToken(token);
 
       // Decode token to get user info
       try {
@@ -49,7 +50,8 @@ const AuthCallbackPage: React.FC = () => {
         color: 'green',
       });
 
-      navigate('/', { replace: true });
+      // After social sign-in, go to the dashboard so user-specific queries load
+      navigate('/dashboard', { replace: true });
     } else {
       navigate('/login');
     }

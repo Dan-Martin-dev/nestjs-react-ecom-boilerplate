@@ -5,6 +5,16 @@
   text-align: center;
 }
 
+/* Global override for all inputs - ensures no uppercase forcing */
+input, 
+input[type="text"], 
+input[type="email"], 
+input[type="password"],
+textarea, 
+select {
+  text-transform: none !important;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

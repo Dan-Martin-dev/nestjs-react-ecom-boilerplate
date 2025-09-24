@@ -14,4 +14,10 @@ export class AppController {
   health(): object {
     return { status: 'ok', uptime: process.uptime(), timestamp: Date.now() };
   }
+
+  // Support legacy and API-versioned health checks
+  @Get('api/v1/health')
+  apiHealth(): object {
+    return this.health();
+  }
 }

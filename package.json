@@ -24,6 +24,7 @@
   },
   "packageManager": "pnpm@9.1.4",
   "dependencies": {
+    "date-fns": "^4.1.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-instagram": "^1.0.0"

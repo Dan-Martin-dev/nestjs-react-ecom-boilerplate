@@ -75,7 +75,7 @@ export const useLoginForm = (): UseLoginFormReturn => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -122,7 +122,7 @@ export const useLoginForm = (): UseLoginFormReturn => {
       // show success toast then wait briefly so user can see it before redirect
       notify.success('Signed in successfully');
       await new Promise((res) => setTimeout(res, 600));
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (error) {
       // Increment login attempts for rate limiting
       setLoginAttempts((prev) => prev + 1);

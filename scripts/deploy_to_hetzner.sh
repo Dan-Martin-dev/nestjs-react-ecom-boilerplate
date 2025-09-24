@@ -118,8 +118,8 @@ ssh $SSH_USER@$HETZNER_IP "cd $DEPLOY_PATH && docker compose ps"
 
 # Health checks
 echo -e "${YELLOW}Running health checks...${NC}"
-if ssh $SSH_USER@$HETZNER_IP "curl -f http://localhost:3000/health > /dev/null 2>&1"; then
-    echo -e "${GREEN}✓ API health check passed${NC}"
+if ssh $SSH_USER@$HETZNER_IP "curl -f http://localhost:3000/api/v1/health > /dev/null 2>&1 || curl -f http://localhost:3000/health > /dev/null 2>&1"; then
+  echo -e "${GREEN}✓ API health check passed${NC}"
 else
     echo -e "${RED}✗ API health check failed${NC}"
 fi

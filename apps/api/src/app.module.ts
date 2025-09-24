@@ -32,11 +32,14 @@ import { MetricsModule } from './metrics/metrics.module';
     // --- Configuration and infrastructure modules ---
     ConfigModule.forRoot({
       isGlobal: true,
-      // Prefer the repository root .env, fallback to packaged relative .env
-      envFilePath: [
-        path.resolve(process.cwd(), '.env'),
-        path.resolve(__dirname, '../../../.env'),
-      ],
+      // Prefer explicit DOTENV_CONFIG_PATH (set by Makefile/scripts),
+      // then repo root .env, then packaged relative .env
+      envFilePath: process.env.DOTENV_CONFIG_PATH
+        ? path.resolve(process.env.DOTENV_CONFIG_PATH)
+        : [
+            path.resolve(process.cwd(), '.env'),
+            path.resolve(__dirname, '../../../.env'),
+          ],
       expandVariables: true,
     }),
     CacheConfigModule,

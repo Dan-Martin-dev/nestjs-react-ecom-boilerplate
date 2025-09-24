@@ -1,0 +1,14 @@
+/* Auth input styles specifically for ensuring proper case text */
+input, 
+textarea, 
+select,
+input[type="text"], 
+input[type="email"], 
+input[type="password"] {
+  text-transform: none !important;
+}
+
+/* Add this class directly to problematic inputs */
+.mixed-case {
+  text-transform: none !important;
+}
