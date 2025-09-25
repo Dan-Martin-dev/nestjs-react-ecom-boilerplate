@@ -50,8 +50,8 @@ const AuthCallbackPage: React.FC = () => {
         color: 'green',
       });
 
-      // After social sign-in, go to the dashboard so user-specific queries load
-      navigate('/dashboard', { replace: true });
+  // After social sign-in, go to the main page (root) so user-specific queries load
+  navigate('/', { replace: true });
     } else {
       navigate('/login');
     }

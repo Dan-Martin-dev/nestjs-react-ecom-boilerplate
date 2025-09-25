@@ -8,9 +8,10 @@ export const CreateAddressSchema = z.object({
   city: z.string().min(1, 'City is required'),
   province: z.string().min(1, 'Province is required'),
   zipCode: z.string().min(1, 'Zip code is required'),
-  neighborhood: z.string().optional(),
-  floor: z.string().optional(),
-  apartment: z.string().optional(),
+  phone: z.string().optional().describe('Contact phone for deliveries (required by most carriers in Argentina)'),
+  neighborhood: z.string().optional().describe('Barrio - important in Argentina'),
+  floor: z.string().optional().describe('Piso (for apartments)'),
+  apartment: z.string().optional().describe('Departamento'),
   country: z.string().min(1, 'Country is required'),
   type: z.nativeEnum(AddressType, {
     errorMap: () => ({ message: 'Invalid address type. Must be SHIPPING or BILLING' }),

@@ -75,7 +75,8 @@ export const useLoginForm = (): UseLoginFormReturn => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      // Redirect to main page (root) instead of dashboard after login
+      navigate('/', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -119,10 +120,11 @@ export const useLoginForm = (): UseLoginFormReturn => {
         localStorage.removeItem('remembered_email');
       }
 
-      // show success toast then wait briefly so user can see it before redirect
-      notify.success('Signed in successfully');
-      await new Promise((res) => setTimeout(res, 600));
-      navigate('/dashboard', { replace: true });
+  // show success toast then wait briefly so user can see it before redirect
+  notify.success('Signed in successfully');
+  await new Promise((res) => setTimeout(res, 600));
+  // Navigate to main page (root) instead of dashboard
+  navigate('/', { replace: true });
     } catch (error) {
       // Increment login attempts for rate limiting
       setLoginAttempts((prev) => prev + 1);

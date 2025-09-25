@@ -18,7 +18,8 @@ export default function AuthLoginPage() {
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    navigate('/dashboard');
+  // Redirect to main page instead of dashboard
+  navigate('/');
     return null;
   }
 
@@ -28,7 +29,7 @@ export default function AuthLoginPage() {
     try {
       await loginMutation.mutateAsync(formData);
       // The auth context will automatically update with the new user data
-      navigate('/dashboard');
+  navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
       // You can add toast notification here if you have one available

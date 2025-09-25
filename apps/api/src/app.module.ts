@@ -11,6 +11,8 @@ import { ProductsModule } from './products/products.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
+import { InvoicesModule } from './invoices/invoices.module';
+import { PaymentsModule } from './payments/payments.module';
 
 import { AddressesModule } from './addresses/addresses.module';
 import { ReviewsModule } from './reviews/reviews.module';
@@ -24,8 +26,8 @@ import { CacheConfigModule } from './cache/cache.module';
 import { LoggerModule } from './logger/logger.module';
 import { MetricsModule } from './metrics/metrics.module';
 
-// NOTE: I've left out 'analytics' and 'payments' as their folders were empty.
-// Add them here once you create their modules.
+// NOTE: I've left out 'analytics' as its folder was empty.
+// The payments module has been implemented with Argentina-specific payment methods.
 
 @Module({
   imports: [
@@ -57,6 +59,8 @@ import { MetricsModule } from './metrics/metrics.module';
     CategoriesModule,
     CartModule,
     OrdersModule,
+    InvoicesModule,
+    PaymentsModule,
     UsersModule,
     AddressesModule,
     ReviewsModule,

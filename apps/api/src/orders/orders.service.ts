@@ -9,7 +9,16 @@ export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createOrderDto: CreateOrderDto): Promise<any> {
-    const { shippingAddressId, billingAddressId, paymentMethod, notes, discountCode } = createOrderDto;
+    const { 
+      shippingAddressId, 
+      billingAddressId, 
+      paymentMethod, 
+      notes, 
+      discountCode,
+      currency = 'ARS', // Default currency for Argentina
+      installments,
+      installmentPlan
+    } = createOrderDto;
 
     // Verify addresses belong to user
     const [shippingAddress, billingAddress] = await Promise.all([
@@ -97,6 +106,7 @@ export class OrdersService {
           shippingAddressId,
           billingAddressId,
           totalAmount,
+          currency, // Add currency field
           notes,
           appliedDiscountId: appliedDiscount?.id, // Access id safely
           items: {
@@ -109,8 +119,13 @@ export class OrdersService {
           payment: {
             create: {
               amount: totalAmount,
+              currency,
               paymentMethod,
               status: PaymentStatus.PENDING,
+              installments,
+              installmentPlan,
+              // Calculate installment amount if installments are provided
+              ...(installments && { installmentAmount: totalAmount / installments }),
             },
           },
         },

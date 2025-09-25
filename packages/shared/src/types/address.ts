@@ -13,9 +13,10 @@ export interface Address {
   city: string;
   province: string;
   zipCode: string;
-  neighborhood?: string;
-  floor?: string;
-  apartment?: string;
+  phone?: string;         // Contact phone for deliveries (required by most carriers in Argentina)
+  neighborhood?: string;  // Barrio - important in Argentina
+  floor?: string;         // Piso (for apartments)
+  apartment?: string;     // Departamento
   country: string;
   type: AddressType;
   isDefault: boolean;
@@ -29,9 +30,10 @@ export interface CreateAddressDto {
   city: string;
   province: string;
   zipCode: string;
-  neighborhood?: string;
-  floor?: string;
-  apartment?: string;
+  phone?: string;         // Contact phone for deliveries (required by most carriers in Argentina)
+  neighborhood?: string;  // Barrio - important in Argentina
+  floor?: string;         // Piso (for apartments)
+  apartment?: string;     // Departamento
   country: string;
   type: AddressType;
   isDefault?: boolean;

@@ -86,6 +86,19 @@ enum DiscountType {
   FIXED_AMOUNT
 }
 
+enum InvoiceType {
+  A     // Used for B2B with VAT discrimination
+  B     // Used for B2C, no VAT discrimination
+  C     // Used for exempt taxpayers
+  M     // Used for monotributo
+  E     // Used for exports
+  NC_A  // Credit note type A
+  NC_B  // Credit note type B
+  NC_C  // Credit note type C
+  ND_A  // Debit note type A
+  ND_B  // Debit note type B
+}
+
 // ----------------------------------------
 // USER & ACCOUNT MANAGEMENT
 // ----------------------------------------
@@ -95,6 +108,8 @@ model User {
   email     String   @unique
   password  String?  // Made optional for OAuth users
   name      String?
+  phone     String?  // Phone number for SMS notifications and delivery contact
+  taxId     String?  // CUIT/CUIL for invoicing (required for B2B transactions in Argentina)
   role      Role     @default(CUSTOMER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,6 +138,7 @@ model Address {
   city      String
   province  String     
   zipCode   String
+  phone     String?   // Contact phone for deliveries (required by most carriers in Argentina)
   neighborhood String? // Barrio - important in Argentina
   floor     String?    // Piso (for apartments)
   apartment String?    // Departamento
@@ -341,6 +357,7 @@ model Order {
   orderNumber     String      @unique @default(cuid()) // More user-friendly order identifier
   status          OrderStatus @default(PENDING)
   totalAmount     Decimal     // Total amount including taxes, shipping, discounts
+  currency        String      @default("ARS") // ISO currency code (ARS for Argentine Peso)
   orderDate       DateTime    @default(now())
   notes           String?     // Customer notes
   createdAt       DateTime    @default(now())
@@ -357,6 +374,7 @@ model Order {
 
   items           OrderItem[]
   payment         Payment?
+  invoice         Invoice?
 
   appliedDiscountId String?
   appliedDiscount   Discount? @relation("OrderDiscounts", fields: [appliedDiscountId], references: [id], onDelete:SetNull)
@@ -400,15 +418,20 @@ model OrderTracking {
 }
 
 model Payment {
-  id            String        @id @default(cuid())
-  amount        Decimal
-  paymentMethod PaymentMethod // e.g., "stripe", "paypal", "credit_card" (Consider an enum)
-  transactionId String?       @unique // From payment gateway
-  status        PaymentStatus @default(PENDING)
-  paymentDate   DateTime?     // When payment was successful
-  metadata      Json?         // Additional gateway details
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id               String        @id @default(cuid())
+  amount           Decimal
+  currency         String        @default("ARS") // ISO currency code (ARS for Argentine Peso)
+  paymentMethod    PaymentMethod // e.g., "stripe", "paypal", "credit_card" (Consider an enum)
+  transactionId    String?       @unique // From payment gateway
+  status           PaymentStatus @default(PENDING)
+  paymentDate      DateTime?     // When payment was successful
+  installments     Int?          // Number of installments (common in Argentina: 3, 6, 12, 18 cuotas)
+  installmentAmount Decimal?     // Amount per installment
+  installmentPlan  String?       // Description of the installment plan (e.g., "3 cuotas sin interés")
+  paymentProviderReference String? // Payment provider's reference (e.g. MercadoPago operation ID)
+  metadata         Json?         // Additional gateway details
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   orderId       String        @unique // Each order has one primary payment record
   order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -416,6 +439,34 @@ model Payment {
   @@index([orderId])
   @@index([transactionId])
   @@index([status])
+}
+
+model Invoice {
+  id              String      @id @default(cuid())
+  invoiceNumber   String      @unique // AFIP assigned document number
+  pointOfSale     Int         // Punto de Venta (POS) number registered in AFIP
+  type            InvoiceType // A, B, C, etc.
+  cae             String?     // CAE number (Electronic Authorization Code)
+  caeExpirationDate DateTime? // When the CAE expires
+  issueDate       DateTime    @default(now()) // When the invoice was issued
+  netAmount       Decimal     // Amount before taxes
+  taxAmount       Decimal     // Tax amount (IVA)
+  totalAmount     Decimal     // Total with taxes
+  taxBreakdown    Json?       // Detailed tax breakdown (different IVA rates: 21%, 10.5%, etc.)
+  recipientTaxId  String?     // Customer's CUIT/CUIL
+  recipientName   String?     // Customer's legal name
+  recipientType   String?     // Responsible inscripto, consumidor final, etc.
+  notes           String?     // Additional fiscal notes
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  orderId         String      @unique // Each order has one invoice
+  order           Order       @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  
+  @@index([invoiceNumber])
+  @@index([cae])
+  @@index([issueDate])
+  @@index([orderId])
 }
 
 model ShippingMethod {
