@@ -13,6 +13,9 @@ export class CartService {
   ) {}
   
   async getCart(userId: string): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
     let cart = await this.prisma.cart.findUnique({
       where: { userId },
       include: {
@@ -67,6 +70,9 @@ export class CartService {
   }
 
   async addToCart(userId: string, addToCartDto: AddToCartDto): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
     const { productVariantId, quantity } = addToCartDto;
 
     const variant = await this.productsService.findVariantAndVerifyStock(
@@ -151,6 +157,9 @@ export class CartService {
   }
 
   async updateCartItem(userId: string, itemId: string, quantity: number): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
     if (quantity <= 0) {
       throw new BadRequestException('Quantity must be greater than 0');
     }
@@ -191,6 +200,9 @@ export class CartService {
   }
 
   async removeFromCart(userId: string, itemId: string): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
     const cartItem = await this.prisma.cartItem.findFirst({
       where: {
         id: itemId,
@@ -210,6 +222,9 @@ export class CartService {
   }
 
   async clearCart(userId: string): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User ID is required');
+    }
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
     });

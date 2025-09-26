@@ -9,7 +9,7 @@ import {
   Delete, 
   UseGuards,
   UsePipes,
-  Request 
+  BadRequestException 
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -23,32 +23,47 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Get()
-  getCart(@Request() req: any): Promise<any> {
-    return this.cartService.getCart(req.user.sub);
+  getCart(@GetUser('id') userId: string): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User not authenticated');
+    }
+    return this.cartService.getCart(userId);
   }
 
   @Post('items')
   @UsePipes(new ZodValidationPipe(AddToCartSchema))
-  addToCart(@Request() req: any, @Body() addToCartDto: AddToCartDto): Promise<any> {
-    return this.cartService.addToCart(req.user.sub, addToCartDto);
+  addToCart(@GetUser('id') userId: string, @Body() addToCartDto: AddToCartDto): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User not authenticated');
+    }
+    return this.cartService.addToCart(userId, addToCartDto);
   }
 
   @Patch('items/:itemId')
   updateCartItem(
-    @Request() req: any,
+    @GetUser('id') userId: string,
     @Param('itemId') itemId: string,
     @Body('quantity') quantity: number,
   ): Promise<any> {
-    return this.cartService.updateCartItem(req.user.sub, itemId, quantity);
+    if (!userId) {
+      throw new BadRequestException('User not authenticated');
+    }
+    return this.cartService.updateCartItem(userId, itemId, quantity);
   }
 
   @Delete('items/:itemId')
-  removeFromCart(@Request() req: any, @Param('itemId') itemId: string): Promise<any> {
-    return this.cartService.removeFromCart(req.user.sub, itemId);
+  removeFromCart(@GetUser('id') userId: string, @Param('itemId') itemId: string): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User not authenticated');
+    }
+    return this.cartService.removeFromCart(userId, itemId);
   }
 
   @Delete()
-  clearCart(@Request() req: any): Promise<any> {
-    return this.cartService.clearCart(req.user.sub);
+  clearCart(@GetUser('id') userId: string): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('User not authenticated');
+    }
+    return this.cartService.clearCart(userId);
   }
 }
