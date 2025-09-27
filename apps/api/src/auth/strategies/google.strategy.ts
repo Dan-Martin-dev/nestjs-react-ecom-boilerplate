@@ -12,7 +12,9 @@ try {
   // leave null and handle below
 }
 
-const GoogleBase: any = GooglePassportStrategy ? PassportStrategy(GooglePassportStrategy, 'google') : class {};
+const GoogleBase: any = GooglePassportStrategy
+  ? PassportStrategy(GooglePassportStrategy, 'google')
+  : class {};
 
 @Injectable()
 export class GoogleStrategy extends GoogleBase {
@@ -21,7 +23,9 @@ export class GoogleStrategy extends GoogleBase {
     // skip calling super() and keep a no-op provider so module import doesn't fail.
     if (!GooglePassportStrategy) {
       // Use console here because `this` is not available before super()
-      console.warn('passport-google-oauth20 not installed — Google OAuth disabled');
+      console.warn(
+        'passport-google-oauth20 not installed — Google OAuth disabled',
+      );
       super();
       return;
     }
@@ -30,7 +34,10 @@ export class GoogleStrategy extends GoogleBase {
       clientID: configService.get<string>('GOOGLE_CLIENT_ID') || '',
       clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET') || '',
       // Ensure callback points to the API route (NestJS global prefix 'api/v1') when running locally
-      callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL', 'http://localhost:3001/api/v1/auth/google/callback'),
+      callbackURL: configService.get<string>(
+        'GOOGLE_CALLBACK_URL',
+        'http://localhost:3001/api/v1/auth/google/callback',
+      ),
       scope: ['email', 'profile'],
     });
   }

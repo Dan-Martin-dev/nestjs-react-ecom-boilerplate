@@ -10,8 +10,14 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { DiscountsService } from './discounts.service';
-import { CreateDiscountDto, CreateDiscountSchema } from './dto/create-discount.dto';
-import { UpdateDiscountDto, UpdateDiscountSchema } from './dto/update-discount.dto';
+import {
+  CreateDiscountDto,
+  CreateDiscountSchema,
+} from './dto/create-discount.dto';
+import {
+  UpdateDiscountDto,
+  UpdateDiscountSchema,
+} from './dto/update-discount.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -56,7 +62,10 @@ export class DiscountsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(UpdateDiscountSchema))
-  update(@Param('id') id: string, @Body() updateDiscountDto: UpdateDiscountDto): Promise<any> {
+  update(
+    @Param('id') id: string,
+    @Body() updateDiscountDto: UpdateDiscountDto,
+  ): Promise<any> {
     return this.discountsService.update(id, updateDiscountDto);
   }
 

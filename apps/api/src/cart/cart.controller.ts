@@ -1,15 +1,15 @@
 // monorepo-ecom/backend/src/cart/cart.controller.ts
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
   UseGuards,
   UsePipes,
-  BadRequestException 
+  BadRequestException,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -32,7 +32,10 @@ export class CartController {
 
   @Post('items')
   @UsePipes(new ZodValidationPipe(AddToCartSchema))
-  addToCart(@GetUser('id') userId: string, @Body() addToCartDto: AddToCartDto): Promise<any> {
+  addToCart(
+    @GetUser('id') userId: string,
+    @Body() addToCartDto: AddToCartDto,
+  ): Promise<any> {
     if (!userId) {
       throw new BadRequestException('User not authenticated');
     }
@@ -52,7 +55,10 @@ export class CartController {
   }
 
   @Delete('items/:itemId')
-  removeFromCart(@GetUser('id') userId: string, @Param('itemId') itemId: string): Promise<any> {
+  removeFromCart(
+    @GetUser('id') userId: string,
+    @Param('itemId') itemId: string,
+  ): Promise<any> {
     if (!userId) {
       throw new BadRequestException('User not authenticated');
     }

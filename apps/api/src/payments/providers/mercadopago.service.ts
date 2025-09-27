@@ -13,20 +13,24 @@ export class MercadoPagoService {
     private prisma: PrismaService,
   ) {}
 
-  async processPayment(order: any, paymentDto: ProcessPaymentDto): Promise<any> {
+  async processPayment(
+    order: any,
+    paymentDto: ProcessPaymentDto,
+  ): Promise<any> {
     try {
       // In a real implementation, we would initialize the MercadoPago SDK here
       // const mercadopago = require('mercadopago');
       // mercadopago.configure({
       //   access_token: this.configService.get('MERCADO_PAGO_ACCESS_TOKEN'),
       // });
-      
+
       this.logger.log(`Processing MercadoPago payment for order ${order.id}`);
-      
+
       // For demonstration purposes, we'll simulate a successful payment
       const installments = paymentDto.installments || 1;
-      const installmentAmount = Number(order.payment?.amount || 0) / installments;
-      
+      const installmentAmount =
+        Number(order.payment?.amount || 0) / installments;
+
       // In a real implementation, we would create a payment in MercadoPago
       // const paymentData = {
       //   transaction_amount: Number(order.payment.amount),
@@ -39,7 +43,7 @@ export class MercadoPagoService {
       //   },
       // };
       // const payment = await mercadopago.payment.create(paymentData);
-      
+
       // Simulate response
       const mockPaymentResponse = {
         status: 'approved',
@@ -50,7 +54,7 @@ export class MercadoPagoService {
           net_received_amount: order.payment?.amount,
         },
       };
-      
+
       return {
         status: PaymentStatus.SUCCESSFUL,
         transactionId: mockPaymentResponse.id,
@@ -67,8 +71,13 @@ export class MercadoPagoService {
         },
       };
     } catch (error: any) {
-      this.logger.error(`Error processing MercadoPago payment: ${error.message}`, error.stack);
-      throw new Error(`Failed to process MercadoPago payment: ${error.message}`);
+      this.logger.error(
+        `Error processing MercadoPago payment: ${error.message}`,
+        error.stack,
+      );
+      throw new Error(
+        `Failed to process MercadoPago payment: ${error.message}`,
+      );
     }
   }
 
@@ -106,15 +115,20 @@ export class MercadoPagoService {
   async handleWebhook(webhookData: any): Promise<any> {
     try {
       this.logger.log('Received MercadoPago webhook', webhookData);
-      
+
       // In a real implementation, we would validate the webhook data
       // and update the payment status accordingly
-      
+
       // For demonstration purposes, we'll just log the webhook data
       return { success: true, message: 'Webhook processed successfully' };
     } catch (error: any) {
-      this.logger.error(`Error processing MercadoPago webhook: ${error.message}`, error.stack);
-      throw new Error(`Failed to process MercadoPago webhook: ${error.message}`);
+      this.logger.error(
+        `Error processing MercadoPago webhook: ${error.message}`,
+        error.stack,
+      );
+      throw new Error(
+        `Failed to process MercadoPago webhook: ${error.message}`,
+      );
     }
   }
 }

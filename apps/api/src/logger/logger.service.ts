@@ -18,15 +18,15 @@ export class LoggerService {
       format: logFormat,
       transports: [
         new transports.Console({
-          format: format.combine(
-            format.colorize(),
-            format.simple(),
-          ),
+          format: format.combine(format.colorize(), format.simple()),
         }),
         // Add file transport for production
         ...(this.configService.get('NODE_ENV') === 'production'
           ? [
-              new transports.File({ filename: 'logs/error.log', level: 'error' }),
+              new transports.File({
+                filename: 'logs/error.log',
+                level: 'error',
+              }),
               new transports.File({ filename: 'logs/combined.log' }),
             ]
           : []),

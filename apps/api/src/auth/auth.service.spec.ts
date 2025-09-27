@@ -85,7 +85,9 @@ describe('AuthService', () => {
       const result = await service.register(registerDto);
 
       // Assert: Verify that the mocks were called correctly and the result is as expected
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { email: registerDto.email } });
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: registerDto.email },
+      });
       expect(configService.get).toHaveBeenCalledWith('BCRYPT_SALT_ROUNDS');
       expect(bcryptHash).toHaveBeenCalledWith(registerDto.password, 10);
       expect(prisma.user.create).toHaveBeenCalledWith({
@@ -114,13 +116,17 @@ describe('AuthService', () => {
 
     it('should throw ConflictException if user already exists', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(createdUser);
-      await expect(service.register(registerDto)).rejects.toThrow(ConflictException);
+      await expect(service.register(registerDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should throw InternalServerErrorException if salt rounds are not configured', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       mockConfigService.get.mockReturnValue(undefined);
-      await expect(service.register(registerDto)).rejects.toThrow(InternalServerErrorException);
+      await expect(service.register(registerDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
@@ -143,8 +149,13 @@ describe('AuthService', () => {
 
       const result = await service.login(loginDto);
 
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { email: loginDto.email } });
-      expect(bcryptCompare).toHaveBeenCalledWith(loginDto.password, userInDb.password);
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: loginDto.email },
+      });
+      expect(bcryptCompare).toHaveBeenCalledWith(
+        loginDto.password,
+        userInDb.password,
+      );
       expect(jwtService.signAsync).toHaveBeenCalledWith({
         sub: userInDb.id,
         email: userInDb.email,
@@ -163,13 +174,17 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException if user is not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw UnauthorizedException if password does not match', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(userInDb);
       bcryptCompare.mockResolvedValue(false);
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

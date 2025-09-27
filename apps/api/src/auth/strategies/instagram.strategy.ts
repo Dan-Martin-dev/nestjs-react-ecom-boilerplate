@@ -9,13 +9,17 @@ try {
   // optional dependency may be missing in some deploys
 }
 
-const InstagramBase: any = InstagramPassportStrategy ? PassportStrategy(InstagramPassportStrategy, 'instagram') : class {};
+const InstagramBase: any = InstagramPassportStrategy
+  ? PassportStrategy(InstagramPassportStrategy, 'instagram')
+  : class {};
 
 @Injectable()
 export class InstagramStrategy extends InstagramBase {
   constructor(private configService: ConfigService) {
     if (!InstagramPassportStrategy) {
-      console.warn('passport-instagram not installed — Instagram OAuth disabled');
+      console.warn(
+        'passport-instagram not installed — Instagram OAuth disabled',
+      );
       super();
       return;
     }
@@ -23,9 +27,11 @@ export class InstagramStrategy extends InstagramBase {
     super({
       clientID: configService.get<string>('INSTAGRAM_CLIENT_ID') || '',
       clientSecret: configService.get<string>('INSTAGRAM_CLIENT_SECRET') || '',
-      callbackURL: configService.get<string>('INSTAGRAM_CALLBACK_URL', 'http://localhost:3001/api/v1/auth/instagram/callback'),
+      callbackURL: configService.get<string>(
+        'INSTAGRAM_CALLBACK_URL',
+        'http://localhost:3001/api/v1/auth/instagram/callback',
+      ),
     });
-
   }
 
   async validate(

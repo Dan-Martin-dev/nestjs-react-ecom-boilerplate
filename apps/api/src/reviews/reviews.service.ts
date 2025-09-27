@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
@@ -34,13 +39,16 @@ export class ReviewsService {
     });
 
     if (!hasPurchased) {
-      throw new BadRequestException('You can only review products you have purchased');
+      throw new BadRequestException(
+        'You can only review products you have purchased',
+      );
     }
 
     // Check if user already reviewed this product
     const existingReview = await this.prisma.review.findUnique({
       where: {
-        userId_productId: { // Unique constraint in schema.prisma
+        userId_productId: {
+          // Unique constraint in schema.prisma
           userId,
           productId,
         },
@@ -60,7 +68,8 @@ export class ReviewsService {
         comment,
       },
       include: {
-        user: { // Include user info in the response
+        user: {
+          // Include user info in the response
           select: {
             id: true,
             name: true,
@@ -72,7 +81,12 @@ export class ReviewsService {
 
   async findProductReviews(productId: string, paginationDto: PaginationDto) {
     // FIX: Added default values for page (1) and limit (10).
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = paginationDto;
     const skip = (page - 1) * limit;
 
     // Check if product exists
@@ -92,7 +106,8 @@ export class ReviewsService {
         take: limit,
         orderBy: { [sortBy]: sortOrder },
         include: {
-          user: { // Include user info
+          user: {
+            // Include user info
             select: {
               id: true,
               name: true,
@@ -127,17 +142,25 @@ export class ReviewsService {
         totalPages: Math.ceil(total / limit),
         averageRating: averageRating._avg.rating || 0, // Default to 0 if no reviews
         totalReviews: averageRating._count.rating,
-        ratingDistribution: ratingDistribution.reduce((acc, item) => {
-          acc[item.rating] = item._count.rating;
-          return acc;
-        }, {} as Record<number, number>), // Map rating to count
+        ratingDistribution: ratingDistribution.reduce(
+          (acc, item) => {
+            acc[item.rating] = item._count.rating;
+            return acc;
+          },
+          {} as Record<number, number>,
+        ), // Map rating to count
       },
     };
   }
 
   async findUserReviews(userId: string, paginationDto: PaginationDto) {
     // FIX: Added default values for page (1) and limit (10).
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = paginationDto;
     const skip = (page - 1) * limit;
 
     const [reviews, total] = await Promise.all([
@@ -147,12 +170,14 @@ export class ReviewsService {
         take: limit,
         orderBy: { [sortBy]: sortOrder },
         include: {
-          product: { // Include product info
+          product: {
+            // Include product info
             select: {
               id: true,
               name: true,
               slug: true,
-              images: { // Include default image
+              images: {
+                // Include default image
                 where: { isDefault: true },
                 take: 1,
               },
@@ -175,7 +200,8 @@ export class ReviewsService {
     };
   }
 
-  async update(userId: string, reviewId: string, updateReviewDto: any) { // Consider a specific UpdateReviewDto
+  async update(userId: string, reviewId: string, updateReviewDto: any) {
+    // Consider a specific UpdateReviewDto
     const review = await this.prisma.review.findUnique({
       where: { id: reviewId },
     });
@@ -194,7 +220,8 @@ export class ReviewsService {
       where: { id: reviewId },
       data: updateReviewDto,
       include: {
-        user: { // Include user info in the response
+        user: {
+          // Include user info in the response
           select: {
             id: true,
             name: true,

@@ -1,5 +1,14 @@
 // monorepo-ecom/backend/src/auth/auth.controller.ts
-import { Controller, Post, Body, UsePipes, UseGuards, Get, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UsePipes,
+  UseGuards,
+  Get,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { RegisterDto, RegisterSchema } from './dto/register.dto';
@@ -50,11 +59,15 @@ export class AuthController {
       const result = await this.authService.validateOAuthUser(req.user);
       // Redirect to frontend with tokens
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(`${frontendUrl}/auth/callback?token=${result.access_token}&provider=google`);
+      res.redirect(
+        `${frontendUrl}/auth/callback?token=${result.access_token}&provider=google`,
+      );
     } catch (error) {
       console.error('Google OAuth error:', error);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(`${frontendUrl}/auth/callback?error=auth_failed&provider=google`);
+      res.redirect(
+        `${frontendUrl}/auth/callback?error=auth_failed&provider=google`,
+      );
     }
   }
 
@@ -67,15 +80,22 @@ export class AuthController {
 
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuthCallback(@Req() req: RequestWithUser, @Res() res: Response) {
+  async facebookAuthCallback(
+    @Req() req: RequestWithUser,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.authService.validateOAuthUser(req.user);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(`${frontendUrl}/auth/callback?token=${result.access_token}&provider=facebook`);
+      res.redirect(
+        `${frontendUrl}/auth/callback?token=${result.access_token}&provider=facebook`,
+      );
     } catch (error) {
       console.error('Facebook OAuth error:', error);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(`${frontendUrl}/auth/callback?error=auth_failed&provider=facebook`);
+      res.redirect(
+        `${frontendUrl}/auth/callback?error=auth_failed&provider=facebook`,
+      );
     }
   }
 
@@ -88,15 +108,22 @@ export class AuthController {
 
   @Get('instagram/callback')
   @UseGuards(AuthGuard('instagram'))
-  async instagramAuthCallback(@Req() req: RequestWithUser, @Res() res: Response) {
+  async instagramAuthCallback(
+    @Req() req: RequestWithUser,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.authService.validateOAuthUser(req.user);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(`${frontendUrl}/auth/callback?token=${result.access_token}&provider=instagram`);
+      res.redirect(
+        `${frontendUrl}/auth/callback?token=${result.access_token}&provider=instagram`,
+      );
     } catch (error) {
       console.error('Instagram OAuth error:', error);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      res.redirect(`${frontendUrl}/auth/callback?error=auth_failed&provider=instagram`);
+      res.redirect(
+        `${frontendUrl}/auth/callback?error=auth_failed&provider=instagram`,
+      );
     }
   }
 }

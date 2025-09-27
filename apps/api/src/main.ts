@@ -19,8 +19,12 @@ async function bootstrap() {
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
   ];
-  const configured = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
-  const allowedOrigins = Array.from(new Set([...configured, ...defaultOrigins]));
+  const configured = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : [];
+  const allowedOrigins = Array.from(
+    new Set([...configured, ...defaultOrigins]),
+  );
 
   app.enableCors({
     origin: allowedOrigins,
@@ -33,20 +37,24 @@ async function bootstrap() {
 
   // Global input validation
   const { ValidationPipe } = await import('@nestjs/common');
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
-  
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
   // Security middleware
   app.use(helmet());
-  app.use(rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    standardHeaders: true,
-    legacyHeaders: false,
-  }));
+  app.use(
+    rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 100, // limit each IP to 100 requests per windowMs
+      standardHeaders: true,
+      legacyHeaders: false,
+    }),
+  );
 
   // Exception filter
   const httpAdapter = app.get(HttpAdapterHost);

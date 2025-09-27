@@ -29,9 +29,9 @@ describe('AuthController', () => {
         },
       ],
     })
-    .overridePipe(ZodValidationPipe)
-    .useValue(new ZodValidationPipe(RegisterSchema)) // Use a mock instance
-    .compile();
+      .overridePipe(ZodValidationPipe)
+      .useValue(new ZodValidationPipe(RegisterSchema)) // Use a mock instance
+      .compile();
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<AuthService>(AuthService);
@@ -48,7 +48,10 @@ describe('AuthController', () => {
         email: 'test@example.com',
         password: 'password123',
       };
-      const expectedResult = { user: { id: '1', email: 'test@example.com' }, access_token: 'token' };
+      const expectedResult = {
+        user: { id: '1', email: 'test@example.com' },
+        access_token: 'token',
+      };
       mockAuthService.register.mockResolvedValue(expectedResult);
 
       const result = await controller.register(registerDto);
@@ -64,7 +67,10 @@ describe('AuthController', () => {
         email: 'test@example.com',
         password: 'password123',
       };
-      const expectedResult = { user: { id: '1', email: 'test@example.com' }, access_token: 'token' };
+      const expectedResult = {
+        user: { id: '1', email: 'test@example.com' },
+        access_token: 'token',
+      };
       mockAuthService.login.mockResolvedValue(expectedResult);
 
       const result = await controller.login(loginDto);

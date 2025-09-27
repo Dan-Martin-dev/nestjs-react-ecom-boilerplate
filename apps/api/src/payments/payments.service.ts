@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProcessPaymentDto } from './dto/process-payment.dto';
 import { PaymentMethod, PaymentStatus } from '@repo/db';
@@ -17,7 +22,11 @@ export class PaymentsService {
     private pagoFacilService: PagoFacilService,
   ) {}
 
-  async processPayment(orderId: string, userId: string, processPaymentDto: ProcessPaymentDto): Promise<any> {
+  async processPayment(
+    orderId: string,
+    userId: string,
+    processPaymentDto: ProcessPaymentDto,
+  ): Promise<any> {
     // Find the order and verify ownership
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
@@ -40,7 +49,9 @@ export class PaymentsService {
     }
 
     if (order.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to process payment for this order');
+      throw new ForbiddenException(
+        'You do not have permission to process payment for this order',
+      );
     }
 
     if (!order.payment) {
@@ -48,7 +59,9 @@ export class PaymentsService {
     }
 
     if (order.payment.status === PaymentStatus.SUCCESSFUL) {
-      throw new BadRequestException('Payment for this order has already been processed');
+      throw new BadRequestException(
+        'Payment for this order has already been processed',
+      );
     }
 
     const { paymentMethod } = processPaymentDto;
@@ -58,22 +71,39 @@ export class PaymentsService {
     try {
       switch (paymentMethod) {
         case PaymentMethod.MERCADO_PAGO:
-          paymentResult = await this.mercadoPagoService.processPayment(order, processPaymentDto);
+          paymentResult = await this.mercadoPagoService.processPayment(
+            order,
+            processPaymentDto,
+          );
           break;
         case PaymentMethod.RAPIPAGO:
-          paymentResult = await this.rapiPagoService.processPayment(order, processPaymentDto);
+          paymentResult = await this.rapiPagoService.processPayment(
+            order,
+            processPaymentDto,
+          );
           break;
         case PaymentMethod.PAGO_FACIL:
-          paymentResult = await this.pagoFacilService.processPayment(order, processPaymentDto);
+          paymentResult = await this.pagoFacilService.processPayment(
+            order,
+            processPaymentDto,
+          );
           break;
         case PaymentMethod.CREDIT_CARD:
-          paymentResult = await this.processCreditCardPayment(order, processPaymentDto);
+          paymentResult = await this.processCreditCardPayment(
+            order,
+            processPaymentDto,
+          );
           break;
         case PaymentMethod.BANK_TRANSFER:
-          paymentResult = await this.processBankTransferPayment(order, processPaymentDto);
+          paymentResult = await this.processBankTransferPayment(
+            order,
+            processPaymentDto,
+          );
           break;
         default:
-          throw new BadRequestException(`Payment method ${paymentMethod} not supported`);
+          throw new BadRequestException(
+            `Payment method ${paymentMethod} not supported`,
+          );
       }
     } catch (error: any) {
       // Update payment status to failed
@@ -81,8 +111,10 @@ export class PaymentsService {
         where: { id: order.payment.id },
         data: {
           status: PaymentStatus.FAILED,
-          metadata: { 
-            error: error.message || 'Unknown error occurred during payment processing' 
+          metadata: {
+            error:
+              error.message ||
+              'Unknown error occurred during payment processing',
           },
         },
       });
@@ -90,7 +122,13 @@ export class PaymentsService {
     }
 
     // Update the payment record with the payment result
-    const { status, transactionId, paymentProviderReference, installments, installmentAmount } = paymentResult;
+    const {
+      status,
+      transactionId,
+      paymentProviderReference,
+      installments,
+      installmentAmount,
+    } = paymentResult;
 
     const updatedPayment = await this.prisma.payment.update({
       where: { id: order.payment.id },
@@ -100,9 +138,11 @@ export class PaymentsService {
         paymentProviderReference,
         installments,
         installmentAmount: installmentAmount?.toString(),
-        installmentPlan: processPaymentDto.installments ? 
-          `${processPaymentDto.installments} cuotas` : undefined,
-        paymentDate: status === PaymentStatus.SUCCESSFUL ? new Date() : undefined,
+        installmentPlan: processPaymentDto.installments
+          ? `${processPaymentDto.installments} cuotas`
+          : undefined,
+        paymentDate:
+          status === PaymentStatus.SUCCESSFUL ? new Date() : undefined,
         metadata: paymentResult.metadata || {},
       },
     });
@@ -135,7 +175,9 @@ export class PaymentsService {
     }
 
     if (payment.order.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to view this payment information');
+      throw new ForbiddenException(
+        'You do not have permission to view this payment information',
+      );
     }
 
     return payment;
@@ -159,7 +201,8 @@ export class PaymentsService {
       {
         id: PaymentMethod.MERCADO_PAGO,
         name: 'MercadoPago',
-        description: 'Pay with MercadoPago - the most popular payment method in Argentina',
+        description:
+          'Pay with MercadoPago - the most popular payment method in Argentina',
         supportsInstallments: true,
       },
       {
@@ -191,14 +234,19 @@ export class PaymentsService {
     return supportedMethods;
   }
 
-  async getInstallmentPlans(paymentMethod: string, amount: number): Promise<any> {
+  async getInstallmentPlans(
+    paymentMethod: string,
+    amount: number,
+  ): Promise<any> {
     switch (paymentMethod) {
       case PaymentMethod.MERCADO_PAGO:
         return this.mercadoPagoService.getInstallmentPlans(amount);
       case PaymentMethod.CREDIT_CARD:
         return this.getCreditCardInstallmentPlans(amount);
       default:
-        return { message: 'This payment method does not support installment plans' };
+        return {
+          message: 'This payment method does not support installment plans',
+        };
     }
   }
 
@@ -225,16 +273,21 @@ export class PaymentsService {
   }
 
   // Helper methods for different payment types
-  private async processCreditCardPayment(order: any, paymentDto: ProcessPaymentDto): Promise<any> {
+  private async processCreditCardPayment(
+    order: any,
+    paymentDto: ProcessPaymentDto,
+  ): Promise<any> {
     // Implement credit card processing logic - this would integrate with a payment gateway
     // For demo purposes, we'll simulate a successful payment
-    
+
     return {
       status: PaymentStatus.SUCCESSFUL,
       transactionId: `cc-${Date.now()}`,
       installments: paymentDto.installments,
-      installmentAmount: paymentDto.installments && order.payment?.amount ? 
-        Number(order.payment.amount) / paymentDto.installments : undefined,
+      installmentAmount:
+        paymentDto.installments && order.payment?.amount
+          ? Number(order.payment.amount) / paymentDto.installments
+          : undefined,
       message: 'Credit card payment successful',
       details: {
         last4: paymentDto.cardNumber?.slice(-4) || '0000',
@@ -243,17 +296,21 @@ export class PaymentsService {
     };
   }
 
-  private async processBankTransferPayment(order: any, paymentDto: ProcessPaymentDto): Promise<any> {
+  private async processBankTransferPayment(
+    order: any,
+    paymentDto: ProcessPaymentDto,
+  ): Promise<any> {
     // Implement bank transfer processing logic
     // For demo purposes, we'll simulate a pending payment
-    
+
     return {
       status: PaymentStatus.PENDING,
       transactionId: `bt-${Date.now()}`,
       paymentProviderReference: `TRANSFER-${order.orderNumber}`,
       installments: 1, // Bank transfers don't support installments
       installmentAmount: order.payment?.amount,
-      message: 'Bank transfer initiated. Please complete the transfer within 48 hours.',
+      message:
+        'Bank transfer initiated. Please complete the transfer within 48 hours.',
       details: {
         bankAccount: 'BA-DEMO-ACCOUNT',
         reference: `ORDER-${order.orderNumber}`,

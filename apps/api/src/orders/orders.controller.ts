@@ -1,15 +1,15 @@
 // monorepo-ecom/backend/src/orders/orders.controller.ts
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
   Query,
   UseGuards,
-  UsePipes, 
-  Request 
+  UsePipes,
+  Request,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -27,13 +27,19 @@ export class OrdersController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(CreateOrderSchema))
-  create(@Request() req: any, @Body() createOrderDto: CreateOrderDto): Promise<any> {
+  create(
+    @Request() req: any,
+    @Body() createOrderDto: CreateOrderDto,
+  ): Promise<any> {
     return this.ordersService.create(req.user.sub, createOrderDto);
   }
 
   @Get()
   @UsePipes(new ZodValidationPipe(PaginationSchema))
-  findUserOrders(@Request() req: any, @Query() paginationDto: PaginationDto): Promise<any> {
+  findUserOrders(
+    @Request() req: any,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<any> {
     return this.ordersService.findUserOrders(req.user.sub, paginationDto);
   }
 
@@ -46,7 +52,10 @@ export class OrdersController {
   }
 
   @Get(':orderNumber')
-  findOne(@Request() req: any, @Param('orderNumber') orderNumber: string): Promise<any> {
+  findOne(
+    @Request() req: any,
+    @Param('orderNumber') orderNumber: string,
+  ): Promise<any> {
     return this.ordersService.findOne(req.user.sub, orderNumber, req.user.role);
   }
 
@@ -61,7 +70,10 @@ export class OrdersController {
   }
 
   @Post(':orderNumber/cancel')
-  cancelOrder(@Request() req: any, @Param('orderNumber') orderNumber: string): Promise<any> {
+  cancelOrder(
+    @Request() req: any,
+    @Param('orderNumber') orderNumber: string,
+  ): Promise<any> {
     return this.ordersService.cancelOrder(req.user.sub, orderNumber);
   }
 }

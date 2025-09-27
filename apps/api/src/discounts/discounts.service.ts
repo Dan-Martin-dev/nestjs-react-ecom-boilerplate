@@ -15,11 +15,8 @@ export class DiscountsService {
    * (ADMIN) Creates a new discount and connects it to products/categories.
    */
   async create(createDiscountDto: CreateDiscountDto): Promise<any> {
-    const {
-      applicableProductIds,
-      applicableCategoryIds,
-      ...discountData
-    } = createDiscountDto;
+    const { applicableProductIds, applicableCategoryIds, ...discountData } =
+      createDiscountDto;
 
     return this.prisma.discount.create({
       data: {
@@ -72,14 +69,16 @@ export class DiscountsService {
       discount.usageLimit !== null &&
       discount.timesUsed >= discount.usageLimit
     ) {
-      throw new BadRequestException('This discount code has reached its usage limit.');
+      throw new BadRequestException(
+        'This discount code has reached its usage limit.',
+      );
     }
 
     // Return the valid discount object, excluding sensitive usage counts
     const { timesUsed, ...validatedDiscount } = discount;
     return validatedDiscount;
   }
-  
+
   /**
    * (ADMIN) Finds a single discount by its ID for management purposes.
    */
@@ -102,11 +101,8 @@ export class DiscountsService {
    * (ADMIN) Updates a discount. `set` is used to replace existing relations.
    */
   async update(id: string, updateDiscountDto: UpdateDiscountDto): Promise<any> {
-    const {
-      applicableProductIds,
-      applicableCategoryIds,
-      ...discountData
-    } = updateDiscountDto;
+    const { applicableProductIds, applicableCategoryIds, ...discountData } =
+      updateDiscountDto;
 
     await this.findOne(id); // Ensure discount exists
 

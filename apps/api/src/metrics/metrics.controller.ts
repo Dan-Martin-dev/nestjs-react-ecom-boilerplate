@@ -1,5 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { register, collectDefaultMetrics, Counter, Histogram } from 'prom-client';
+import {
+  register,
+  collectDefaultMetrics,
+  Counter,
+  Histogram,
+} from 'prom-client';
 
 // Create metrics
 const httpRequestsTotal = new Counter({

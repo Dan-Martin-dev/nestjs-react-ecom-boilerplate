@@ -41,7 +41,9 @@ export class UsersController {
   @Get()
   findAll(@Request() req: any): Promise<any> {
     if (req.user.role !== Role.ADMIN) {
-      throw new ForbiddenException('You do not have permission to access this resource.');
+      throw new ForbiddenException(
+        'You do not have permission to access this resource.',
+      );
     }
     return this.usersService.findAll();
   }
@@ -52,7 +54,9 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string, @Request() req: any): Promise<any> {
     if (req.user.role !== Role.ADMIN) {
-      throw new ForbiddenException('You do not have permission to access this resource.');
+      throw new ForbiddenException(
+        'You do not have permission to access this resource.',
+      );
     }
     return this.usersService.findOne(id);
   }
@@ -82,7 +86,9 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req: any): Promise<any> {
     if (req.user.role !== Role.ADMIN) {
-      throw new ForbiddenException('You do not have permission to perform this action.');
+      throw new ForbiddenException(
+        'You do not have permission to perform this action.',
+      );
     }
     return this.usersService.remove(id);
   }

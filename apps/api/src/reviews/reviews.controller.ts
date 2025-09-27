@@ -1,17 +1,17 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
   Query,
   UseGuards,
-  UsePipes, 
+  UsePipes,
   Request,
   Injectable,
-  Inject
+  Inject,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -26,7 +26,10 @@ export class ReviewsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(CreateReviewSchema))
-  create(@Request() req: any, @Body() createReviewDto: CreateReviewDto): Promise<any> {
+  create(
+    @Request() req: any,
+    @Body() createReviewDto: CreateReviewDto,
+  ): Promise<any> {
     return this.reviewsService.create(req.user.sub, createReviewDto);
   }
 
@@ -42,13 +45,20 @@ export class ReviewsController {
   @Get('user')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(PaginationSchema))
-  findUserReviews(@Request() req: any, @Query() paginationDto: PaginationDto): Promise<any> {
+  findUserReviews(
+    @Request() req: any,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<any> {
     return this.reviewsService.findUserReviews(req.user.sub, paginationDto);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Request() req: any, @Param('id') id: string, @Body() updateReviewDto: any): Promise<any> {
+  update(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() updateReviewDto: any,
+  ): Promise<any> {
     return this.reviewsService.update(req.user.sub, id, updateReviewDto);
   }
 

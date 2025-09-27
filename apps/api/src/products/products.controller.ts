@@ -1,14 +1,14 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  Query, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
   UseGuards,
-  UsePipes 
+  UsePipes,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -19,7 +19,10 @@ import { Role } from '@repo/db';
 // Import shared schemas
 import { CreateProductSchema } from '@repo/shared';
 import { CreateProductDto } from '../common/validators';
-import { ProductFilterDto, ProductFilterSchema } from './dto/product-filter.dto';
+import {
+  ProductFilterDto,
+  ProductFilterSchema,
+} from './dto/product-filter.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -29,13 +32,18 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(CreateProductSchema))
-  create(@Body() createProductDto: CreateProductDto): Promise<import('@repo/db').Product> {
+  create(
+    @Body() createProductDto: CreateProductDto,
+  ): Promise<import('@repo/db').Product> {
     return this.productsService.create(createProductDto);
   }
 
   @Get()
   @UsePipes(new ZodValidationPipe(ProductFilterSchema))
-  findAll(@Query() filterDto: ProductFilterDto): Promise<{ data: import('@repo/db').Product[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
+  findAll(@Query() filterDto: ProductFilterDto): Promise<{
+    data: import('@repo/db').Product[];
+    meta: { total: number; page: number; limit: number; totalPages: number };
+  }> {
     return this.productsService.findAll(filterDto);
   }
 
@@ -57,7 +65,10 @@ export class ProductsController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  update(@Param('id') id: string, @Body() updateProductDto: any): Promise<import('@repo/db').Product> {
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: any,
+  ): Promise<import('@repo/db').Product> {
     return this.productsService.update(id, updateProductDto);
   }
 

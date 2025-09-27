@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@repo/db';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from '../common/validators';
@@ -9,7 +13,9 @@ import { ProductDtoSchema } from '@repo/shared';
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createProductDto: CreateProductDto): Promise<import('@repo/db').Product> {
+  async create(
+    createProductDto: CreateProductDto,
+  ): Promise<import('@repo/db').Product> {
     const {
       name,
       slug,
@@ -31,11 +37,11 @@ export class ProductsService {
         metaTitle,
         metaDescription,
         categories: {
-          connect: categoryIds.map(id => ({ id })),
+          connect: categoryIds.map((id) => ({ id })),
         },
         images: images
           ? {
-              create: images.map(img => ({
+              create: images.map((img) => ({
                 url: img.url,
                 altText: img.altText ?? '',
                 isDefault: img.isDefault ?? false,
@@ -44,14 +50,14 @@ export class ProductsService {
           : undefined,
         variants: variants
           ? {
-              create: variants.map(variant => ({
+              create: variants.map((variant) => ({
                 name: variant.name,
                 sku: variant.sku,
                 price: variant.price.toString(),
                 stockQuantity: variant.stockQuantity,
                 ProductVariantAttribute: variant.attributes
                   ? {
-                      create: variant.attributes.map(attr => ({
+                      create: variant.attributes.map((attr) => ({
                         attributeId: attr.attributeId,
                         value: attr.value,
                       })),
@@ -77,21 +83,24 @@ export class ProductsService {
     });
   }
 
-  async findAll(filterDto: ProductFilterDto): Promise<{ data: import('@repo/db').Product[]; meta: { total: number; page: number; limit: number; totalPages: number } }> {
-    const { 
-      page, 
-      limit, 
-      sortBy, 
-      sortOrder, 
-      categoryId, 
-      minPrice, 
-      maxPrice, 
-      search, 
-      inStock 
+  async findAll(filterDto: ProductFilterDto): Promise<{
+    data: import('@repo/db').Product[];
+    meta: { total: number; page: number; limit: number; totalPages: number };
+  }> {
+    const {
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      categoryId,
+      minPrice,
+      maxPrice,
+      search,
+      inStock,
     } = filterDto;
 
     const skip = (page - 1) * limit;
-    
+
     const where: any = {
       isActive: true,
       deletedAt: null,
@@ -243,7 +252,10 @@ export class ProductsService {
     return product;
   }
 
-  async findVariantAndVerifyStock(variantId: string, requestedQuantity: number): Promise<import('@repo/db').ProductVariant> {
+  async findVariantAndVerifyStock(
+    variantId: string,
+    requestedQuantity: number,
+  ): Promise<import('@repo/db').ProductVariant> {
     const variant = await this.prisma.productVariant.findUnique({
       where: { id: variantId },
     });
@@ -252,12 +264,17 @@ export class ProductsService {
       throw new NotFoundException('Product variant not found');
     }
     if (variant.stockQuantity < requestedQuantity) {
-      throw new BadRequestException('Not enough stock available for this variant');
+      throw new BadRequestException(
+        'Not enough stock available for this variant',
+      );
     }
     return variant;
   }
 
-  async update(id: string, updateProductDto: any): Promise<import('@repo/db').Product> {
+  async update(
+    id: string,
+    updateProductDto: any,
+  ): Promise<import('@repo/db').Product> {
     // Implementation for updating product
     return this.prisma.product.update({
       where: { id },
@@ -280,9 +297,10 @@ export class ProductsService {
       },
     });
   }
-  
+
   // Simple in-memory TTL cache for bestsellers. In production use Redis or another distributed cache.
-  private static _bestsellersCache: Map<string, { ts: number; data: any[] }> = new Map();
+  private static _bestsellersCache: Map<string, { ts: number; data: any[] }> =
+    new Map();
   private static _BestsellersCacheTTL = 1000 * 60 * 10; // 10 minutes
 
   async getBestsellers(limit = 10, daysWindow?: number) {
@@ -290,7 +308,10 @@ export class ProductsService {
 
     // Return from cache if fresh
     const cached = ProductsService._bestsellersCache.get(cacheKey);
-    if (cached && Date.now() - cached.ts < ProductsService._BestsellersCacheTTL) {
+    if (
+      cached &&
+      Date.now() - cached.ts < ProductsService._BestsellersCacheTTL
+    ) {
       return cached.data;
     }
 
@@ -299,7 +320,9 @@ export class ProductsService {
       status: { in: ['SHIPPED', 'DELIVERED'] },
     };
     if (daysWindow && Number.isFinite(daysWindow)) {
-      orderWhere.createdAt = { gte: new Date(Date.now() - daysWindow * 24 * 60 * 60 * 1000) };
+      orderWhere.createdAt = {
+        gte: new Date(Date.now() - daysWindow * 24 * 60 * 60 * 1000),
+      };
     }
 
     // Aggregate order items by productVariantId and sum quantities.
@@ -314,9 +337,12 @@ export class ProductsService {
       take: limit * 5, // fetch more variants to account for multiple variants per product
     });
 
-    const variantIds = groups.map(g => g.productVariantId).filter(Boolean) as string[];
+    const variantIds = groups.map((g) => g.productVariantId).filter(Boolean);
     if (variantIds.length === 0) {
-      ProductsService._bestsellersCache.set(cacheKey, { ts: Date.now(), data: [] });
+      ProductsService._bestsellersCache.set(cacheKey, {
+        ts: Date.now(),
+        data: [],
+      });
       return [];
     }
 
@@ -330,9 +356,9 @@ export class ProductsService {
     const productTotals = new Map<string, number>();
     for (const g of groups) {
       const vid = g.productVariantId as string | null;
-      const qty = (g._sum?.quantity ?? 0) as number;
+      const qty = g._sum?.quantity ?? 0;
       if (!vid) continue;
-      const variant = variants.find(v => v.id === vid);
+      const variant = variants.find((v) => v.id === vid);
       const pid = variant?.productId;
       if (!pid) continue;
       productTotals.set(pid, (productTotals.get(pid) ?? 0) + qty);
@@ -355,11 +381,13 @@ export class ProductsService {
     });
 
     // Map products by id to preserve aggregate ordering
-    const productsMap = new Map(products.map(p => [p.id, p]));
-    const ordered = sortedProductIds.map(id => productsMap.get(id)).filter(Boolean) as any[];
+    const productsMap = new Map(products.map((p) => [p.id, p]));
+    const ordered = sortedProductIds
+      .map((id) => productsMap.get(id))
+      .filter(Boolean) as any[];
 
     // Map to DTOs and validate using Zod
-    const dtos = ordered.map(product => {
+    const dtos = ordered.map((product) => {
       const productDto = {
         id: product.id,
         name: product.name,
@@ -369,8 +397,19 @@ export class ProductsService {
         isActive: product.isActive,
         metaTitle: product.metaTitle || undefined,
         metaDescription: product.metaDescription || undefined,
-        images: product.images.map((img: any) => ({ id: img.id, url: img.url, altText: img.altText || undefined, isDefault: img.isDefault })),
-        variants: (product.variants || []).map((v: any) => ({ id: v.id, name: v.name, sku: v.sku, price: v.price, stockQuantity: v.stockQuantity })),
+        images: product.images.map((img: any) => ({
+          id: img.id,
+          url: img.url,
+          altText: img.altText || undefined,
+          isDefault: img.isDefault,
+        })),
+        variants: (product.variants || []).map((v: any) => ({
+          id: v.id,
+          name: v.name,
+          sku: v.sku,
+          price: v.price,
+          stockQuantity: v.stockQuantity,
+        })),
         _count: product._count,
         createdAt: product.createdAt?.toISOString?.(),
         updatedAt: product.updatedAt?.toISOString?.(),
@@ -379,7 +418,10 @@ export class ProductsService {
     });
 
     // Cache result
-    ProductsService._bestsellersCache.set(cacheKey, { ts: Date.now(), data: dtos });
+    ProductsService._bestsellersCache.set(cacheKey, {
+      ts: Date.now(),
+      data: dtos,
+    });
 
     return dtos;
   }

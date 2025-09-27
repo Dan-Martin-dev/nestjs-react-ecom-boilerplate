@@ -41,7 +41,9 @@ export class AuthService {
   }
 
   private refreshTokenExpiryDays() {
-    return Number(this.configService.get<number>('JWT_REFRESH_EXPIRATION_DAYS', 7));
+    return Number(
+      this.configService.get<number>('JWT_REFRESH_EXPIRATION_DAYS', 7),
+    );
   }
 
   private async createAndStoreRefreshToken(userId: string) {
@@ -69,7 +71,9 @@ export class AuthService {
     if (existingUser) {
       throw new ConflictException('User already exists');
     }
-    const saltRounds = Number(this.configService.get<number>('BCRYPT_SALT_ROUNDS', 10));
+    const saltRounds = Number(
+      this.configService.get<number>('BCRYPT_SALT_ROUNDS', 10),
+    );
     const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
     const user = await this.prisma.user.create({
       data: {
@@ -107,7 +111,11 @@ export class AuthService {
       where: { email: loginDto.email },
     });
 
-    if (!user || !user.password || !(await bcrypt.compare(loginDto.password, user.password))) {
+    if (
+      !user ||
+      !user.password ||
+      !(await bcrypt.compare(loginDto.password, user.password))
+    ) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -138,13 +146,18 @@ export class AuthService {
     const tokenHash = this.hashToken(refreshToken);
 
     return await this.prisma.$transaction(async (prisma) => {
-      const existing = await (prisma as any).refreshToken.findUnique({ where: { tokenHash } });
+      const existing = await (prisma as any).refreshToken.findUnique({
+        where: { tokenHash },
+      });
       if (!existing) {
         throw new UnauthorizedException('Refresh token not found');
       }
       if (existing.revoked) {
         // possible reuse attack — revoke all refresh tokens for the user
-        await (prisma as any).refreshToken.updateMany({ where: { userId: existing.userId }, data: { revoked: true } });
+        await (prisma as any).refreshToken.updateMany({
+          where: { userId: existing.userId },
+          data: { revoked: true },
+        });
         throw new UnauthorizedException('Refresh token revoked');
       }
       if (existing.expiresAt < new Date()) {
@@ -152,7 +165,9 @@ export class AuthService {
       }
 
       // Load user to ensure they still exist
-      const user = await prisma.user.findUnique({ where: { id: existing.userId } });
+      const user = await prisma.user.findUnique({
+        where: { id: existing.userId },
+      });
       if (!user) throw new UnauthorizedException('User not found');
 
       // Create new refresh token
@@ -161,16 +176,27 @@ export class AuthService {
       const days = this.refreshTokenExpiryDays();
       const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
-      const newToken = await (prisma as any).refreshToken.create({ data: { tokenHash: newHash, userId: user.id, expiresAt } });
+      const newToken = await (prisma as any).refreshToken.create({
+        data: { tokenHash: newHash, userId: user.id, expiresAt },
+      });
 
       // Revoke and link old token
-      await (prisma as any).refreshToken.update({ where: { id: existing.id }, data: { revoked: true, replacedById: newToken.id } });
+      await (prisma as any).refreshToken.update({
+        where: { id: existing.id },
+        data: { revoked: true, replacedById: newToken.id },
+      });
 
       // Issue new access token (stateless JWT)
-      const accessToken = await this.jwtService.signAsync({ sub: user.id, email: user.email, role: user.role }, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_EXPIRATION_TIME', '3600s'),
-      });
+      const accessToken = await this.jwtService.signAsync(
+        { sub: user.id, email: user.email, role: user.role },
+        {
+          secret: this.configService.get<string>('JWT_SECRET'),
+          expiresIn: this.configService.get<string>(
+            'JWT_EXPIRATION_TIME',
+            '3600s',
+          ),
+        },
+      );
 
       return { access_token: accessToken, refresh_token: newRaw };
     });
@@ -179,15 +205,21 @@ export class AuthService {
   // Revoke a refresh token (logout)
   async revokeRefreshToken(refreshToken: string) {
     const tokenHash = this.hashToken(refreshToken);
-    const existing = await (this.prisma as any).refreshToken.findUnique({ where: { tokenHash } });
+    const existing = await (this.prisma as any).refreshToken.findUnique({
+      where: { tokenHash },
+    });
     if (!existing) return { ok: true };
-    await (this.prisma as any).refreshToken.update({ where: { id: existing.id }, data: { revoked: true } });
+    await (this.prisma as any).refreshToken.update({
+      where: { id: existing.id },
+      data: { revoked: true },
+    });
     return { ok: true };
   }
 
   // Handle OAuth login/signup
   async validateOAuthUser(oauthUser: OAuthUser) {
-    const { provider, providerId, email, firstName, lastName, picture } = oauthUser;
+    const { provider, providerId, email, firstName, lastName, picture } =
+      oauthUser;
 
     // Try to find existing user by provider and providerId
     let user: any = await (this.prisma as any).user.findFirst({
@@ -205,7 +237,7 @@ export class AuthService {
         updatedAt: true,
         provider: true,
         providerId: true,
-      }
+      },
     });
 
     // If not found by provider, try to find by email (for account linking)
@@ -222,14 +254,15 @@ export class AuthService {
           updatedAt: true,
           provider: true,
           providerId: true,
-        }
+        },
       });
     }
 
     if (user) {
       // Update user info from OAuth provider
-      const name = firstName && lastName ? `${firstName} ${lastName}` : user.name;
-      
+      const name =
+        firstName && lastName ? `${firstName} ${lastName}` : user.name;
+
       // Update user with explicitly defined fields
       user = await (this.prisma as any).user.update({
         where: { id: user.id },
@@ -247,14 +280,17 @@ export class AuthService {
           updatedAt: true,
           provider: true,
           providerId: true,
-        }
+        },
       });
     } else {
       // Create new user
       user = await (this.prisma as any).user.create({
         data: {
           email: email || `${providerId}@${provider}.local`, // Fallback for providers without email
-          name: firstName && lastName ? `${firstName} ${lastName}` : firstName || `${provider} User`,
+          name:
+            firstName && lastName
+              ? `${firstName} ${lastName}`
+              : firstName || `${provider} User`,
           provider,
           providerId,
           password: '', // OAuth users use empty string password instead of null
@@ -268,7 +304,7 @@ export class AuthService {
           updatedAt: true,
           provider: true,
           providerId: true,
-        }
+        },
       });
     }
 

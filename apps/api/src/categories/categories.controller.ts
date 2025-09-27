@@ -1,13 +1,13 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
   UseGuards,
-  UsePipes 
+  UsePipes,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -16,7 +16,10 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@repo/db';
-import { CreateCategoryDto, CreateCategorySchema } from './dto/create-category.dto';
+import {
+  CreateCategoryDto,
+  CreateCategorySchema,
+} from './dto/create-category.dto';
 
 @Controller('categories')
 export class CategoriesController {

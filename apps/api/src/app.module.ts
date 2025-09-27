@@ -19,7 +19,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { UsersModule } from './users/users.module';
 
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'; 
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { CacheConfigModule } from './cache/cache.module';
@@ -47,10 +47,12 @@ import { MetricsModule } from './metrics/metrics.module';
     CacheConfigModule,
     LoggerModule,
     MetricsModule,
-    ThrottlerModule.forRoot([{
-      ttl: 60,  
-      limit: 5,  
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60,
+        limit: 5,
+      },
+    ]),
 
     // --- Register all modules here ---
     PrismaModule,
@@ -68,11 +70,12 @@ import { MetricsModule } from './metrics/metrics.module';
     // Make sure AuthGuardModule is imported at the app level
   ],
   controllers: [AppController], // Keep the basic app controller for root health checks
-  providers: [    
+  providers: [
     AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    },],   // Keep the basic app service
+    },
+  ], // Keep the basic app service
 })
 export class AppModule {}

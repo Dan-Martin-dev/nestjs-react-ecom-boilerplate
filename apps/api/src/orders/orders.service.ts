@@ -1,23 +1,35 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { OrderStatus, PaymentStatus, InventoryChangeType, Role, Discount, OrderTrackingStatus } from '@repo/db'; // Import from shared db package
+import {
+  OrderStatus,
+  PaymentStatus,
+  InventoryChangeType,
+  Role,
+  Discount,
+  OrderTrackingStatus,
+} from '@repo/db'; // Import from shared db package
 
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createOrderDto: CreateOrderDto): Promise<any> {
-    const { 
-      shippingAddressId, 
-      billingAddressId, 
-      paymentMethod, 
-      notes, 
+    const {
+      shippingAddressId,
+      billingAddressId,
+      paymentMethod,
+      notes,
       discountCode,
       currency = 'ARS', // Default currency for Argentina
       installments,
-      installmentPlan
+      installmentPlan,
     } = createOrderDto;
 
     // Verify addresses belong to user
@@ -110,7 +122,7 @@ export class OrdersService {
           notes,
           appliedDiscountId: appliedDiscount?.id, // Access id safely
           items: {
-            create: cart.items.map(item => ({
+            create: cart.items.map((item) => ({
               productVariantId: item.productVariantId,
               quantity: item.quantity,
               priceAtPurchase: item.priceAtAddition,
@@ -125,7 +137,9 @@ export class OrdersService {
               installments,
               installmentPlan,
               // Calculate installment amount if installments are provided
-              ...(installments && { installmentAmount: totalAmount / installments }),
+              ...(installments && {
+                installmentAmount: totalAmount / installments,
+              }),
             },
           },
         },
@@ -185,8 +199,16 @@ export class OrdersService {
     return order;
   }
 
-  async findUserOrders(userId: string, paginationDto: PaginationDto): Promise<any> {
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder } = paginationDto; // Provide defaults
+  async findUserOrders(
+    userId: string,
+    paginationDto: PaginationDto,
+  ): Promise<any> {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder,
+    } = paginationDto; // Provide defaults
     const skip = (page - 1) * limit;
 
     const [orders, total] = await Promise.all([
@@ -232,7 +254,12 @@ export class OrdersService {
   }
 
   async findAllOrders(paginationDto: PaginationDto): Promise<any> {
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder } = paginationDto; // Provide defaults
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder,
+    } = paginationDto; // Provide defaults
     const skip = (page - 1) * limit;
 
     const [orders, total] = await Promise.all([
@@ -279,7 +306,11 @@ export class OrdersService {
     };
   }
 
-  async findOne(userId: string, orderNumber: string, userRole: Role): Promise<any> {
+  async findOne(
+    userId: string,
+    orderNumber: string,
+    userRole: Role,
+  ): Promise<any> {
     const order = await this.prisma.order.findUnique({
       where: { orderNumber },
       include: {
@@ -325,7 +356,10 @@ export class OrdersService {
     return order;
   }
 
-  async updateOrderStatus(orderNumber: string, status: OrderStatus): Promise<any> {
+  async updateOrderStatus(
+    orderNumber: string,
+    status: OrderStatus,
+  ): Promise<any> {
     const order = await this.prisma.order.findUnique({
       where: { orderNumber },
     });
@@ -367,7 +401,10 @@ export class OrdersService {
       throw new ForbiddenException('Access denied');
     }
 
-    if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.PROCESSING) {
+    if (
+      order.status !== OrderStatus.PENDING &&
+      order.status !== OrderStatus.PROCESSING
+    ) {
       throw new BadRequestException('Order cannot be cancelled');
     }
 
@@ -411,20 +448,26 @@ export class OrdersService {
     return { message: 'Order cancelled successfully' };
   }
 
-  private isDiscountValid(discount: any): boolean { // Consider typing 'discount' more specifically
+  private isDiscountValid(discount: any): boolean {
+    // Consider typing 'discount' more specifically
     const now = new Date();
 
     if (discount.startDate && now < discount.startDate) return false;
     if (discount.endDate && now > discount.endDate) return false;
-    if (discount.usageLimit && discount.timesUsed >= discount.usageLimit) return false;
+    if (discount.usageLimit && discount.timesUsed >= discount.usageLimit)
+      return false;
     // Add check for minimumSpend if applicable
     // if (discount.minimumSpend && totalAmount < discount.minimumSpend) return false; // Requires totalAmount here
 
     return true;
   }
 
-  private mapOrderStatusToTrackingStatus(status: OrderStatus): OrderTrackingStatus { // Explicit return type
-    const mapping: Record<OrderStatus, OrderTrackingStatus> = { // Explicit mapping type
+  private mapOrderStatusToTrackingStatus(
+    status: OrderStatus,
+  ): OrderTrackingStatus {
+    // Explicit return type
+    const mapping: Record<OrderStatus, OrderTrackingStatus> = {
+      // Explicit mapping type
       [OrderStatus.PENDING]: OrderTrackingStatus.ORDER_PLACED,
       [OrderStatus.PROCESSING]: OrderTrackingStatus.PROCESSING,
       [OrderStatus.SHIPPED]: OrderTrackingStatus.SHIPPED,

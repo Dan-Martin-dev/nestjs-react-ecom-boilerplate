@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 
@@ -54,7 +58,7 @@ export class CategoriesService {
 
   async getCategoryTree() {
     const categories = await this.prisma.category.findMany({
-      where: { 
+      where: {
         deletedAt: null,
         parentId: null, // Root categories only
       },
@@ -102,7 +106,7 @@ export class CategoriesService {
           where: { deletedAt: null },
         },
         Product: {
-          where: { 
+          where: {
             isActive: true,
             deletedAt: null,
           },
@@ -203,7 +207,9 @@ export class CategoriesService {
     }
 
     if (category.children.length > 0) {
-      throw new BadRequestException('Cannot delete category with subcategories');
+      throw new BadRequestException(
+        'Cannot delete category with subcategories',
+      );
     }
 
     if (category.Product.length > 0) {

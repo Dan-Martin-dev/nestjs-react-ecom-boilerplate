@@ -52,12 +52,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
       httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
       message = 'An unexpected internal server error occurred.';
     }
-    
+
     // Log the full error for internal review, especially for 500 errors
     if (httpStatus >= 500) {
-        this.logger.error(`HTTP Status: ${httpStatus} | Message: ${JSON.stringify(message)}`, exception instanceof Error ? exception.stack : exception);
+      this.logger.error(
+        `HTTP Status: ${httpStatus} | Message: ${JSON.stringify(message)}`,
+        exception instanceof Error ? exception.stack : exception,
+      );
     } else {
-        this.logger.warn(`HTTP Status: ${httpStatus} | Message: ${JSON.stringify(message)}`);
+      this.logger.warn(
+        `HTTP Status: ${httpStatus} | Message: ${JSON.stringify(message)}`,
+      );
     }
 
     const responseBody = {

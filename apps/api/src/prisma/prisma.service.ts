@@ -11,8 +11,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       this.logger.log('Successfully connected to database');
     } catch (error: any) {
       // In development mode, continue even if database connection fails
-      this.logger.warn(`Database connection failed: ${error.message || 'Unknown error'}`);
-      this.logger.warn('Continuing without database connection in development mode');
+      this.logger.warn(
+        `Database connection failed: ${error.message || 'Unknown error'}`,
+      );
+      this.logger.warn(
+        'Continuing without database connection in development mode',
+      );
     }
   }
 

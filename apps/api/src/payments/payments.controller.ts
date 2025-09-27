@@ -11,7 +11,10 @@ import {
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { ProcessPaymentDto, ProcessPaymentSchema } from './dto/process-payment.dto';
+import {
+  ProcessPaymentDto,
+  ProcessPaymentSchema,
+} from './dto/process-payment.dto';
 import { Role } from '@repo/db';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -28,7 +31,11 @@ export class PaymentsController {
     @Body() processPaymentDto: ProcessPaymentDto,
     @Request() req: any,
   ): Promise<any> {
-    return this.paymentsService.processPayment(orderId, req.user.sub, processPaymentDto);
+    return this.paymentsService.processPayment(
+      orderId,
+      req.user.sub,
+      processPaymentDto,
+    );
   }
 
   @Get('methods')
@@ -41,7 +48,10 @@ export class PaymentsController {
     @Param('paymentMethod') paymentMethod: string,
     @Param('amount') amount: string,
   ): Promise<any> {
-    return this.paymentsService.getInstallmentPlans(paymentMethod, parseFloat(amount));
+    return this.paymentsService.getInstallmentPlans(
+      paymentMethod,
+      parseFloat(amount),
+    );
   }
 
   @Get(':id')

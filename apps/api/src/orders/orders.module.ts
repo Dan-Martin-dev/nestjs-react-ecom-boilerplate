@@ -16,8 +16,8 @@ import { ProductsModule } from '../products/products.module';
   // 'imports' makes the exports of other modules available for injection here.
   imports: [
     PrismaModule, // Now OrdersService can inject PrismaService.
-    AuthModule,   // Now OrdersController can use AuthGuard and RolesGuard.
-    ProductsModule // Allows OrdersService to potentially use ProductsService methods.
+    AuthModule, // Now OrdersController can use AuthGuard and RolesGuard.
+    ProductsModule, // Allows OrdersService to potentially use ProductsService methods.
   ],
   // 'controllers' registers our controller to handle incoming HTTP requests.
   controllers: [OrdersController],

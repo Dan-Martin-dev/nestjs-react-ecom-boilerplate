@@ -14,13 +14,13 @@ import { AuthModule } from '../auth/auth.module';
   // We need AuthModule for the guards used in the controller.
   // We need PrismaModule for the database service used in the service.
   imports: [PrismaModule, AuthModule],
-  
+
   // 'controllers' registers our controller to handle incoming HTTP requests.
   controllers: [ProductsController],
-  
+
   // 'providers' registers the service with the NestJS DI container.
   providers: [ProductsService],
-  
+
   // 'exports' makes ProductsService available to any other module that imports
   // the ProductModule (e.g., the CartModule).
   exports: [ProductsService],

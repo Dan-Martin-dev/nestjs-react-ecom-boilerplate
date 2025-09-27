@@ -10,8 +10,6 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule, // Import AuthModule which provides JwtAuthGuard and JwtService
   ],
   controllers: [ReviewsController],
-  providers: [
-    ReviewsService,
-  ],
+  providers: [ReviewsService],
 })
 export class ReviewsModule {}

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -14,7 +18,10 @@ export class AddressesService {
    * @param userId The ID of the user creating the address.
    * @param createAddressDto The address data.
    */
-  async create(userId: string, createAddressDto: CreateAddressDto): Promise<Address> {
+  async create(
+    userId: string,
+    createAddressDto: CreateAddressDto,
+  ): Promise<Address> {
     const { isDefault, ...addressData } = createAddressDto;
 
     if (isDefault) {
@@ -75,7 +82,9 @@ export class AddressesService {
 
     // CRITICAL: Authorization check. Ensure the user owns this address.
     if (address.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to access this address.');
+      throw new ForbiddenException(
+        'You do not have permission to access this address.',
+      );
     }
 
     return address;
@@ -88,10 +97,14 @@ export class AddressesService {
    * @param userId The ID of the user making the request.
    * @param updateAddressDto The data to update.
    */
-  async update(id: string, userId: string, updateAddressDto: UpdateAddressDto): Promise<Address> {
+  async update(
+    id: string,
+    userId: string,
+    updateAddressDto: UpdateAddressDto,
+  ): Promise<Address> {
     // First, verify the address exists and the user owns it.
     await this.findOne(id, userId);
-    
+
     const { isDefault, ...addressData } = updateAddressDto;
 
     if (isDefault === true) {

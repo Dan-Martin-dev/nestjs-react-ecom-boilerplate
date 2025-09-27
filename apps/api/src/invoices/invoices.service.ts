@@ -41,7 +41,9 @@ export class InvoicesService {
     });
 
     if (existingInvoice) {
-      throw new NotFoundException(`Invoice already exists for order with ID ${orderId}`);
+      throw new NotFoundException(
+        `Invoice already exists for order with ID ${orderId}`,
+      );
     }
 
     // Create the invoice
@@ -52,7 +54,9 @@ export class InvoicesService {
         pointOfSale,
         type,
         cae,
-        caeExpirationDate: caeExpirationDate ? new Date(caeExpirationDate) : undefined,
+        caeExpirationDate: caeExpirationDate
+          ? new Date(caeExpirationDate)
+          : undefined,
         issueDate: new Date(issueDate),
         netAmount,
         taxAmount,
@@ -106,7 +110,9 @@ export class InvoicesService {
     });
 
     if (!invoice) {
-      throw new NotFoundException(`Invoice for order with ID ${orderId} not found`);
+      throw new NotFoundException(
+        `Invoice for order with ID ${orderId} not found`,
+      );
     }
 
     // Convert taxBreakdown from JSON string to object if it exists
@@ -141,7 +147,7 @@ export class InvoicesService {
     });
 
     // Convert taxBreakdown from JSON string to object if it exists for each invoice
-    return invoices.map(invoice => {
+    return invoices.map((invoice) => {
       if (invoice.taxBreakdown) {
         return {
           ...invoice,

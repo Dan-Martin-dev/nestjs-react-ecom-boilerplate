@@ -1,5 +1,9 @@
 // monorepo-ecom/backend/src/cart/cart.service.ts
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { ProductsService } from 'src/products/products.service';
@@ -9,9 +13,9 @@ export class CartService {
   // INJECT BOTH SERVICES
   constructor(
     private prisma: PrismaService,
-    private productsService: ProductsService, 
+    private productsService: ProductsService,
   ) {}
-  
+
   async getCart(userId: string): Promise<any> {
     if (!userId) {
       throw new BadRequestException('User ID is required');
@@ -79,7 +83,7 @@ export class CartService {
       productVariantId,
       quantity,
     );
-    
+
     if (!variant) {
       throw new NotFoundException('Product variant not found');
     }
@@ -112,7 +116,7 @@ export class CartService {
     if (existingItem) {
       // Update quantity
       const newQuantity = existingItem.quantity + quantity;
-      
+
       if (variant.stockQuantity < newQuantity) {
         throw new BadRequestException('Not enough stock available');
       }
@@ -156,7 +160,11 @@ export class CartService {
     }
   }
 
-  async updateCartItem(userId: string, itemId: string, quantity: number): Promise<any> {
+  async updateCartItem(
+    userId: string,
+    itemId: string,
+    quantity: number,
+  ): Promise<any> {
     if (!userId) {
       throw new BadRequestException('User ID is required');
     }
