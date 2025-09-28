@@ -4,6 +4,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -59,6 +60,21 @@ async function bootstrap() {
   // Exception filter
   const httpAdapter = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+
+  // Swagger API documentation
+  const config = new DocumentBuilder()
+    .setTitle('E-commerce API')
+    .setDescription('API for the e-commerce application')
+    .setVersion('1.0')
+    .addTag('products', 'Product management endpoints')
+    .addTag('categories', 'Category management endpoints')
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('cart', 'Shopping cart endpoints')
+    .addTag('orders', 'Order management endpoints')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
 
   // HTTPS config for Traefik (if behind proxy)
   if (process.env.SSL_ENABLED === 'true') {
