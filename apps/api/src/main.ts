@@ -5,14 +5,18 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable compression
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  app.use(compression());
+  // Enable compression (wrap runtime middleware call to keep typings clean)
+  app.use(((req: Request, res: Response, next: NextFunction) => {
+    // Call runtime middleware directly and forward to next.
+    // compression() has runtime any typing; single-line disable for the call below.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    (compression() as unknown as RequestHandler)(req, res, next);
+  }) as unknown as (req: Request, res: Response, next: NextFunction) => void);
 
   // Enable CORS for frontend. Allow common local dev origins and any configured via CORS_ORIGIN.
   const defaultOrigins = [
@@ -81,9 +85,12 @@ async function bootstrap() {
   // HTTPS config for Traefik (if behind proxy)
   if (process.env.SSL_ENABLED === 'true') {
     // Traefik will handle SSL termination, but you can enforce HTTPS redirect if needed
-    app.use((req: Request, res: Response, next: () => void) => {
-      if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect('https://' + req.headers.host + req.url);
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      const proto = req.headers['x-forwarded-proto'];
+      // Only redirect when header exists and is not https
+      if (typeof proto === 'string' && proto !== 'https') {
+        const host = String(req.headers.host ?? '');
+        return res.redirect('https://' + host + req.url);
       }
       next();
     });
