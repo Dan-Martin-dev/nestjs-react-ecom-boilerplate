@@ -5,11 +5,13 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable compression
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(compression());
 
   // Enable CORS for frontend. Allow common local dev origins and any configured via CORS_ORIGIN.
@@ -79,7 +81,7 @@ async function bootstrap() {
   // HTTPS config for Traefik (if behind proxy)
   if (process.env.SSL_ENABLED === 'true') {
     // Traefik will handle SSL termination, but you can enforce HTTPS redirect if needed
-    app.use((req: any, res: any, next: () => void) => {
+    app.use((req: Request, res: Response, next: () => void) => {
       if (req.headers['x-forwarded-proto'] !== 'https') {
         return res.redirect('https://' + req.headers.host + req.url);
       }
@@ -90,10 +92,11 @@ async function bootstrap() {
   // Graceful shutdown
   process.on('SIGTERM', () => {
     console.log('SIGTERM received, shutting down gracefully...');
-    app.close();
+    void app.close();
   });
 
   // Listen on provided port
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
-bootstrap();
+
+void bootstrap();

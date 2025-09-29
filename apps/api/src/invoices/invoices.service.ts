@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
-import { InvoiceType } from '@repo/db';
+import { Invoice } from '@repo/db';
 
 @Injectable()
 export class InvoicesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createInvoiceDto: CreateInvoiceDto): Promise<any> {
+  async create(createInvoiceDto: CreateInvoiceDto): Promise<Invoice> {
     const {
       orderId,
       invoiceNumber,
@@ -70,7 +70,7 @@ export class InvoicesService {
     });
   }
 
-  async findOne(id: string): Promise<any> {
+  async findOne(id: string): Promise<Invoice & { order?: any }> {
     const invoice = await this.prisma.invoice.findUnique({
       where: { id },
       include: {
@@ -95,16 +95,23 @@ export class InvoicesService {
 
     // Convert taxBreakdown from JSON string to object if it exists
     if (invoice.taxBreakdown) {
+      const parsedTaxBreakdown = JSON.parse(invoice.taxBreakdown as string) as {
+        rate: number;
+        base: string;
+        amount: string;
+        description?: string;
+      }[];
+
       return {
         ...invoice,
-        taxBreakdown: JSON.parse(String(invoice.taxBreakdown)),
+        taxBreakdown: parsedTaxBreakdown,
       };
     }
 
     return invoice;
   }
 
-  async findByOrder(orderId: string): Promise<any> {
+  async findByOrder(orderId: string): Promise<Invoice> {
     const invoice = await this.prisma.invoice.findUnique({
       where: { orderId },
     });
@@ -117,16 +124,23 @@ export class InvoicesService {
 
     // Convert taxBreakdown from JSON string to object if it exists
     if (invoice.taxBreakdown) {
+      const parsedTaxBreakdown = JSON.parse(invoice.taxBreakdown as string) as {
+        rate: number;
+        base: string;
+        amount: string;
+        description?: string;
+      }[];
+
       return {
         ...invoice,
-        taxBreakdown: JSON.parse(String(invoice.taxBreakdown)),
+        taxBreakdown: parsedTaxBreakdown,
       };
     }
 
     return invoice;
   }
 
-  async findAll(): Promise<any> {
+  async findAll(): Promise<(Invoice & { order?: any })[]> {
     const invoices = await this.prisma.invoice.findMany({
       include: {
         order: {
@@ -149,9 +163,18 @@ export class InvoicesService {
     // Convert taxBreakdown from JSON string to object if it exists for each invoice
     return invoices.map((invoice) => {
       if (invoice.taxBreakdown) {
+        const parsedTaxBreakdown = JSON.parse(
+          invoice.taxBreakdown as string,
+        ) as {
+          rate: number;
+          base: string;
+          amount: string;
+          description?: string;
+        }[];
+
         return {
           ...invoice,
-          taxBreakdown: JSON.parse(String(invoice.taxBreakdown)),
+          taxBreakdown: parsedTaxBreakdown,
         };
       }
       return invoice;
@@ -159,7 +182,7 @@ export class InvoicesService {
   }
 
   // Helper method to get order by invoice ID
-  async getOrderByInvoiceId(invoiceId: string): Promise<any> {
+  async getOrderByInvoiceId(invoiceId: string): Promise<unknown> {
     const invoice = await this.prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
@@ -175,7 +198,7 @@ export class InvoicesService {
   }
 
   // Helper method to get order by ID
-  async getOrderById(orderId: string): Promise<any> {
+  async getOrderById(orderId: string): Promise<unknown> {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
     });
