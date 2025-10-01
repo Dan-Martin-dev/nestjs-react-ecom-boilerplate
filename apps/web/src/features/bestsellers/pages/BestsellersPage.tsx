@@ -1,13 +1,13 @@
-// -------------------------
-// Imports
-// -------------------------
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../auth/styles/auth-fonts.css';
-import { SAMPLE_UI_PRODUCTS } from '../utils/productMapper';
 import type { UiProduct } from '../utils/productMapper';
+import { useBestsellers } from '../hooks/useBestsellers';
+import { IconLoader2 } from '@tabler/icons-react';
 
 const BestsellersPage: React.FC = () => {
+  const { data: products, isLoading, error } = useBestsellers(8);
+
   return (
     <main className="max-w-6xl mx-auto py-12 px-4 auth-font-inco auth-uppercase">
       {/* ------------------------- */}
@@ -17,11 +17,26 @@ const BestsellersPage: React.FC = () => {
         <h2 className="text-2xl font-inco font-medium tracking-wide text-black">BESTSELLERS</h2>
       </header>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center p-8">
+          <IconLoader2 className="w-8 h-8 animate-spin text-gray-600" />
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="text-red-600 bg-red-50 p-4 rounded-md mb-6">
+          Unable to load bestsellers. Please try again later.
+        </div>
+      )}
+
       {/* ------------------------- */}
       {/* Product grid */}
       {/* ------------------------- */}
-      <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-  {SAMPLE_UI_PRODUCTS.map((p: UiProduct) => (
+      {products && products.length > 0 && (
+        <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          {products.map((p: UiProduct) => (
 
           /* ------------------------- */
           /* Single product */
@@ -77,7 +92,7 @@ const BestsellersPage: React.FC = () => {
           </article>
         ))}
       </section>
-
+      )}
       {/* ------------------------- */}
       {/* Footer / View more link */}
       {/* ------------------------- */}
