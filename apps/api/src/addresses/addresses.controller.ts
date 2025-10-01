@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   UsePipes,
-  Request,
 } from '@nestjs/common';
 import { AddressesService } from './addresses.service';
 import {
@@ -19,6 +18,7 @@ import {
   UpdateAddressDto,
   UpdateAddressSchema,
 } from './dto/update-address.dto';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
@@ -31,24 +31,23 @@ export class AddressesController {
   @UsePipes(new ZodValidationPipe(CreateAddressSchema))
   create(
     @Body() createAddressDto: CreateAddressDto,
-    @Request() req: any,
+    @GetUser('id') userId: string,
   ): Promise<import('@repo/db').Address> {
-    const userId = req.user.sub; // 'sub' from JWT payload is the user ID
     return this.addressesService.create(userId, createAddressDto);
   }
 
   @Get()
-  findAll(@Request() req: any): Promise<import('@repo/db').Address[]> {
-    const userId = req.user.sub;
+  findAll(
+    @GetUser('id') userId: string,
+  ): Promise<import('@repo/db').Address[]> {
     return this.addressesService.findAllForUser(userId);
   }
 
   @Get(':id')
   findOne(
     @Param('id') id: string,
-    @Request() req: any,
+    @GetUser('id') userId: string,
   ): Promise<import('@repo/db').Address> {
-    const userId = req.user.sub;
     return this.addressesService.findOne(id, userId);
   }
 
@@ -57,18 +56,16 @@ export class AddressesController {
   update(
     @Param('id') id: string,
     @Body() updateAddressDto: UpdateAddressDto,
-    @Request() req: any,
+    @GetUser('id') userId: string,
   ): Promise<import('@repo/db').Address> {
-    const userId = req.user.sub;
     return this.addressesService.update(id, userId, updateAddressDto);
   }
 
   @Delete(':id')
   remove(
     @Param('id') id: string,
-    @Request() req: any,
+    @GetUser('id') userId: string,
   ): Promise<import('@repo/db').Address> {
-    const userId = req.user.sub;
     return this.addressesService.remove(id, userId);
   }
 }

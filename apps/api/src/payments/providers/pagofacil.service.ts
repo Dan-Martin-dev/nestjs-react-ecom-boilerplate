@@ -3,6 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentStatus } from '@repo/db';
 import { ProcessPaymentDto } from '../dto/process-payment.dto';
+import {
+  OrderWithPayment,
+  PaymentResponse,
+  WebhookResponse,
+} from '../interfaces/payment.interfaces';
 
 @Injectable()
 export class PagoFacilService {
@@ -13,10 +18,11 @@ export class PagoFacilService {
     private prisma: PrismaService,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async processPayment(
-    order: any,
-    paymentDto: ProcessPaymentDto,
-  ): Promise<any> {
+    order: OrderWithPayment,
+    _paymentDto: ProcessPaymentDto,
+  ): Promise<PaymentResponse> {
     try {
       this.logger.log(`Processing PagoFacil payment for order ${order.id}`);
 
@@ -31,29 +37,37 @@ export class PagoFacilService {
         status: PaymentStatus.PENDING, // PagoFacil payments are pending until paid in cash
         transactionId: voucherCode,
         paymentProviderReference: voucherCode,
+        installments: 1,
+        installmentAmount: Number(order.payment?.amount || 0),
         message:
           'Payment voucher generated successfully. Please pay at your nearest PagoFacil location.',
         details: {
           provider: 'PagoFacil',
+          status: 'pending',
           voucherCode,
           expirationDate: expirationDate.toISOString(),
-          amount: order.payment?.amount,
+          amount: order.payment?.amount || '0',
         },
         metadata: {
           voucherCode,
           expirationDate: expirationDate.toISOString(),
         },
       };
-    } catch (error: any) {
+    } catch (error) {
+      const typedError = error as Error;
       this.logger.error(
-        `Error processing PagoFacil payment: ${error.message}`,
-        error.stack,
+        `Error processing PagoFacil payment: ${typedError.message}`,
+        typedError.stack,
       );
-      throw new Error(`Failed to process PagoFacil payment: ${error.message}`);
+      throw new Error(
+        `Failed to process PagoFacil payment: ${typedError.message}`,
+      );
     }
   }
 
-  async handleWebhook(webhookData: any): Promise<any> {
+  async handleWebhook(
+    webhookData: Record<string, unknown>,
+  ): Promise<WebhookResponse> {
     try {
       this.logger.log('Received PagoFacil webhook', webhookData);
 
@@ -62,7 +76,7 @@ export class PagoFacilService {
 
       // Check if the webhook is for a payment confirmation
       if (webhookData.action === 'payment_received') {
-        const voucherCode = webhookData.voucherCode;
+        const voucherCode = webhookData.voucherCode as string;
 
         // Find the payment with this voucher code
         const payment = await this.prisma.payment.findFirst({
@@ -90,7 +104,7 @@ export class PagoFacilService {
             paymentDate: new Date(),
             metadata: {
               ...(payment.metadata as Record<string, unknown>),
-              webhookData,
+              webhookReceived: true,
               paidAt: new Date().toISOString(),
             },
           },
@@ -103,12 +117,15 @@ export class PagoFacilService {
       }
 
       return { success: true, message: 'Webhook processed successfully' };
-    } catch (error: any) {
+    } catch (error) {
+      const typedError = error as Error;
       this.logger.error(
-        `Error processing PagoFacil webhook: ${error.message}`,
-        error.stack,
+        `Error processing PagoFacil webhook: ${typedError.message}`,
+        typedError.stack,
       );
-      throw new Error(`Failed to process PagoFacil webhook: ${error.message}`);
+      throw new Error(
+        `Failed to process PagoFacil webhook: ${typedError.message}`,
+      );
     }
   }
 }

@@ -29,6 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     // Exclude the password from the user object returned.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = user;
 
     // The returned object is attached to the request as `req.user`

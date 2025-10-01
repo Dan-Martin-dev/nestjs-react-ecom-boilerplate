@@ -101,7 +101,8 @@ export class ProductsService {
 
     const skip = (page - 1) * limit;
 
-    const where: any = {
+    // Use the Prisma generated types for the where clause
+    const where: Prisma.ProductWhereInput = {
       isActive: true,
       deletedAt: null,
     };
@@ -113,9 +114,10 @@ export class ProductsService {
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
-      where.price = {};
-      if (minPrice !== undefined) where.price.gte = minPrice;
-      if (maxPrice !== undefined) where.price.lte = maxPrice;
+      where.price = {
+        ...(minPrice !== undefined ? { gte: minPrice.toString() } : {}),
+        ...(maxPrice !== undefined ? { lte: maxPrice.toString() } : {}),
+      };
     }
 
     if (search) {
@@ -273,16 +275,86 @@ export class ProductsService {
 
   async update(
     id: string,
-    updateProductDto: any,
+    updateProductDto: import('./dto/update-product.dto').UpdateProductDto,
   ): Promise<import('@repo/db').Product> {
-    // Implementation for updating product
+    const {
+      name,
+      slug,
+      description,
+      price,
+      categoryIds,
+      images,
+      variants,
+      metaTitle,
+      metaDescription,
+    } = updateProductDto;
+
+    // Build the update data object with proper Prisma types
+    const updateData: Prisma.ProductUpdateInput = {
+      ...(name && { name }),
+      ...(slug && { slug }),
+      ...(description && { description }),
+      ...(price && { price: price.toString() }),
+      ...(metaTitle && { metaTitle }),
+      ...(metaDescription && { metaDescription }),
+    };
+
+    // Handle category updates if provided
+    if (categoryIds && categoryIds.length > 0) {
+      updateData.categories = {
+        set: [], // Clear existing categories first
+        connect: categoryIds.map((id) => ({ id })),
+      };
+    }
+
+    // Handle image updates if provided
+    if (images && images.length > 0) {
+      updateData.images = {
+        deleteMany: {}, // Delete all existing images
+        create: images.map((img) => ({
+          url: img.url,
+          altText: img.altText ?? '',
+          isDefault: img.isDefault ?? false,
+        })),
+      };
+    }
+
+    // Handle variant updates if provided
+    if (variants && variants.length > 0) {
+      updateData.variants = {
+        deleteMany: {}, // Delete all existing variants
+        create: variants.map((variant) => ({
+          name: variant.name,
+          sku: variant.sku,
+          price: variant.price.toString(),
+          stockQuantity: variant.stockQuantity,
+          ProductVariantAttribute: variant.attributes
+            ? {
+                create: variant.attributes.map((attr) => ({
+                  attributeId: attr.attributeId,
+                  value: attr.value,
+                })),
+              }
+            : undefined,
+        })),
+      };
+    }
+
     return this.prisma.product.update({
       where: { id },
-      data: updateProductDto,
+      data: updateData,
       include: {
         categories: true,
         images: true,
-        variants: true,
+        variants: {
+          include: {
+            ProductVariantAttribute: {
+              include: {
+                attribute: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -299,8 +371,10 @@ export class ProductsService {
   }
 
   // Simple in-memory TTL cache for bestsellers. In production use Redis or another distributed cache.
-  private static _bestsellersCache: Map<string, { ts: number; data: any[] }> =
-    new Map();
+  private static _bestsellersCache: Map<
+    string,
+    { ts: number; data: ReturnType<typeof ProductDtoSchema.parse>[] }
+  > = new Map();
   private static _BestsellersCacheTTL = 1000 * 60 * 10; // 10 minutes
 
   async getBestsellers(limit = 10, daysWindow?: number) {
@@ -316,7 +390,7 @@ export class ProductsService {
     }
 
     // Build order filter: only count completed/confirmed orders
-    const orderWhere: any = {
+    const orderWhere: Prisma.OrderWhereInput = {
       status: { in: ['SHIPPED', 'DELIVERED'] },
     };
     if (daysWindow && Number.isFinite(daysWindow)) {
@@ -384,35 +458,68 @@ export class ProductsService {
     const productsMap = new Map(products.map((p) => [p.id, p]));
     const ordered = sortedProductIds
       .map((id) => productsMap.get(id))
-      .filter(Boolean) as any[];
+      .filter(Boolean);
+
+    // Define interfaces for better type safety
+    interface ProductImage {
+      id: string;
+      url: string;
+      altText?: string;
+      isDefault: boolean;
+    }
+
+    interface ProductVariant {
+      id: string;
+      name: string;
+      sku: string;
+      price: string;
+      stockQuantity: number;
+    }
+
+    interface ProductWithDetails {
+      id: string;
+      name: string;
+      slug: string;
+      description?: string;
+      price: string;
+      isActive: boolean;
+      metaTitle?: string;
+      metaDescription?: string;
+      images: ProductImage[];
+      variants?: ProductVariant[];
+      _count?: { reviews: number };
+      createdAt?: Date;
+      updatedAt?: Date;
+    }
 
     // Map to DTOs and validate using Zod
     const dtos = ordered.map((product) => {
+      const typedProduct = product as unknown as ProductWithDetails;
       const productDto = {
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        description: product.description || undefined,
-        price: product.price,
-        isActive: product.isActive,
-        metaTitle: product.metaTitle || undefined,
-        metaDescription: product.metaDescription || undefined,
-        images: product.images.map((img: any) => ({
+        id: typedProduct.id,
+        name: typedProduct.name,
+        slug: typedProduct.slug,
+        description: typedProduct.description || undefined,
+        price: typedProduct.price,
+        isActive: typedProduct.isActive,
+        metaTitle: typedProduct.metaTitle || undefined,
+        metaDescription: typedProduct.metaDescription || undefined,
+        images: typedProduct.images.map((img) => ({
           id: img.id,
           url: img.url,
           altText: img.altText || undefined,
           isDefault: img.isDefault,
         })),
-        variants: (product.variants || []).map((v: any) => ({
+        variants: (typedProduct.variants || []).map((v) => ({
           id: v.id,
           name: v.name,
           sku: v.sku,
           price: v.price,
           stockQuantity: v.stockQuantity,
         })),
-        _count: product._count,
-        createdAt: product.createdAt?.toISOString?.(),
-        updatedAt: product.updatedAt?.toISOString?.(),
+        _count: typedProduct._count,
+        createdAt: typedProduct.createdAt?.toISOString?.(),
+        updatedAt: typedProduct.updatedAt?.toISOString?.(),
       };
       return ProductDtoSchema.parse(productDto);
     });

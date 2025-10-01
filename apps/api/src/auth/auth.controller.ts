@@ -14,13 +14,21 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { RegisterDto, RegisterSchema } from './dto/register.dto';
 import { LoginDto, LoginSchema } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { Request as ExpressRequest, Response } from 'express';
 
 // Extend the Express Request interface to include the user property
 interface RequestWithUser extends ExpressRequest {
-  user: any;
+  user: {
+    provider: string;
+    providerId: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    picture?: string;
+    accessToken?: string;
+    username?: string;
+  };
 }
 
 @Controller('auth')

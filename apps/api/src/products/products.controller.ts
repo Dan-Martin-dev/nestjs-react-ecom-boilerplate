@@ -31,6 +31,10 @@ import {
   ProductFilterDto,
   ProductFilterSchema,
 } from './dto/product-filter.dto';
+import {
+  UpdateProductDto,
+  UpdateProductSchema,
+} from './dto/update-product.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -139,6 +143,7 @@ export class ProductsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a product' })
   @ApiParam({ name: 'id', description: 'Product ID' })
+  @UsePipes(new ZodValidationPipe(UpdateProductSchema))
   @ApiResponse({
     status: 200,
     description: 'Product updated successfully',
@@ -148,7 +153,7 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   update(
     @Param('id') id: string,
-    @Body() updateProductDto: any,
+    @Body() updateProductDto: UpdateProductDto,
   ): Promise<import('@repo/db').Product> {
     return this.productsService.update(id, updateProductDto);
   }

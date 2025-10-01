@@ -15,12 +15,20 @@ import {
   Discount,
   OrderTrackingStatus,
 } from '@repo/db'; // Import from shared db package
+import {
+  Order,
+  OrdersResponse,
+  AdminOrdersResponse,
+  CancelOrderResponse,
+  OrderSummary,
+  OrderSummaryWithUser,
+} from './interfaces/order.interfaces';
 
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, createOrderDto: CreateOrderDto): Promise<any> {
+  async create(userId: string, createOrderDto: CreateOrderDto): Promise<Order> {
     const {
       shippingAddressId,
       billingAddressId,
@@ -196,13 +204,13 @@ export class OrdersService {
       return newOrder;
     });
 
-    return order;
+    return order as unknown as Order;
   }
 
   async findUserOrders(
     userId: string,
     paginationDto: PaginationDto,
-  ): Promise<any> {
+  ): Promise<OrdersResponse> {
     const {
       page = 1,
       limit = 10,
@@ -242,8 +250,8 @@ export class OrdersService {
       this.prisma.order.count({ where: { userId } }),
     ]);
 
-    return {
-      data: orders,
+    const result: OrdersResponse = {
+      data: orders as unknown[] as OrderSummary[],
       meta: {
         total,
         page,
@@ -251,9 +259,13 @@ export class OrdersService {
         totalPages: Math.ceil(total / limit),
       },
     };
+
+    return result;
   }
 
-  async findAllOrders(paginationDto: PaginationDto): Promise<any> {
+  async findAllOrders(
+    paginationDto: PaginationDto,
+  ): Promise<AdminOrdersResponse> {
     const {
       page = 1,
       limit = 10,
@@ -295,8 +307,8 @@ export class OrdersService {
       this.prisma.order.count(),
     ]);
 
-    return {
-      data: orders,
+    const result: AdminOrdersResponse = {
+      data: orders as unknown[] as OrderSummaryWithUser[],
       meta: {
         total,
         page,
@@ -304,13 +316,15 @@ export class OrdersService {
         totalPages: Math.ceil(total / limit),
       },
     };
+
+    return result;
   }
 
   async findOne(
     userId: string,
     orderNumber: string,
     userRole: Role,
-  ): Promise<any> {
+  ): Promise<Order> {
     const order = await this.prisma.order.findUnique({
       where: { orderNumber },
       include: {
@@ -353,13 +367,13 @@ export class OrdersService {
       throw new ForbiddenException('Access denied');
     }
 
-    return order;
+    return order as unknown as Order;
   }
 
   async updateOrderStatus(
     orderNumber: string,
     status: OrderStatus,
-  ): Promise<any> {
+  ): Promise<Order> {
     const order = await this.prisma.order.findUnique({
       where: { orderNumber },
     });
@@ -371,6 +385,29 @@ export class OrdersService {
     const updatedOrder = await this.prisma.order.update({
       where: { orderNumber },
       data: { status },
+      include: {
+        items: {
+          include: {
+            productVariant: {
+              include: {
+                product: {
+                  include: {
+                    images: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        payment: true,
+        shippingAddress: true,
+        billingAddress: true,
+        OrderTracking: {
+          orderBy: {
+            timestamp: 'desc',
+          },
+        },
+      },
     });
 
     // Create order tracking entry
@@ -382,10 +419,13 @@ export class OrdersService {
       },
     });
 
-    return updatedOrder;
+    return updatedOrder as unknown as Order;
   }
 
-  async cancelOrder(userId: string, orderNumber: string) {
+  async cancelOrder(
+    userId: string,
+    orderNumber: string,
+  ): Promise<CancelOrderResponse> {
     const order = await this.prisma.order.findUnique({
       where: { orderNumber },
       include: {
@@ -448,8 +488,7 @@ export class OrdersService {
     return { message: 'Order cancelled successfully' };
   }
 
-  private isDiscountValid(discount: any): boolean {
-    // Consider typing 'discount' more specifically
+  private isDiscountValid(discount: Discount): boolean {
     const now = new Date();
 
     if (discount.startDate && now < discount.startDate) return false;

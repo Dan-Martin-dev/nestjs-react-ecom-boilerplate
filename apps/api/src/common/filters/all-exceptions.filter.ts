@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '@repo/db';
+import { Request } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -20,7 +21,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest();
+    const request = ctx.getRequest<Request>();
 
     let httpStatus: number;
     let message: string | object;
@@ -34,10 +35,24 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // Handle known Prisma exceptions
       // See Prisma error codes: https://www.prisma.io/docs/reference/api-reference/error-reference#error-codes
       switch (exception.code) {
-        case 'P2002': // Unique constraint failed
+        case 'P2002': {
+          // Unique constraint failed
           httpStatus = HttpStatus.CONFLICT;
-          message = `A record with this value already exists. Field: ${exception.meta?.target}`;
+          let targetField = 'unknown';
+
+          if (exception.meta && exception.meta.target) {
+            if (Array.isArray(exception.meta.target)) {
+              targetField = exception.meta.target.join(', ');
+            } else if (typeof exception.meta.target === 'string') {
+              targetField = exception.meta.target;
+            } else {
+              targetField = JSON.stringify(exception.meta.target);
+            }
+          }
+
+          message = `A record with this value already exists. Field: ${targetField}`;
           break;
+        }
         case 'P2025': // Record to update or delete does not exist
           httpStatus = HttpStatus.NOT_FOUND;
           message = `The requested resource was not found.`;
@@ -57,7 +72,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (httpStatus >= 500) {
       this.logger.error(
         `HTTP Status: ${httpStatus} | Message: ${JSON.stringify(message)}`,
-        exception instanceof Error ? exception.stack : exception,
+        exception instanceof Error ? exception.stack : String(exception),
       );
     } else {
       this.logger.warn(
@@ -65,11 +80,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
       );
     }
 
+    const path = httpAdapter.getRequestUrl(request) as string;
+    const method = httpAdapter.getRequestMethod(request) as string;
+
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
-      path: httpAdapter.getRequestUrl(request),
-      method: httpAdapter.getRequestMethod(request),
+      path,
+      method,
       ...(typeof message === 'string' ? { message } : message),
     };
 

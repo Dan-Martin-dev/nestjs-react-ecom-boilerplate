@@ -11,6 +11,7 @@ import { MercadoPagoService } from './providers/mercadopago.service';
 import { RapiPagoService } from './providers/rapipago.service';
 import { PagoFacilService } from './providers/pagofacil.service';
 import { ConfigService } from '@nestjs/config';
+import { OrderWithPayment } from './interfaces/payment.interfaces';
 
 @Injectable()
 export class PaymentsService {
@@ -72,31 +73,71 @@ export class PaymentsService {
       switch (paymentMethod) {
         case PaymentMethod.MERCADO_PAGO:
           paymentResult = await this.mercadoPagoService.processPayment(
-            order,
+            {
+              id: order.id,
+              orderNumber: order.orderNumber,
+              payment: order.payment ? {
+                id: order.payment.id,
+                amount: String(order.payment.amount),
+                status: order.payment.status,
+              } : undefined
+            },
             processPaymentDto,
           );
           break;
         case PaymentMethod.RAPIPAGO:
           paymentResult = await this.rapiPagoService.processPayment(
-            order,
+            {
+              id: order.id,
+              orderNumber: order.orderNumber,
+              payment: order.payment ? {
+                id: order.payment.id,
+                amount: String(order.payment.amount),
+                status: order.payment.status,
+              } : undefined
+            },
             processPaymentDto,
           );
           break;
         case PaymentMethod.PAGO_FACIL:
           paymentResult = await this.pagoFacilService.processPayment(
-            order,
+            {
+              id: order.id,
+              orderNumber: order.orderNumber,
+              payment: order.payment ? {
+                id: order.payment.id,
+                amount: String(order.payment.amount),
+                status: order.payment.status,
+              } : undefined
+            },
             processPaymentDto,
           );
           break;
         case PaymentMethod.CREDIT_CARD:
           paymentResult = await this.processCreditCardPayment(
-            order,
+            {
+              id: order.id,
+              orderNumber: order.orderNumber,
+              payment: order.payment ? {
+                id: order.payment.id,
+                amount: String(order.payment.amount),
+                status: order.payment.status,
+              } : undefined
+            },
             processPaymentDto,
           );
           break;
         case PaymentMethod.BANK_TRANSFER:
           paymentResult = await this.processBankTransferPayment(
-            order,
+            {
+              id: order.id,
+              orderNumber: order.orderNumber,
+              payment: order.payment ? {
+                id: order.payment.id,
+                amount: String(order.payment.amount),
+                status: order.payment.status,
+              } : undefined
+            },
             processPaymentDto,
           );
           break;
@@ -274,7 +315,7 @@ export class PaymentsService {
 
   // Helper methods for different payment types
   private async processCreditCardPayment(
-    order: any,
+    order: OrderWithPayment,
     paymentDto: ProcessPaymentDto,
   ): Promise<any> {
     // Implement credit card processing logic - this would integrate with a payment gateway
@@ -297,7 +338,7 @@ export class PaymentsService {
   }
 
   private async processBankTransferPayment(
-    order: any,
+    order: OrderWithPayment,
     paymentDto: ProcessPaymentDto,
   ): Promise<any> {
     // Implement bank transfer processing logic

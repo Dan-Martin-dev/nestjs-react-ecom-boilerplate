@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { UpdateReviewDto } from './dto/update-review.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
@@ -200,7 +201,11 @@ export class ReviewsService {
     };
   }
 
-  async update(userId: string, reviewId: string, updateReviewDto: any) {
+  async update(
+    userId: string,
+    reviewId: string,
+    updateReviewDto: UpdateReviewDto,
+  ) {
     // Consider a specific UpdateReviewDto
     const review = await this.prisma.review.findUnique({
       where: { id: reviewId },

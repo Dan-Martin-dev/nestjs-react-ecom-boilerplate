@@ -8,8 +8,11 @@ import { User } from '@repo/db';
  * as it relies on the user object being attached to the request by Passport.
  */
 export const GetUser = createParamDecorator(
-  (data: keyof Omit<User, 'password'> | undefined, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
+  (
+    data: keyof Omit<User, 'password'> | undefined,
+    ctx: ExecutionContext,
+  ): User | User[keyof Omit<User, 'password'>] | undefined => {
+    const request = ctx.switchToHttp().getRequest<{ user?: User }>();
     const user = request.user;
 
     // If a specific property of the user is requested (e.g., @GetUser('id')), return that property.

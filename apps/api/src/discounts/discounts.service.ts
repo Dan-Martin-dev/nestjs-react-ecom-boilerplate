@@ -75,6 +75,7 @@ export class DiscountsService {
     }
 
     // Return the valid discount object, excluding sensitive usage counts
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { timesUsed, ...validatedDiscount } = discount;
     return validatedDiscount;
   }

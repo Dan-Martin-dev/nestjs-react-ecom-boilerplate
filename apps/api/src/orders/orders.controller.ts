@@ -9,7 +9,6 @@ import {
   Query,
   UseGuards,
   UsePipes,
-  Request,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -19,6 +18,13 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role, OrderStatus } from '@repo/db';
 import { CreateOrderDto, CreateOrderSchema } from './dto/create-order.dto';
 import { PaginationDto, PaginationSchema } from '../common/dto/pagination.dto';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import {
+  Order,
+  OrdersResponse,
+  AdminOrdersResponse,
+  CancelOrderResponse,
+} from './interfaces/order.interfaces';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
@@ -28,35 +34,38 @@ export class OrdersController {
   @Post()
   @UsePipes(new ZodValidationPipe(CreateOrderSchema))
   create(
-    @Request() req: any,
+    @GetUser('id') userId: string,
     @Body() createOrderDto: CreateOrderDto,
-  ): Promise<any> {
-    return this.ordersService.create(req.user.sub, createOrderDto);
+  ): Promise<Order> {
+    return this.ordersService.create(userId, createOrderDto);
   }
 
   @Get()
   @UsePipes(new ZodValidationPipe(PaginationSchema))
   findUserOrders(
-    @Request() req: any,
+    @GetUser('id') userId: string,
     @Query() paginationDto: PaginationDto,
-  ): Promise<any> {
-    return this.ordersService.findUserOrders(req.user.sub, paginationDto);
+  ): Promise<OrdersResponse> {
+    return this.ordersService.findUserOrders(userId, paginationDto);
   }
 
   @Get('admin')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @UsePipes(new ZodValidationPipe(PaginationSchema))
-  findAllOrders(@Query() paginationDto: PaginationDto): Promise<any> {
+  findAllOrders(
+    @Query() paginationDto: PaginationDto,
+  ): Promise<AdminOrdersResponse> {
     return this.ordersService.findAllOrders(paginationDto);
   }
 
   @Get(':orderNumber')
   findOne(
-    @Request() req: any,
+    @GetUser('id') userId: string,
+    @GetUser('role') userRole: Role,
     @Param('orderNumber') orderNumber: string,
-  ): Promise<any> {
-    return this.ordersService.findOne(req.user.sub, orderNumber, req.user.role);
+  ): Promise<Order> {
+    return this.ordersService.findOne(userId, orderNumber, userRole);
   }
 
   @Patch(':orderNumber/status')
@@ -65,15 +74,15 @@ export class OrdersController {
   updateOrderStatus(
     @Param('orderNumber') orderNumber: string,
     @Body('status') status: OrderStatus,
-  ): Promise<any> {
+  ): Promise<Order> {
     return this.ordersService.updateOrderStatus(orderNumber, status);
   }
 
   @Post(':orderNumber/cancel')
   cancelOrder(
-    @Request() req: any,
+    @GetUser('id') userId: string,
     @Param('orderNumber') orderNumber: string,
-  ): Promise<any> {
-    return this.ordersService.cancelOrder(req.user.sub, orderNumber);
+  ): Promise<CancelOrderResponse> {
+    return this.ordersService.cancelOrder(userId, orderNumber);
   }
 }

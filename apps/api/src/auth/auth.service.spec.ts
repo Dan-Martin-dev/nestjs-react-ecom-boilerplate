@@ -18,9 +18,6 @@ const bcryptCompare = bcrypt.compare as jest.Mock;
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: PrismaService;
-  let jwtService: JwtService;
-  let configService: ConfigService;
 
   // Mock providers that mimic the real services
   const mockPrismaService = {
@@ -47,9 +44,6 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    prisma = module.get<PrismaService>(PrismaService);
-    jwtService = module.get<JwtService>(JwtService);
-    configService = module.get<ConfigService>(ConfigService);
 
     // Reset mocks before each test to ensure test isolation
     jest.clearAllMocks();
@@ -85,12 +79,12 @@ describe('AuthService', () => {
       const result = await service.register(registerDto);
 
       // Assert: Verify that the mocks were called correctly and the result is as expected
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: registerDto.email },
       });
-      expect(configService.get).toHaveBeenCalledWith('BCRYPT_SALT_ROUNDS');
+      expect(mockConfigService.get).toHaveBeenCalledWith('BCRYPT_SALT_ROUNDS');
       expect(bcryptHash).toHaveBeenCalledWith(registerDto.password, 10);
-      expect(prisma.user.create).toHaveBeenCalledWith({
+      expect(mockPrismaService.user.create).toHaveBeenCalledWith({
         data: {
           ...registerDto,
           password: 'hashedPassword',
@@ -103,7 +97,7 @@ describe('AuthService', () => {
           createdAt: true,
         },
       });
-      expect(jwtService.signAsync).toHaveBeenCalledWith({
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith({
         sub: createdUser.id,
         email: createdUser.email,
         role: createdUser.role,
@@ -149,14 +143,14 @@ describe('AuthService', () => {
 
       const result = await service.login(loginDto);
 
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: loginDto.email },
       });
       expect(bcryptCompare).toHaveBeenCalledWith(
         loginDto.password,
         userInDb.password,
       );
-      expect(jwtService.signAsync).toHaveBeenCalledWith({
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith({
         sub: userInDb.id,
         email: userInDb.email,
         role: userInDb.role,

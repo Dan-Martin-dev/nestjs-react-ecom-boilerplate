@@ -5,7 +5,6 @@ import {
   Param,
   UseGuards,
   UsePipes,
-  Request,
   Get,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
@@ -18,6 +17,7 @@ import {
 import { Role } from '@repo/db';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 
 @Controller('payments')
 @UseGuards(JwtAuthGuard)
@@ -29,11 +29,11 @@ export class PaymentsController {
   processPayment(
     @Param('orderId') orderId: string,
     @Body() processPaymentDto: ProcessPaymentDto,
-    @Request() req: any,
+    @GetUser('id') userId: string,
   ): Promise<any> {
     return this.paymentsService.processPayment(
       orderId,
-      req.user.sub,
+      userId,
       processPaymentDto,
     );
   }
@@ -55,8 +55,11 @@ export class PaymentsController {
   }
 
   @Get(':id')
-  getPaymentInfo(@Param('id') id: string, @Request() req: any): Promise<any> {
-    return this.paymentsService.getPaymentInfo(id, req.user.sub);
+  getPaymentInfo(
+    @Param('id') id: string,
+    @GetUser('id') userId: string,
+  ): Promise<any> {
+    return this.paymentsService.getPaymentInfo(id, userId);
   }
 
   @Post('webhook')

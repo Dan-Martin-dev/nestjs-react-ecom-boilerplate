@@ -10,8 +10,11 @@ export const CreateInvoiceSchema = z.object({
     .positive('Point of sale must be a positive number'),
   type: z.nativeEnum(InvoiceType),
   cae: z.string().optional(),
-  caeExpirationDate: z.string().optional(),
-  issueDate: z.string().transform((val) => new Date(val)),
+  caeExpirationDate: z.preprocess(
+    (val) => (val ? new Date(val as string) : undefined),
+    z.date().optional(),
+  ),
+  issueDate: z.preprocess((val) => new Date(val as string), z.date()),
   netAmount: z.string().min(1, 'Net amount is required'),
   taxAmount: z.string().min(1, 'Tax amount is required'),
   totalAmount: z.string().min(1, 'Total amount is required'),

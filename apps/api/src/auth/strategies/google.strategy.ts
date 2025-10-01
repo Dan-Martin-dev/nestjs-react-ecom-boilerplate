@@ -1,27 +1,50 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
+import { Strategy as PassportBaseStrategy } from 'passport';
 
-// Try to load the optional passport-google-oauth20 package. If it's missing,
-// fall back to a no-op strategy class so the app can start without Google OAuth
-let GooglePassportStrategy: any = null;
+interface GoogleProfile {
+  id: string;
+  name?: {
+    givenName?: string;
+    familyName?: string;
+  };
+  emails?: Array<{ value: string }>;
+  photos?: Array<{ value: string }>;
+}
+
+// Define a base class for when the strategy isn't available
+const EmptyBaseClass = class {
+  constructor(_options?: unknown) {}
+};
+
+// Store the Google Strategy constructor if available
+let GoogleStrategyClass: any = null;
+let isGoogleAvailable = false;
+
 try {
-  // require is used because the package is CommonJS and may not be present in all environments
-  GooglePassportStrategy = require('passport-google-oauth20').Strategy;
-} catch (e) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const googleModule = require('passport-google-oauth20');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  GoogleStrategyClass = googleModule.Strategy;
+  isGoogleAvailable = true;
+} catch {
   // leave null and handle below
 }
 
-const GoogleBase: any = GooglePassportStrategy
-  ? PassportStrategy(GooglePassportStrategy, 'google')
-  : class {};
+const GoogleBase = isGoogleAvailable
+  ? PassportStrategy(
+      GoogleStrategyClass as typeof PassportBaseStrategy,
+      'google',
+    )
+  : EmptyBaseClass;
 
 @Injectable()
 export class GoogleStrategy extends GoogleBase {
   constructor(private configService: ConfigService) {
     // If the underlying passport strategy isn't available we intentionally
     // skip calling super() and keep a no-op provider so module import doesn't fail.
-    if (!GooglePassportStrategy) {
+    if (!isGoogleAvailable) {
       // Use console here because `this` is not available before super()
       console.warn(
         'passport-google-oauth20 not installed — Google OAuth disabled',
@@ -42,13 +65,18 @@ export class GoogleStrategy extends GoogleBase {
     });
   }
 
+  // We use async for consistency with other passport strategies, even though this implementation doesn't use await
+  // eslint-disable-next-line @typescript-eslint/require-await
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: any,
-    done: (error: any, user?: any) => void,
-  ): Promise<any> {
-    if (!GooglePassportStrategy) return done(null, null);
+    profile: GoogleProfile,
+    done: (error: unknown, user?: unknown) => void,
+  ): Promise<void> {
+    if (!isGoogleAvailable) {
+      done(null, null);
+      return;
+    }
 
     const { name, emails, photos, id } = profile;
 

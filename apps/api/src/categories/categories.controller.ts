@@ -20,6 +20,10 @@ import {
   CreateCategoryDto,
   CreateCategorySchema,
 } from './dto/create-category.dto';
+import {
+  UpdateCategoryDto,
+  UpdateCategorySchema,
+} from './dto/update-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -56,7 +60,11 @@ export class CategoriesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  update(@Param('id') id: string, @Body() updateCategoryDto: any) {
+  @UsePipes(new ZodValidationPipe(UpdateCategorySchema))
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ) {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 

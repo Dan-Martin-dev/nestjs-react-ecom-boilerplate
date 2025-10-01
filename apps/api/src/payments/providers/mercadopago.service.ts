@@ -3,6 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentStatus } from '@repo/db';
 import { ProcessPaymentDto } from '../dto/process-payment.dto';
+import {
+  OrderWithPayment,
+  PaymentResponse,
+  PaymentProviderResponse,
+  InstallmentPlan,
+  WebhookResponse,
+} from '../interfaces/payment.interfaces';
 
 @Injectable()
 export class MercadoPagoService {
@@ -13,10 +20,11 @@ export class MercadoPagoService {
     private prisma: PrismaService,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async processPayment(
-    order: any,
+    order: OrderWithPayment,
     paymentDto: ProcessPaymentDto,
-  ): Promise<any> {
+  ): Promise<PaymentResponse> {
     try {
       // In a real implementation, we would initialize the MercadoPago SDK here
       // const mercadopago = require('mercadopago');
@@ -45,13 +53,13 @@ export class MercadoPagoService {
       // const payment = await mercadopago.payment.create(paymentData);
 
       // Simulate response
-      const mockPaymentResponse = {
+      const mockPaymentResponse: PaymentProviderResponse = {
         status: 'approved',
         id: `mp-${Date.now()}`,
         installments,
         installment_amount: installmentAmount,
         transaction_details: {
-          net_received_amount: order.payment?.amount,
+          net_received_amount: order.payment?.amount || '0',
         },
       };
 
@@ -70,18 +78,20 @@ export class MercadoPagoService {
           response: mockPaymentResponse,
         },
       };
-    } catch (error: any) {
+    } catch (error) {
+      const typedError = error as Error;
       this.logger.error(
-        `Error processing MercadoPago payment: ${error.message}`,
-        error.stack,
+        `Error processing MercadoPago payment: ${typedError.message}`,
+        typedError.stack,
       );
       throw new Error(
-        `Failed to process MercadoPago payment: ${error.message}`,
+        `Failed to process MercadoPago payment: ${typedError.message}`,
       );
     }
   }
 
-  async getInstallmentPlans(amount: number): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async getInstallmentPlans(amount: number): Promise<InstallmentPlan[]> {
     // In a real implementation, we would fetch the available installment plans from MercadoPago
     // For demonstration purposes, we'll return standard installment plans
     return [
@@ -112,7 +122,10 @@ export class MercadoPagoService {
     ];
   }
 
-  async handleWebhook(webhookData: any): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async handleWebhook(
+    webhookData: Record<string, unknown>,
+  ): Promise<WebhookResponse> {
     try {
       this.logger.log('Received MercadoPago webhook', webhookData);
 
@@ -121,13 +134,14 @@ export class MercadoPagoService {
 
       // For demonstration purposes, we'll just log the webhook data
       return { success: true, message: 'Webhook processed successfully' };
-    } catch (error: any) {
+    } catch (error) {
+      const typedError = error as Error;
       this.logger.error(
-        `Error processing MercadoPago webhook: ${error.message}`,
-        error.stack,
+        `Error processing MercadoPago webhook: ${typedError.message}`,
+        typedError.stack,
       );
       throw new Error(
-        `Failed to process MercadoPago webhook: ${error.message}`,
+        `Failed to process MercadoPago webhook: ${typedError.message}`,
       );
     }
   }

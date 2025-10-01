@@ -7,10 +7,13 @@ import {
 import { ZodSchema, ZodError } from 'zod';
 
 @Injectable()
-export class ZodValidationPipe implements PipeTransform {
-  constructor(private schema: ZodSchema) {}
+export class ZodValidationPipe<T> implements PipeTransform {
+  constructor(private schema: ZodSchema<T>) {}
 
-  transform(value: any, metadata: ArgumentMetadata) {
+  transform(value: unknown, metadata: ArgumentMetadata): T {
+    // metadata is required by PipeTransform interface but not used in this implementation
+    void metadata;
+
     try {
       const parsedValue = this.schema.parse(value);
       return parsedValue;

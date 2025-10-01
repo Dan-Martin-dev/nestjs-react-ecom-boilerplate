@@ -21,12 +21,14 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     next: CallHandler,
   ): Observable<Response<T>> {
     return next.handle().pipe(
-      map((data) => ({
-        success: true,
-        message: 'Success',
-        data,
-        timestamp: new Date().toISOString(),
-      })),
+      map(
+        (data): Response<T> => ({
+          success: true,
+          message: 'Success',
+          data: data as T,
+          timestamp: new Date().toISOString(),
+        }),
+      ),
     );
   }
 }

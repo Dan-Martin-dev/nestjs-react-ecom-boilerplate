@@ -1,22 +1,49 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
+import { Strategy as PassportBaseStrategy } from 'passport';
 
-let InstagramPassportStrategy: any = null;
+interface InstagramProfile {
+  id: string;
+  displayName?: string;
+  username?: string;
+  photos?: Array<{ value: string }>;
+}
+
+// Define interfaces for Instagram strategy options if needed in the future
+// Removed unused interface
+
+// Define a base class for when the strategy isn't available
+// Add constructor that matches the signature of the Instagram Strategy
+const EmptyBaseClass = class {
+  constructor(_options?: unknown) {} 
+};
+
+// Store the Instagram Strategy constructor if available
+let InstagramStrategyClass: any = null;
+let isInstagramAvailable = false;
+
 try {
-  InstagramPassportStrategy = require('passport-instagram').Strategy;
-} catch (e) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const instagramModule = require('passport-instagram');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  InstagramStrategyClass = instagramModule.Strategy;
+  isInstagramAvailable = true;
+} catch {
   // optional dependency may be missing in some deploys
 }
 
-const InstagramBase: any = InstagramPassportStrategy
-  ? PassportStrategy(InstagramPassportStrategy, 'instagram')
-  : class {};
+const InstagramBase = isInstagramAvailable
+  ? PassportStrategy(
+      InstagramStrategyClass as typeof PassportBaseStrategy,
+      'instagram',
+    )
+  : EmptyBaseClass;
 
 @Injectable()
 export class InstagramStrategy extends InstagramBase {
   constructor(private configService: ConfigService) {
-    if (!InstagramPassportStrategy) {
+    if (!isInstagramAvailable) {
       console.warn(
         'passport-instagram not installed — Instagram OAuth disabled',
       );
@@ -34,13 +61,18 @@ export class InstagramStrategy extends InstagramBase {
     });
   }
 
+  // We use async for consistency with other passport strategies, even though this implementation doesn't use await
+  // eslint-disable-next-line @typescript-eslint/require-await
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: any,
-    done: (error: any, user?: any) => void,
-  ): Promise<any> {
-    if (!InstagramPassportStrategy) return done(null, null);
+    profile: InstagramProfile,
+    done: (error: unknown, user?: unknown) => void,
+  ): Promise<void> {
+    if (!isInstagramAvailable) {
+      done(null, null);
+      return;
+    }
 
     const { id, displayName, username, photos } = profile;
 

@@ -12,7 +12,6 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
-import { User, Prisma } from '@repo/db';
 
 // Define interface for OAuth user data structure
 interface OAuthUser {
@@ -52,7 +51,7 @@ export class AuthService {
     const days = this.refreshTokenExpiryDays();
     const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
-    await (this.prisma as any).refreshToken.create({
+    await this.prisma.refreshToken.create({
       data: {
         tokenHash,
         userId,
@@ -146,7 +145,7 @@ export class AuthService {
     const tokenHash = this.hashToken(refreshToken);
 
     return await this.prisma.$transaction(async (prisma) => {
-      const existing = await (prisma as any).refreshToken.findUnique({
+      const existing = await prisma.refreshToken.findUnique({
         where: { tokenHash },
       });
       if (!existing) {
@@ -154,7 +153,7 @@ export class AuthService {
       }
       if (existing.revoked) {
         // possible reuse attack — revoke all refresh tokens for the user
-        await (prisma as any).refreshToken.updateMany({
+        await prisma.refreshToken.updateMany({
           where: { userId: existing.userId },
           data: { revoked: true },
         });
@@ -176,12 +175,12 @@ export class AuthService {
       const days = this.refreshTokenExpiryDays();
       const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
-      const newToken = await (prisma as any).refreshToken.create({
+      const newToken = await prisma.refreshToken.create({
         data: { tokenHash: newHash, userId: user.id, expiresAt },
       });
 
       // Revoke and link old token
-      await (prisma as any).refreshToken.update({
+      await prisma.refreshToken.update({
         where: { id: existing.id },
         data: { revoked: true, replacedById: newToken.id },
       });
@@ -205,11 +204,11 @@ export class AuthService {
   // Revoke a refresh token (logout)
   async revokeRefreshToken(refreshToken: string) {
     const tokenHash = this.hashToken(refreshToken);
-    const existing = await (this.prisma as any).refreshToken.findUnique({
+    const existing = await this.prisma.refreshToken.findUnique({
       where: { tokenHash },
     });
     if (!existing) return { ok: true };
-    await (this.prisma as any).refreshToken.update({
+    await this.prisma.refreshToken.update({
       where: { id: existing.id },
       data: { revoked: true },
     });
@@ -218,11 +217,10 @@ export class AuthService {
 
   // Handle OAuth login/signup
   async validateOAuthUser(oauthUser: OAuthUser) {
-    const { provider, providerId, email, firstName, lastName, picture } =
-      oauthUser;
+    const { provider, providerId, email, firstName, lastName } = oauthUser;
 
     // Try to find existing user by provider and providerId
-    let user: any = await (this.prisma as any).user.findFirst({
+    let user = await this.prisma.user.findFirst({
       where: {
         provider: provider,
         providerId: providerId,
@@ -242,7 +240,7 @@ export class AuthService {
 
     // If not found by provider, try to find by email (for account linking)
     if (!user && email) {
-      user = await (this.prisma as any).user.findUnique({
+      user = await this.prisma.user.findUnique({
         where: { email },
         select: {
           id: true,
@@ -264,7 +262,7 @@ export class AuthService {
         firstName && lastName ? `${firstName} ${lastName}` : user.name;
 
       // Update user with explicitly defined fields
-      user = await (this.prisma as any).user.update({
+      user = await this.prisma.user.update({
         where: { id: user.id },
         data: {
           name,
@@ -275,6 +273,7 @@ export class AuthService {
           id: true,
           email: true,
           name: true,
+          password: true,
           role: true,
           createdAt: true,
           updatedAt: true,
@@ -284,7 +283,7 @@ export class AuthService {
       });
     } else {
       // Create new user
-      user = await (this.prisma as any).user.create({
+      user = await this.prisma.user.create({
         data: {
           email: email || `${providerId}@${provider}.local`, // Fallback for providers without email
           name:
@@ -299,6 +298,7 @@ export class AuthService {
           id: true,
           email: true,
           name: true,
+          password: true,
           role: true,
           createdAt: true,
           updatedAt: true,

@@ -9,15 +9,15 @@ import {
   Query,
   UseGuards,
   UsePipes,
-  Request,
-  Injectable,
-  Inject,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateReviewDto, CreateReviewSchema } from './dto/create-review.dto';
+import { UpdateReviewDto, UpdateReviewSchema } from './dto/update-review.dto';
 import { PaginationDto, PaginationSchema } from '../common/dto/pagination.dto';
+import { CurrentUser } from '../common/decorators/user.decorator';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -27,10 +27,10 @@ export class ReviewsController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(CreateReviewSchema))
   create(
-    @Request() req: any,
+    @CurrentUser() user: JwtPayload,
     @Body() createReviewDto: CreateReviewDto,
-  ): Promise<any> {
-    return this.reviewsService.create(req.user.sub, createReviewDto);
+  ) {
+    return this.reviewsService.create(user.sub, createReviewDto);
   }
 
   @Get('product/:productId')
@@ -46,25 +46,26 @@ export class ReviewsController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(PaginationSchema))
   findUserReviews(
-    @Request() req: any,
+    @CurrentUser() user: JwtPayload,
     @Query() paginationDto: PaginationDto,
-  ): Promise<any> {
-    return this.reviewsService.findUserReviews(req.user.sub, paginationDto);
+  ) {
+    return this.reviewsService.findUserReviews(user.sub, paginationDto);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
+  @UsePipes(new ZodValidationPipe(UpdateReviewSchema))
   update(
-    @Request() req: any,
+    @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
-    @Body() updateReviewDto: any,
-  ): Promise<any> {
-    return this.reviewsService.update(req.user.sub, id, updateReviewDto);
+    @Body() updateReviewDto: UpdateReviewDto,
+  ) {
+    return this.reviewsService.update(user.sub, id, updateReviewDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Request() req: any, @Param('id') id: string): Promise<any> {
-    return this.reviewsService.remove(req.user.sub, id);
+  remove(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    return this.reviewsService.remove(user.sub, id);
   }
 }

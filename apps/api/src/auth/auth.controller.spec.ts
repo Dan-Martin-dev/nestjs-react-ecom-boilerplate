@@ -10,7 +10,6 @@ jest.mock('../common/pipes/zod-validation.pipe');
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let service: AuthService;
 
   // By mocking the service, we test the controller in isolation.
   // We trust that the service works because it has its own separate tests.
@@ -34,7 +33,6 @@ describe('AuthController', () => {
       .compile();
 
     controller = module.get<AuthController>(AuthController);
-    service = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
@@ -56,7 +54,7 @@ describe('AuthController', () => {
 
       const result = await controller.register(registerDto);
 
-      expect(service.register).toHaveBeenCalledWith(registerDto);
+      expect(mockAuthService.register).toHaveBeenCalledWith(registerDto);
       expect(result).toEqual(expectedResult);
     });
   });
@@ -75,7 +73,7 @@ describe('AuthController', () => {
 
       const result = await controller.login(loginDto);
 
-      expect(service.login).toHaveBeenCalledWith(loginDto);
+      expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);
       expect(result).toEqual(expectedResult);
     });
   });
