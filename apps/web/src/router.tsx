@@ -46,10 +46,9 @@ const router = createBrowserRouter([
         ),
       },
 
-      // Product routes grouped under ProductsLayout for future filters/sidebars
+      // Product routes now use RootLayout (main layout with header/footer)
       {
         path: 'products',
-        element: <ProductsLayout />,
         children: [
           {
             index: true,
