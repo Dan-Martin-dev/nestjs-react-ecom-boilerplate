@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiClient } from '../lib/api'
+import { apiClient, API_ENDPOINTS } from '../lib/api'
 import { type Product, type ProductFilterDto, type PaginatedResponse, type CreateProductDto } from '../types/api'
 
 // Query keys
@@ -32,12 +32,12 @@ export function useProducts(filters: ProductFilterDto = {}) {
   })
 }
 
-// Get single product by ID
-export function useProduct(id: string) {
+// Get single product by slug
+export function useProductBySlug(slug: string) {
   return useQuery({
-    queryKey: productKeys.detail(id),
-    queryFn: () => apiClient.get<Product>(`/products/${id}`),
-    enabled: !!id,
+    queryKey: productKeys.detail(slug),
+    queryFn: () => apiClient.get<Product>(API_ENDPOINTS.PRODUCT_BY_SLUG(slug)),
+    enabled: !!slug,
     staleTime: 10 * 60 * 1000, // 10 minutes
   })
 }

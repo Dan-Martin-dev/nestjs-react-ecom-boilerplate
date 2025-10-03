@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { APP_CONFIG } from '../../../config';
 import type { Product as SharedProduct } from '@repo/shared';
-import { mapSharedProductToUi } from '../../bestsellers/utils/productMapper';
 
 async function fetchAllProducts(limit: number = 20): Promise<SharedProduct[]> {
   const response = await fetch(`${APP_CONFIG.api.baseUrl}/products?limit=${limit}&sortBy=createdAt&sortOrder=desc`);
@@ -16,7 +15,6 @@ export function useAllProducts(limit: number = 20) {
   return useQuery({
     queryKey: ['all-products', limit],
     queryFn: () => fetchAllProducts(limit),
-    select: (data) => data.map(mapSharedProductToUi),
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     gcTime: 1000 * 60 * 10, // Keep data in cache for 10 minutes
   });

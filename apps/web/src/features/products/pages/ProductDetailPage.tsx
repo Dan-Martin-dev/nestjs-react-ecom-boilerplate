@@ -2,37 +2,28 @@ import { Link, useParams } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { useAddToCart } from '../../../hooks/useCart'
 import { useAuthStore } from '../../../stores'
-import { ArrowLeft, Star } from 'lucide-react'
-
-// Mock product data - would come from API based on productId
-const mockProduct = {
-  id: '1',
-  name: 'Wireless Headphones',
-  price: 99.99,
-  images: [
-    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=600&h=600&fit=crop&crop=center'
-  ],
-  description: 'Experience premium sound quality with our state-of-the-art wireless headphones. Featuring active noise cancellation, 30-hour battery life, and crystal-clear audio reproduction.',
-  features: [
-    'Active Noise Cancellation',
-    '30-hour battery life',
-    'Bluetooth 5.0 connectivity',
-    'Premium build quality',
-    'Comfortable over-ear design'
-  ],
-  rating: 4.8,
-  reviews: 127,
-  inStock: true
-}
+import { ArrowLeft } from 'lucide-react'
+import { useProductBySlug } from '../../../hooks/useProducts'
+import { useState, useEffect } from 'react'
+import type { Product, ProductImage, ProductVariant } from '@repo/shared'
 
 function ProductDetailPage() {
-  const { productId } = useParams();
-  // TODO: Use productId to fetch actual product data instead of mock data
-  console.log('Product ID:', productId) // Temporary to avoid linting error
+  const { productId } = useParams()
+  const { data: productResp, isLoading, error } = useProductBySlug(productId || '')
+  const product = productResp as Product | undefined
+
   const { isAuthenticated } = useAuthStore()
   const addToCartMutation = useAddToCart()
+
+  // Local UI state
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
+  const [quantity, setQuantity] = useState<number>(1)
+
+  useEffect(() => {
+    if (!selectedVariantId && product?.variants && product.variants.length > 0) {
+      setSelectedVariantId(product.variants[0].id)
+    }
+  }, [product, selectedVariantId])
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
@@ -40,19 +31,35 @@ function ProductDetailPage() {
       return
     }
 
+    if (!selectedVariantId) {
+      alert('Please select a variant')
+      return
+    }
+
     try {
-      // For demo purposes, we'll use a mock variant ID
-      // In a real app, this would come from the product data
       await addToCartMutation.mutateAsync({
-        productVariantId: 'mock-variant-id', // This should come from actual product data
-        quantity: 1,
+        productVariantId: selectedVariantId,
+        quantity,
       })
       alert('Item added to cart!')
-    } catch (error) {
-      console.error('Failed to add to cart:', error)
+    } catch (err) {
+      console.error('Failed to add to cart:', err)
       alert('Failed to add item to cart')
     }
   }
+
+  if (isLoading) {
+    return <div className="p-8 text-center">Loading product...</div>
+  }
+
+  if (error || !product) {
+    return <div className="p-8 text-center text-red-600">Unable to load product.</div>
+  }
+
+  // Map images
+  const images: ProductImage[] = (product?.images as ProductImage[]) ?? []
+
+  const mainImage = images.find((i) => i.isDefault) ?? images[0]
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -66,17 +73,18 @@ function ProductDetailPage() {
         <div className="space-y-4">
           <div className="aspect-square rounded-lg overflow-hidden border">
             <img
-              src={mockProduct.images[0]}
-              alt={mockProduct.name}
+              src={mainImage?.url ?? ''}
+              alt={mainImage?.altText ?? product.name}
               className="w-full h-full object-cover"
             />
           </div>
+
           <div className="grid grid-cols-3 gap-2">
-            {mockProduct.images.slice(1).map((image, index) => (
-              <div key={index} className="aspect-square rounded-lg overflow-hidden border">
+            {images.slice(0, 6).map((img: ProductImage, index: number) => (
+              <div key={img.id ?? index} className="aspect-square rounded-lg overflow-hidden border">
                 <img
-                  src={image}
-                  alt={`${mockProduct.name} ${index + 2}`}
+                  src={img.url}
+                  alt={img.altText ?? product.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -87,68 +95,58 @@ function ProductDetailPage() {
         {/* Product Details */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{mockProduct.name}</h1>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < Math.floor(mockProduct.rating) 
-                        ? 'text-yellow-400 fill-current' 
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {mockProduct.rating} ({mockProduct.reviews} reviews)
-              </span>
-            </div>
+            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+
             <div className="text-3xl font-bold text-primary mb-4">
-              ${mockProduct.price}
+              ${product.price}
             </div>
           </div>
 
           <div>
             <h3 className="font-semibold mb-2">Description</h3>
-            <p className="text-muted-foreground">{mockProduct.description}</p>
+            <p className="text-muted-foreground">{product.description}</p>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-2">Features</h3>
-            <ul className="space-y-1">
-              {mockProduct.features.map((feature, index) => (
-                <li key={index} className="text-muted-foreground flex items-center gap-2">
-                  <span className="w-1 h-1 bg-primary rounded-full"></span>
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {product.variants && product.variants.length > 0 && (
+            <div>
+              <h3 className="font-semibold mb-2">Variant</h3>
+              <div className="flex gap-2 flex-wrap">
+                {product.variants.map((v: ProductVariant) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedVariantId(v.id)}
+                    className={`px-3 py-2 border rounded text-sm ${selectedVariantId === v.id ? 'bg-gray-900 text-white' : 'bg-white'}`}
+                  >
+                    {v.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className={`px-2 py-1 rounded text-sm ${
-                mockProduct.inStock 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {mockProduct.inStock ? 'In Stock' : 'Out of Stock'}
-              </span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center">
+                <label className="mr-2 text-sm">Qty</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                  className="w-20 border rounded px-2 py-1"
+                />
+              </div>
             </div>
-            
+
             <div className="flex gap-4">
-              <Button 
+              <Button
                 onClick={handleAddToCart}
-                disabled={!mockProduct.inStock}
+                disabled={!selectedVariantId}
                 className="flex-1"
               >
                 Add to Cart
               </Button>
-              <Button variant="outline">
-                Add to Wishlist
-              </Button>
+              <Button variant="outline">Add to Wishlist</Button>
             </div>
           </div>
         </div>
