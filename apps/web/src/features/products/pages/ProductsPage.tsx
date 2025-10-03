@@ -6,7 +6,7 @@ import { useAllProducts } from '../hooks/useAllProducts';
 import { IconLoader2 } from '@tabler/icons-react';
 
 const ProductsPage: React.FC = () => {
-  const { data: products, isLoading, error } = useAllProducts(20);
+  const { data: products, isLoading, error } = useAllProducts(8);
 
   return (
     <main className="max-w-6xl mx-auto py-12 px-4 auth-font-inco auth-uppercase">
@@ -38,23 +38,16 @@ const ProductsPage: React.FC = () => {
         <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {products.map((p: UiProduct) => (
 
-          /* ------------------------- */
-          /* Single product */
-          /* ------------------------- */
-          <article key={p.id} className="group">
+            <article key={p.id} className="group">
+              <Link to={p.href} className="block overflow-hidden bg-white shadow-sm hover:shadow-md">
+                <div className="relative pb-[100%] bg-gray-50">
+                  <img
+                    src={p.img}
+                    alt={p.alt || p.title}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                  />
 
-            {/* ------------------------- */}
-            {/* Product image (clickable) */}
-            {/* Contains the promo badge overlaid on the image */}
-            {/* ------------------------- */}
-            <Link to={p.href} className="block overflow-hidden bg-white shadow-sm hover:shadow-md">
-              <div className="relative pb-[100%] bg-gray-50">
-                <img
-                  src={p.img}
-                  alt={p.alt || p.title}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  loading="lazy"
-                />
                   {/* Promo tag inside image: centered bottom on xs/sm, bottom-right on md+ */}
                   {p.badge && (
                     <span
@@ -64,34 +57,26 @@ const ProductsPage: React.FC = () => {
                       {p.badge}
                     </span>
                   )}
+                </div>
+              </Link>
+
+              <div className="mt-3">
+                <h3 className="text-base md:text-md font-inco font-medium text-gray-900">
+                  <Link to={p.href} className="hover:underline">
+                    {p.title}
+                  </Link>
+                </h3>
+
+                {p.alt && <p className="text-sm text-gray-500 mt-1 normal-case">{p.alt}</p>}
+
+                <div className="mt-1 flex items-center justify-between text-sm text-gray-600">
+                  <span>{p.price}</span>
+                </div>
               </div>
-            </Link>
+            </article>
 
-            {/* ------------------------- */}
-            {/* Title, subtitle and price */}
-            {/* ------------------------- */}
-            <div className="mt-3">
-              {/* Title */}
-              <h3 className="text-base md:text-md font-inco font-medium text-gray-900">
-                <Link to={p.href} className="hover:underline">
-                  {p.title}
-                </Link>
-              </h3>
-
-              {/* Subtitle (smaller, gray) - uses `alt` when present */}
-              {p.alt && (
-                <p className="text-sm text-gray-500 mt-1 normal-case">{p.alt}</p>
-              )}
-
-              {/* Price */}
-              <div className="mt-1 flex items-center justify-between text-sm text-gray-600">
-                <span>{p.price}</span>
-              </div>
-            </div>
-
-          </article>
-        ))}
-      </section>
+          ))}
+        </section>
       )}
       {/* ------------------------- */}
       {/* Footer / View more link */}

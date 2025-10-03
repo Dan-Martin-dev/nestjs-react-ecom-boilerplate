@@ -6,15 +6,15 @@ const path = require('path');
 const crypto = require('crypto');
 const sharp = require('sharp');
 
-// Initialize S3 client for Oracle Object Storage
+// Initialize S3 client for Hetzner Storage Box (S3-compatible)
 const s3 = new S3Client({
-  region: process.env.ORACLE_REGION || 'us-ashburn-1',
-  endpoint: process.env.ORACLE_ENDPOINT,
+  region: 'fsn1', // Hetzner region, e.g., fsn1, nbg1; adjust as needed
+  endpoint: process.env.HETZNER_ENDPOINT, // e.g., https://fsn1.your-storagebox.de
   credentials: {
-    accessKeyId: process.env.ORACLE_ACCESS_KEY,
-    secretAccessKey: process.env.ORACLE_SECRET_KEY,
+    accessKeyId: process.env.HETZNER_ACCESS_KEY, // Your Storage Box username
+    secretAccessKey: process.env.HETZNER_SECRET_KEY, // Your Storage Box password
   },
-  forcePathStyle: true, // Oracle requires path-style URLs
+  forcePathStyle: true, // Required for Hetzner
 });
 
 async function downloadImage(url, localPath) {
@@ -28,16 +28,17 @@ async function uploadImage(localPath, key) {
 
   await s3.send(
     new PutObjectCommand({
-      Bucket: process.env.ORACLE_BUCKET,
+      Bucket: process.env.HETZNER_BUCKET, // Your Storage Box name, e.g., 'your-storagebox'
       Key: key,
       Body: body,
       ContentType: contentType,
       CacheControl: 'public, max-age=31536000, immutable',
-      ACL: 'public-read',
+      ACL: 'public-read', // Ensure public access if needed
     }),
   );
 
-  return `${process.env.CDN_HOST.replace(/\/$/, '')}/${key}`;
+  // Hetzner Storage Box public URL format: https://<username>.your-storagebox.de/<key>
+  return `${process.env.HETZNER_CDN_HOST.replace(/\/$/, '')}/${key}`;
 }
 
 async function processImage(localPath, productId, variant) {
