@@ -9,7 +9,7 @@ const ProductsPage: React.FC = () => {
   const { data: products, isLoading, error } = useAllProducts(20);
 
   return (
-    <div className="max-w-6xl mx-auto py-12 px-4 auth-font-inco auth-uppercase">
+    <main className="max-w-6xl mx-auto py-12 px-4 auth-font-inco auth-uppercase">
       {/* ------------------------- */}
       {/* Header */}
       {/* ------------------------- */}
@@ -97,11 +97,11 @@ const ProductsPage: React.FC = () => {
       {/* Footer / View more link */}
       {/* ------------------------- */}
       <footer className="mt-6 text-sm">
-        <Link to="/products" className="text-blue-600 underline">
-          View all products
+        <Link to="/collections/all-products" className="text-blue-600 underline">
+          View all products in the All Products collection
         </Link>
       </footer>
-    </div>
+    </main>
   );
 };
 

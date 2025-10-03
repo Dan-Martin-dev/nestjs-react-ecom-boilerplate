@@ -2,16 +2,13 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { RootLayout } from './features/layout/pages/RootLayoutV6';
 import AuthLayout from './features/layout/pages/AuthLayout';
-import ProductsLayout from './features/layout/pages/ProductsLayout';
 import CartLayout from './features/layout/pages/CartLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Loadable from './utils/Loadable';
 import ProtectedRoute from './features/auth/components/ProtectedRoute';
 
 const ProductsPage = lazy(() => import('./features/products/pages/ProductsPage'));
-/* 
 const BestsellersPage = lazy(() => import('./features/bestsellers/pages/BestsellersPage'));
-*/
 const CartPage = lazy(() => import('./features/cart/pages/CartPage'));
 const ProductDetailPage = lazy(() => import('./features/products/pages/ProductDetailPage'));
 const NotFoundPage = lazy(() => import('./features/layout/pages/NotFoundPage'));
@@ -41,7 +38,7 @@ const router = createBrowserRouter([
         index: true,
         element: (
           <Loadable>
-            <ProductsLayout />,
+            <BestsellersPage />
           </Loadable>
         ),
       },
