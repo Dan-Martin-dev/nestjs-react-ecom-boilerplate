@@ -2,10 +2,11 @@ import { Link, useParams } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { useAddToCart } from '../../../hooks/useCart'
 import { useAuthStore } from '../../../stores'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronRight, Minus, Plus, ShoppingCart, Heart } from 'lucide-react'
 import { useProductBySlug } from '../../../hooks/useProducts'
 import { useState, useEffect } from 'react'
 import type { Product, ProductImage, ProductVariant } from '@repo/shared'
+import '../../auth/styles/auth-fonts.css'
 
 function ProductDetailPage() {
   const { productId } = useParams()
@@ -17,8 +18,22 @@ function ProductDetailPage() {
 
   // Local UI state
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [quantity, setQuantity] = useState<number>(1)
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
+  const [openAccordion, setOpenAccordion] = useState<string | null>('description')
+  const [notificationVisible, setNotificationVisible] = useState<boolean>(false)
+  const [notificationMessage, setNotificationMessage] = useState<string>('')
 
+  // Find selected variant
+  useEffect(() => {
+    if (product?.variants && selectedVariantId) {
+      const variant = product.variants.find(v => v.id === selectedVariantId)
+      setSelectedVariant(variant || null)
+    }
+  }, [selectedVariantId, product])
+
+  // Set default variant
   useEffect(() => {
     if (!selectedVariantId && product?.variants && product.variants.length > 0) {
       setSelectedVariantId(product.variants[0].id)
@@ -27,12 +42,16 @@ function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      alert('Please login to add items to cart')
+      setNotificationMessage('Please login to add items to cart')
+      setNotificationVisible(true)
+      setTimeout(() => setNotificationVisible(false), 3000)
       return
     }
 
     if (!selectedVariantId) {
-      alert('Please select a variant')
+      setNotificationMessage('Please select a variant')
+      setNotificationVisible(true)
+      setTimeout(() => setNotificationVisible(false), 3000)
       return
     }
 
@@ -41,115 +60,358 @@ function ProductDetailPage() {
         productVariantId: selectedVariantId,
         quantity,
       })
-      alert('Item added to cart!')
+      setNotificationMessage(`${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart`)
+      setNotificationVisible(true)
+      setTimeout(() => setNotificationVisible(false), 3000)
     } catch (err) {
       console.error('Failed to add to cart:', err)
-      alert('Failed to add item to cart')
+      setNotificationMessage('Failed to add item to cart')
+      setNotificationVisible(true)
+      setTimeout(() => setNotificationVisible(false), 3000)
     }
   }
 
+  const toggleAccordion = (section: string) => {
+    setOpenAccordion(openAccordion === section ? null : section)
+  }
+
+  const increaseQuantity = () => {
+    setQuantity(prev => prev + 1)
+  }
+
+  const decreaseQuantity = () => {
+    setQuantity(prev => Math.max(1, prev - 1))
+  }
+
   if (isLoading) {
-    return <div className="p-8 text-center">Loading product...</div>
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-48 bg-gray-200 rounded"></div>
+          <div className="h-64 w-full max-w-md bg-gray-200 rounded"></div>
+          <div className="h-4 w-full max-w-md bg-gray-200 rounded"></div>
+          <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    )
   }
 
   if (error || !product) {
-    return <div className="p-8 text-center text-red-600">Unable to load product.</div>
+    return (
+      <div className="max-w-3xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <h2 className="text-lg font-medium text-red-800 mb-2">Product Not Found</h2>
+          <p className="text-red-700">We couldn't find the product you're looking for.</p>
+          <Link 
+            to="/products" 
+            className="mt-4 inline-flex items-center text-sm font-medium text-red-700 hover:text-red-800"
+          >
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Return to Products
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   // Map images
   const images: ProductImage[] = (product?.images as ProductImage[]) ?? []
+  const currentImage = images[selectedImageIndex] || images[0]
 
-  const mainImage = images.find((i) => i.isDefault) ?? images[0]
+  // Format price to show cents properly
+  const formattedPrice = parseFloat(selectedVariant?.price || product.price).toFixed(2)
+
+  // Extract fabric details or use default
+  const fabricDetails = product.description?.includes('GSM') 
+    ? product.description 
+    : '275 GSM JERSEY'
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Link to="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
-        <ArrowLeft className="h-4 w-4" />
-        Back to Products
-      </Link>
+    <div className="bg-white auth-font-inco">
+      {/* Top navigation bar */}
+      <div className="border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4">
+          <nav className="flex py-4 text-sm">
+            <Link to="/" className="text-gray-500 hover:text-gray-700">Home</Link>
+            <ChevronRight className="mx-2 h-5 w-5 text-gray-400" />
+            <Link to="/products" className="text-gray-500 hover:text-gray-700">Products</Link>
+            <ChevronRight className="mx-2 h-5 w-5 text-gray-400" />
+            <span className="text-gray-900 font-medium">{product.name}</span>
+          </nav>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="max-w-6xl mx-auto px-4 py-12 lg:grid lg:grid-cols-2 lg:gap-x-12">
         {/* Product Images */}
-        <div className="space-y-4">
-          <div className="aspect-square rounded-lg overflow-hidden border">
+        <div className="mb-10 lg:mb-0">
+          {/* Main Image */}
+          <div className="aspect-square overflow-hidden bg-gray-50 mb-6">
             <img
-              src={mainImage?.url ?? ''}
-              alt={mainImage?.altText ?? product.name}
+              src={currentImage?.url ?? ''}
+              alt={currentImage?.altText ?? product.name}
               className="w-full h-full object-cover"
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            {images.slice(0, 6).map((img: ProductImage, index: number) => (
-              <div key={img.id ?? index} className="aspect-square rounded-lg overflow-hidden border">
+          {/* Image Gallery */}
+          <div className="grid grid-cols-5 gap-2">
+            {images.map((img: ProductImage, index: number) => (
+              <button
+                key={img.id || index}
+                onClick={() => setSelectedImageIndex(index)}
+                className={`aspect-square border ${selectedImageIndex === index ? 'border-black' : 'border-gray-200'} hover:border-gray-400 transition`}
+              >
                 <img
                   src={img.url}
-                  alt={img.altText ?? product.name}
+                  alt={img.altText ?? `View ${index + 1} of ${product.name}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
-              </div>
+              </button>
             ))}
           </div>
         </div>
 
         {/* Product Details */}
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-
-            <div className="text-3xl font-bold text-primary mb-4">
-              ${product.price}
-            </div>
+        <div className="lg:pl-10">
+          {/* Fabric type */}
+          <div className="mb-4">
+            <p className="text-sm text-gray-500 tracking-wide uppercase">
+              {fabricDetails}
+            </p>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-2">Description</h3>
-            <p className="text-muted-foreground">{product.description}</p>
+          {/* Title & Price */}
+          <h1 className="text-3xl font-medium mb-6">{product.name.toUpperCase()}</h1>
+          <div className="mb-8">
+            <p className="text-xl">${formattedPrice}</p>
           </div>
 
+          {/* Variants Selection */}
           {product.variants && product.variants.length > 0 && (
-            <div>
-              <h3 className="font-semibold mb-2">Variant</h3>
-              <div className="flex gap-2 flex-wrap">
-                {product.variants.map((v: ProductVariant) => (
-                  <button
-                    key={v.id}
-                    onClick={() => setSelectedVariantId(v.id)}
-                    className={`px-3 py-2 border rounded text-sm ${selectedVariantId === v.id ? 'bg-gray-900 text-white' : 'bg-white'}`}
-                  >
-                    {v.name}
-                  </button>
-                ))}
+            <div className="mb-8">
+              <h3 className="text-sm font-medium mb-3 uppercase">Color</h3>
+              <div className="flex flex-wrap gap-2">
+                {product.variants.map((v: ProductVariant) => {
+                  // Determine if this variant is a color
+                  const isColor = v.name.toLowerCase().includes('black') ||
+                                  v.name.toLowerCase().includes('white') ||
+                                  v.name.toLowerCase().includes('grey') ||
+                                  v.name.toLowerCase().includes('navy');
+                  
+                  let backgroundColor = '#ddd';
+                  if (v.name.toLowerCase().includes('black')) backgroundColor = '#000';
+                  if (v.name.toLowerCase().includes('white')) backgroundColor = '#fff';
+                  if (v.name.toLowerCase().includes('grey')) backgroundColor = '#aaa';
+                  if (v.name.toLowerCase().includes('navy')) backgroundColor = '#003366';
+                  
+                  return isColor ? (
+                    <button
+                      key={v.id}
+                      onClick={() => setSelectedVariantId(v.id)}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center focus:outline-none ${
+                        selectedVariantId === v.id 
+                          ? 'ring-2 ring-offset-2 ring-black' 
+                          : 'ring-1 ring-gray-200'
+                      }`}
+                      title={v.name}
+                      aria-label={`Select ${v.name} color`}
+                    >
+                      <span 
+                        className="w-8 h-8 rounded-full" 
+                        style={{ backgroundColor }}
+                      ></span>
+                    </button>
+                  ) : (
+                    <button
+                      key={v.id}
+                      onClick={() => setSelectedVariantId(v.id)}
+                      className={`px-4 py-2 border ${
+                        selectedVariantId === v.id 
+                          ? 'border-black bg-black text-white' 
+                          : 'border-gray-300 bg-white hover:border-gray-400'
+                      }`}
+                    >
+                      {v.name}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center">
-                <label className="mr-2 text-sm">Qty</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
-                  className="w-20 border rounded px-2 py-1"
+          {/* Quantity Selector */}
+          <div className="mb-8">
+            <h3 className="text-sm font-medium mb-3 uppercase">Quantity</h3>
+            <div className="flex items-center border border-gray-300 w-36">
+              <button 
+                onClick={decreaseQuantity}
+                className="w-10 h-10 flex items-center justify-center border-r border-gray-300"
+                aria-label="Decrease quantity"
+              >
+                <Minus size={16} />
+              </button>
+              <div className="flex-1 text-center">
+                <span className="text-sm">{quantity}</span>
+              </div>
+              <button 
+                onClick={increaseQuantity}
+                className="w-10 h-10 flex items-center justify-center border-l border-gray-300"
+                aria-label="Increase quantity"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Add to Cart & Wishlist */}
+          <div className="flex flex-col space-y-3 mb-10">
+            <Button
+              onClick={handleAddToCart}
+              disabled={!selectedVariantId || addToCartMutation.isPending}
+              className="bg-[#3b2b1b] hover:bg-[#2a1f13] text-white py-4 w-full rounded-none font-normal text-base flex justify-center"
+            >
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              {addToCartMutation.isPending ? 'Adding...' : 'Add to Cart'}
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="border-gray-300 text-gray-800 py-4 w-full rounded-none font-normal text-base flex justify-center hover:bg-gray-50"
+            >
+              <Heart className="mr-2 h-5 w-5" />
+              Add to Wishlist
+            </Button>
+          </div>
+
+          {/* Product Information Accordions */}
+          <div className="border-t border-gray-200">
+            {/* Description Accordion */}
+            <div className="border-b border-gray-200">
+              <button
+                className="flex justify-between items-center w-full py-4 px-2 text-left focus:outline-none"
+                onClick={() => toggleAccordion('description')}
+                aria-expanded={openAccordion === 'description'}
+                aria-controls="description-panel"
+              >
+                <span className="font-medium uppercase text-sm">Product Description</span>
+                <ChevronDown 
+                  className={`w-5 h-5 transition-transform ${openAccordion === 'description' ? 'transform rotate-180' : ''}`}
                 />
+              </button>
+              <div 
+                id="description-panel"
+                className={`overflow-hidden transition-all duration-300 ${openAccordion === 'description' ? 'max-h-96' : 'max-h-0'}`}
+              >
+                <div className="px-2 pb-4 text-gray-600">
+                  <p>{product.description || 'No detailed description available for this product.'}</p>
+                </div>
               </div>
             </div>
-
-            <div className="flex gap-4">
-              <Button
-                onClick={handleAddToCart}
-                disabled={!selectedVariantId}
-                className="flex-1"
+            
+            {/* Size Guide Accordion */}
+            <div className="border-b border-gray-200">
+              <button
+                className="flex justify-between items-center w-full py-4 px-2 text-left focus:outline-none"
+                onClick={() => toggleAccordion('size')}
+                aria-expanded={openAccordion === 'size'}
+                aria-controls="size-panel"
               >
-                Add to Cart
-              </Button>
-              <Button variant="outline">Add to Wishlist</Button>
+                <span className="font-medium uppercase text-sm">Size Guide</span>
+                <ChevronDown 
+                  className={`w-5 h-5 transition-transform ${openAccordion === 'size' ? 'transform rotate-180' : ''}`}
+                />
+              </button>
+              <div 
+                id="size-panel"
+                className={`overflow-hidden transition-all duration-300 ${openAccordion === 'size' ? 'max-h-96' : 'max-h-0'}`}
+              >
+                <div className="px-2 pb-4">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left py-2 pr-4">Size</th>
+                          <th className="text-left py-2 px-4">Chest (inches)</th>
+                          <th className="text-left py-2 px-4">Length (inches)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-2 pr-4">S</td>
+                          <td className="py-2 px-4">36-38</td>
+                          <td className="py-2 px-4">28</td>
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-2 pr-4">M</td>
+                          <td className="py-2 px-4">39-41</td>
+                          <td className="py-2 px-4">29</td>
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-2 pr-4">L</td>
+                          <td className="py-2 px-4">42-44</td>
+                          <td className="py-2 px-4">30</td>
+                        </tr>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-2 pr-4">XL</td>
+                          <td className="py-2 px-4">45-47</td>
+                          <td className="py-2 px-4">31</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Shipping Accordion */}
+            <div className="border-b border-gray-200">
+              <button
+                className="flex justify-between items-center w-full py-4 px-2 text-left focus:outline-none"
+                onClick={() => toggleAccordion('shipping')}
+                aria-expanded={openAccordion === 'shipping'}
+                aria-controls="shipping-panel"
+              >
+                <span className="font-medium uppercase text-sm">Shipping & Returns</span>
+                <ChevronDown 
+                  className={`w-5 h-5 transition-transform ${openAccordion === 'shipping' ? 'transform rotate-180' : ''}`}
+                />
+              </button>
+              <div 
+                id="shipping-panel"
+                className={`overflow-hidden transition-all duration-300 ${openAccordion === 'shipping' ? 'max-h-96' : 'max-h-0'}`}
+              >
+                <div className="px-2 pb-4 text-gray-600">
+                  <p className="mb-3">Free shipping on all orders over $100.</p>
+                  <p className="mb-3">Orders typically ship within 1-2 business days.</p>
+                  <p>Returns accepted within 30 days of delivery for unworn items.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </main>
+
+      {/* Product recommendations section */}
+      <section className="bg-gray-50 py-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-2xl font-medium mb-8 text-center">You May Also Like</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* This would typically be populated with recommended products */}
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="aspect-square bg-white border border-gray-100"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Toast notification */}
+      <div 
+        className={`fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded shadow-lg transition-opacity duration-300 flex items-center
+                  ${notificationVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        role="alert"
+      >
+        {notificationMessage}
       </div>
     </div>
   )

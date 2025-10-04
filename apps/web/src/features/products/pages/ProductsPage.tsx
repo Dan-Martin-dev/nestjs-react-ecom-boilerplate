@@ -68,20 +68,23 @@ const ProductsPage: React.FC = () => {
                     )}
                   </div>
                 </Link>
-
+                
                 <div className="mt-3">
-                  <h3 className="text-base md:text-md font-inco font-medium text-gray-900">
+
+                  {/* title */}
+                  <h3 className="text-base md:text- font-inco font-medium text-gray-900">
                     <Link to={`/products/${p.slug}`} className="hover:underline">
                       {titleWithBadge}
                     </Link>
                   </h3>
-
+                  
+                  {/* description */}
                   {p.description && (
                     <p className="text-sm text-gray-500 mt-1 normal-case">{p.description}</p>
                   )}
 
                   <div className="mt-1 flex items-center justify-between text-sm text-gray-600">
-                    <span>Regular price {p.price}</span>
+                    <span>${p.price}</span>
                   </div>
 
                   {/* Color variants */}
