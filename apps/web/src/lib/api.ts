@@ -1,6 +1,6 @@
 import type { ApiError } from '../types/api'
+import { API_URL } from '../config'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1'
 const IS_DEV = import.meta.env.DEV
 
 export const API_ENDPOINTS = {
@@ -24,9 +24,9 @@ export const API_ENDPOINTS = {
   
   // Cart
   CART: '/cart',
-  CART_ADD: '/cart/add',
-  CART_UPDATE: '/cart/update',
-  CART_REMOVE: '/cart/remove',
+  CART_ADD: '/cart/items',
+  CART_UPDATE: '/cart/items',
+  CART_REMOVE: '/cart/items',
   
   // Orders
   ORDERS: '/orders',
@@ -76,7 +76,7 @@ export class ApiClient {
   private baseUrl: string
   private token: string | null = null
 
-  constructor(baseUrl: string = API_BASE_URL) {
+  constructor(baseUrl: string = API_URL) {
     this.baseUrl = baseUrl
   }
 

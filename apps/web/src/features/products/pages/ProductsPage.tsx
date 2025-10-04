@@ -34,6 +34,11 @@ const ProductsPage: React.FC = () => {
       {/* ------------------------- */}
       {/* Product grid */}
       {/* ------------------------- */}
+      {isLoading && !error && (
+        <div className="flex items-center justify-center p-8">
+          <IconLoader2 className="w-8 h-8 animate-spin text-gray-600" />
+        </div>
+      )}
       {products && products.length > 0 && (
         <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {products.map((p: SharedProduct) => {
