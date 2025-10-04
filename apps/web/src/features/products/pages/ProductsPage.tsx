@@ -9,12 +9,12 @@ const ProductsPage: React.FC = () => {
   const { data: products, isLoading, error } = useAllProducts(8);
 
   return (
-    <main className="max-w-6xl mx-auto py-12 px-4 auth-font-inco auth-uppercase">
+    <main className="max-w-6xl mx-auto py-12 px-4 auth-font-inco auth-uppercase font-inter">
       {/* ------------------------- */}
       {/* Header */}
       {/* ------------------------- */}
       <header className="mb-6">
-        <h2 className="text-2xl font-inco font-medium tracking-wide text-black">BESTSELLERS</h2>
+        <h2 className="text-2xl font-inter font-medium tracking-wide text-black">BESTSELLERS</h2>
       </header>
 
       {/* Loading State */}
@@ -49,7 +49,7 @@ const ProductsPage: React.FC = () => {
             return (
               <article key={p.id} className="group">
                 <Link to={`/products/${p.slug}`} className="block overflow-hidden bg-white shadow-sm hover:shadow-md">
-                  <div className="relative pb-[100%] bg-gray-50">
+                  <div className="relative pb-[125%] sm:pb-[100%] bg-gray-50">
                     <img
                       src={defaultImage?.url ?? ''}
                       alt={defaultImage?.altText ?? p.name}
@@ -60,7 +60,7 @@ const ProductsPage: React.FC = () => {
                     {/* Promo tag inside image: centered bottom on xs/sm, bottom-right on md+ */}
                     {badge && (
                       <span
-                        className="absolute z-10 bottom-3 left-1/2 transform -translate-x-1/2 md:left-auto md:right-3 md:translate-x-0 bg-[#3b2b1b] text-white text-sm font-medium rounded-full px-5 md:px-6 py-2 min-w-[10rem] md:min-w-[11rem] flex items-center justify-center shadow-md"
+                        className="hidden md:block absolute z-10 bottom-3 left-1/2 transform -translate-x-1/2 md:left-auto md:right-3 md:translate-x-0 bg-[#3b2b1b] text-white text-sm font-medium rounded-full px-5 md:px-6 py-2 min-w-[10rem] md:min-w-[11rem] flex items-center justify-center shadow-md"
                         aria-hidden={true}
                       >
                         {badge}
@@ -69,10 +69,10 @@ const ProductsPage: React.FC = () => {
                   </div>
                 </Link>
                 
-                <div className="mt-3">
+                <div className="mt-2">
 
                   {/* title */}
-                  <h3 className="text-base md:text- font-inco font-medium text-gray-900">
+                  <h3 className="text-sm sm:text-base font-inter font-semibold text-gray-900 leading-tight">
                     <Link to={`/products/${p.slug}`} className="hover:underline">
                       {titleWithBadge}
                     </Link>
@@ -80,10 +80,10 @@ const ProductsPage: React.FC = () => {
                   
                   {/* description */}
                   {p.description && (
-                    <p className="text-sm text-gray-500 mt-1 normal-case">{p.description}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5 uppercase">{p.description}</p>
                   )}
 
-                  <div className="mt-1 flex items-center justify-between text-sm text-gray-600">
+                  <div className="mt-0.5 flex items-center justify-between text-sm text-gray-600">
                     <span>${p.price}</span>
                   </div>
 
