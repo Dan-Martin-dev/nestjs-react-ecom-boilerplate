@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { useAddToCart } from '../../../hooks/useCart'
 import { useAuthStore } from '../../../stores'
-import { ArrowLeft, ChevronDown, ChevronRight, Minus, Plus, ShoppingCart, Heart } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Minus, Plus, ShoppingCart, Heart } from 'lucide-react'
 import { useProductBySlug } from '../../../hooks/useProducts'
 import { useState, useEffect } from 'react'
 import type { Product, ProductImage, ProductVariant } from '@repo/shared'
@@ -128,14 +128,15 @@ function ProductDetailPage() {
 
   return (
     <div className="bg-white auth-font-inco">
+      
       {/* Top navigation bar */}
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4">
-          <nav className="flex py-4 text-sm">
+          <nav className="flex py-4 text-sm uppercase tracking-wide">
             <Link to="/" className="text-gray-500 hover:text-gray-700">Home</Link>
-            <ChevronRight className="mx-2 h-5 w-5 text-gray-400" />
+            <span className="mx-2 text-gray-400">/</span>
             <Link to="/products" className="text-gray-500 hover:text-gray-700">Products</Link>
-            <ChevronRight className="mx-2 h-5 w-5 text-gray-400" />
+            <span className="mx-2 text-gray-400">/</span>
             <span className="text-gray-900 font-medium">{product.name}</span>
           </nav>
         </div>
@@ -145,7 +146,7 @@ function ProductDetailPage() {
         {/* Product Images */}
         <div className="mb-10 lg:mb-0">
           {/* Main Image */}
-          <div className="aspect-square overflow-hidden bg-gray-50 mb-6">
+          <div className="-mx-4 lg:mx-0 -mt-12 lg:mt-0 aspect-square overflow-hidden bg-gray-50 mb-6">
             <img
               src={currentImage?.url ?? ''}
               alt={currentImage?.altText ?? product.name}
@@ -153,8 +154,31 @@ function ProductDetailPage() {
             />
           </div>
 
-          {/* Image Gallery */}
-          <div className="grid grid-cols-5 gap-2">
+          {/* Image Gallery - Carousel on mobile, grid on desktop */}
+          <div className="lg:hidden">
+            {/* Mobile Carousel */}
+            <div className="relative">
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+                {images.map((img: ProductImage, index: number) => (
+                  <button
+                    key={img.id || index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`flex-shrink-0 w-16 h-16 border-2 ${selectedImageIndex === index ? 'border-black' : 'border-gray-200'} hover:border-gray-400 transition`}
+                  >
+                    <img
+                      src={img.url}
+                      alt={img.altText ?? `View ${index + 1} of ${product.name}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop Grid */}
+          <div className="hidden lg:grid lg:grid-cols-5 lg:gap-2">
             {images.map((img: ProductImage, index: number) => (
               <button
                 key={img.id || index}

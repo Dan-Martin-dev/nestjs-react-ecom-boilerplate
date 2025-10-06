@@ -61,7 +61,7 @@ export function Footer() {
 
           {/* Newsletter section */}
           <div className="max-w-3xl mx-auto text-center">
-            <h3 className="font-teko text-sm md:text-xl font-semibold uppercase tracking-widest">
+            <h3 className="font-inco text-sm md:text-xl font-semibold uppercase tracking-widest">
               Join the newsletter for exclusive updates
             </h3>
             <form
@@ -154,7 +154,7 @@ export function Footer() {
 
             {/* Social + Popular searches column (uses last grid column space) */}
             <div>
-              <h4 className="font-teko text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-3">
+              <h4 className="font-inco text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-3">
                 Social media
               </h4>
 
@@ -254,7 +254,7 @@ export function Footer() {
                 </a>
               </div>
 
-              <h4 className="font-teko text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-2 md:mb-3">
+              <h4 className="font-inco text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-2 md:mb-3">
                 Popular searches
               </h4>
               {/* Horizontal list that stays on one line at lg (no wrap) */}
@@ -276,8 +276,8 @@ export function Footer() {
 
       {/* Copyright */}
       <div className="bg-white p-4">
-        <p className="font-teko text-center text-black text-md opacity-90">
-          COPYRIGHT © 2025 VARELS – T-SHIRTS, CAPS, HEADWEAR
+        <p className="text-sm font-inco font-semibold text-center text-black md:text-md opacity-90">
+          COPYRIGHT © 2025 VARELS – T-SHIRTS
         </p>
       </div>
 

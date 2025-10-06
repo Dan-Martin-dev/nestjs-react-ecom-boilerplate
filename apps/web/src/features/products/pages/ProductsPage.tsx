@@ -24,7 +24,7 @@ const ProductsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Error State */}
+      {/* Error State */} 
       {error && (
         <div className="text-red-600 bg-red-50 p-4 rounded-md mb-6">
           Unable to load products. Please try again later.
@@ -105,14 +105,7 @@ const ProductsPage: React.FC = () => {
           })}
         </section>
       )}
-      {/* ------------------------- */}
-      {/* Footer / View more link   */}
-      {/* ------------------------- */}
-      <footer className="mt-6 text-sm">
-        <Link to="/collections/best-sellers" className="text-blue-600 underline">
-          View all products in the Best Sellers collection
-        </Link>
-      </footer>
+
     </main>
   );
 };
