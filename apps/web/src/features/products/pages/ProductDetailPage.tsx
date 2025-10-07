@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Button } from '../../../components/ui/button'
 import { useAddToCart } from '../../../hooks/useCart'
 import { useAuthStore } from '../../../stores'
-import { ArrowLeft, ChevronDown, Minus, Plus, ShoppingCart, Heart } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Minus, Plus, ShoppingCart, Heart } from 'lucide-react'
 import { useProductBySlug } from '../../../hooks/useProducts'
 import { useState, useEffect } from 'react'
 import type { Product, ProductImage, ProductVariant } from '@repo/shared'
@@ -116,7 +116,6 @@ function ProductDetailPage() {
 
   // Map images
   const images: ProductImage[] = (product?.images as ProductImage[]) ?? []
-  const currentImage = images[selectedImageIndex] || images[0]
 
   // Format price to show cents properly
   const formattedPrice = parseFloat(selectedVariant?.price || product.price).toFixed(2)
@@ -144,122 +143,141 @@ function ProductDetailPage() {
 
       <main className="max-w-6xl mx-auto px-4 py-12 lg:grid lg:grid-cols-2 lg:gap-x-12">
         {/* Product Images */}
-        <div className="mb-10 lg:mb-0">
-          {/* Main Image */}
-          <div className="-mx-4 lg:mx-0 -mt-12 lg:mt-0 aspect-square overflow-hidden bg-gray-50 mb-6">
-            <img
-              src={currentImage?.url ?? ''}
-              alt={currentImage?.altText ?? product.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Image Gallery - Carousel on mobile, grid on desktop */}
-          <div className="lg:hidden">
-            {/* Mobile Carousel */}
-            <div className="relative">
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+        <div className="mb-4 lg:mb-0">
+          {/* Image Carousel */}
+          <div className="relative">
+            {/* Main Carousel Container */}
+            {/* Image Carousel */}
+          <div className="relative -mx-4 lg:mx-0 -mt-12 lg:mt-0 aspect-square overflow-hidden bg-gray-50">
+              <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${selectedImageIndex * 100}%)` }}>
                 {images.map((img: ProductImage, index: number) => (
-                  <button
-                    key={img.id || index}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={`flex-shrink-0 w-16 h-16 border-2 ${selectedImageIndex === index ? 'border-black' : 'border-gray-200'} hover:border-gray-400 transition`}
-                  >
+                  <div key={img.id || index} className="flex-shrink-0 w-full h-full">
                     <img
                       src={img.url}
                       alt={img.altText ?? `View ${index + 1} of ${product.name}`}
                       className="w-full h-full object-cover"
-                      loading="lazy"
+                      loading={index === 0 ? "eager" : "lazy"}
                     />
-                  </button>
+                  </div>
                 ))}
               </div>
+
+              {/* Navigation Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => prev > 0 ? prev - 1 : images.length - 1)}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => prev < images.length - 1 ? prev + 1 : 0)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
             </div>
-          </div>
-          
-          {/* Desktop Grid */}
-          <div className="hidden lg:grid lg:grid-cols-5 lg:gap-2">
-            {images.map((img: ProductImage, index: number) => (
-              <button
-                key={img.id || index}
-                onClick={() => setSelectedImageIndex(index)}
-                className={`aspect-square border ${selectedImageIndex === index ? 'border-black' : 'border-gray-200'} hover:border-gray-400 transition`}
-              >
-                <img
-                  src={img.url}
-                  alt={img.altText ?? `View ${index + 1} of ${product.name}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </button>
-            ))}
+
+            {/* Indicator Dots */}
+            {images.length > 1 && (
+              <div className="flex justify-center gap-2 mt-4">
+                {images.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      selectedImageIndex === index ? 'bg-black' : 'bg-gray-300'
+                    }`}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Product Details */}
-        <div className="lg:pl-10">
+        <div className=" lg:pl-10 ">
+          {/* Title & Price */}
+          <h1 className="text-2xl sm:text-3xl font-medium mb-1">{product.name.toUpperCase()}</h1>
+          
           {/* Fabric type */}
           <div className="mb-4">
             <p className="text-sm text-gray-500 tracking-wide uppercase">
               {fabricDetails}
             </p>
           </div>
-
-          {/* Title & Price */}
-          <h1 className="text-3xl font-medium mb-6">{product.name.toUpperCase()}</h1>
+          
           <div className="mb-8">
             <p className="text-xl">${formattedPrice}</p>
           </div>
 
           {/* Variants Selection */}
           {product.variants && product.variants.length > 0 && (
-            <div className="mb-8">
+            <div className="mb-5">
               <h3 className="text-sm font-medium mb-3 uppercase">Color</h3>
+              <div className="flex flex-wrap gap-2 mb-6">
+                {product.variants
+                  .filter((v: ProductVariant) => {
+                    // Determine if this variant is a color
+                    const isColor = v.name.toLowerCase().includes('black') ||
+                                    v.name.toLowerCase().includes('white') ||
+                                    v.name.toLowerCase().includes('grey') ||
+                                    v.name.toLowerCase().includes('navy');
+                    return isColor;
+                  })
+                  .map((v: ProductVariant) => {
+                    let backgroundColor = '#ddd';
+                    if (v.name.toLowerCase().includes('black')) backgroundColor = '#000';
+                    if (v.name.toLowerCase().includes('white')) backgroundColor = '#fff';
+                    if (v.name.toLowerCase().includes('grey')) backgroundColor = '#aaa';
+                    if (v.name.toLowerCase().includes('navy')) backgroundColor = '#003366';
+                    
+                    return (
+                      <button
+                        key={v.id}
+                        onClick={() => setSelectedVariantId(v.id)}
+                        className="w-6 h-6 flex items-center justify-center focus:outline-none"
+                        title={v.name}
+                        aria-label={`Select ${v.name} color`}
+                      >
+                        <span 
+                          className="w-5 h-5" 
+                          style={{ backgroundColor }}
+                        ></span>
+                      </button>
+                    );
+                  })}
+              </div>
+
+              <h3 className="text-sm font-medium mb-3 uppercase">Size</h3>
               <div className="flex flex-wrap gap-2">
-                {product.variants.map((v: ProductVariant) => {
-                  // Determine if this variant is a color
-                  const isColor = v.name.toLowerCase().includes('black') ||
-                                  v.name.toLowerCase().includes('white') ||
-                                  v.name.toLowerCase().includes('grey') ||
-                                  v.name.toLowerCase().includes('navy');
-                  
-                  let backgroundColor = '#ddd';
-                  if (v.name.toLowerCase().includes('black')) backgroundColor = '#000';
-                  if (v.name.toLowerCase().includes('white')) backgroundColor = '#fff';
-                  if (v.name.toLowerCase().includes('grey')) backgroundColor = '#aaa';
-                  if (v.name.toLowerCase().includes('navy')) backgroundColor = '#003366';
-                  
-                  return isColor ? (
+                {product.variants
+                  .filter((v: ProductVariant) => {
+                    // Determine if this variant is a size
+                    const isSize = ['xs', 's', 'm', 'l', 'xl', 'xxl'].includes(v.name.toLowerCase());
+                    return isSize;
+                  })
+                  .map((v: ProductVariant) => (
                     <button
                       key={v.id}
                       onClick={() => setSelectedVariantId(v.id)}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center focus:outline-none ${
-                        selectedVariantId === v.id 
-                          ? 'ring-2 ring-offset-2 ring-black' 
-                          : 'ring-1 ring-gray-200'
-                      }`}
-                      title={v.name}
-                      aria-label={`Select ${v.name} color`}
-                    >
-                      <span 
-                        className="w-8 h-8 rounded-full" 
-                        style={{ backgroundColor }}
-                      ></span>
-                    </button>
-                  ) : (
-                    <button
-                      key={v.id}
-                      onClick={() => setSelectedVariantId(v.id)}
-                      className={`px-4 py-2 border ${
+                      className={`w-10 h-10 rounded border flex items-center justify-center text-sm font-medium ${
                         selectedVariantId === v.id 
                           ? 'border-black bg-black text-white' 
                           : 'border-gray-300 bg-white hover:border-gray-400'
                       }`}
+                      title={v.name}
+                      aria-label={`Select ${v.name} size`}
                     >
-                      {v.name}
+                      {v.name.toUpperCase()}
                     </button>
-                  );
-                })}
+                  ))}
               </div>
             </div>
           )}
