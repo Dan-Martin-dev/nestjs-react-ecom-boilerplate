@@ -1,4 +1,4 @@
-import { prisma } from '../packages/db';
+import { prisma, ImageUsage, ImageFormat } from '../packages/db';
 
 async function seedBestsellers() {
   console.log('Seeding bestsellers products...');
@@ -13,88 +13,102 @@ async function seedBestsellers() {
       description: 'T-shirts and apparel',
     },
   });
-
-  // Create products
   const products = [
     {
-      name: '1009 HEAVYWEIGHT T-SHIRT',
-      slug: 'heavyweight-t-shirt-black',
-      description: 'Premium heavyweight cotton t-shirt',
+      name: 'HEAVYWEIGHT WHITE TEE',
+      slug: 'heavyweight-white-tee',
+      description: '275 GSM JERSEY',
       price: 35.00,
       images: [
         {
           url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_01_2.jpg?v=1726516822&width=360',
-          altText: '1009 Heavyweight T-Shirt Black',
+          altText: 'Heavyweight White T-Shirt',
           isDefault: true,
+          format: ImageFormat.JPEG,
+          isVector: false,
+          printResolution: 300,
+          usage: [ImageUsage.PRINT, ImageUsage.WEB],
+        },
+      ],
+      variants: [
+        {
+          name: 'White',
+          sku: 'HW-WHT',
+          price: 35.00,
+          stockQuantity: 100,
+        },
+      ],
+    },
+    {
+      name: 'HEAVYWEIGHT BLACK TEE',
+      slug: 'heavyweight-black-tee',
+      description: '275 GSM JERSEY',
+      price: 35.00,
+      images: [
+        {
+          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_Black_01_2.jpg?v=1726510061&width=823',
+          altText: 'Heavyweight Black T-Shirt',
+          isDefault: true,
+          format: ImageFormat.JPEG,
+          isVector: false,
+          printResolution: 300,
+          usage: [ImageUsage.PRINT, ImageUsage.WEB],
         },
       ],
       variants: [
         {
           name: 'Black',
-          sku: '1009-BLK',
+          sku: 'HW-BLK',
           price: 35.00,
           stockQuantity: 100,
         },
       ],
     },
     {
-      name: '1009 HEAVYWEIGHT T-SHIRT',
-      slug: 'heavyweight-t-shirt-white',
-      description: 'Premium heavyweight cotton t-shirt',
+      name: 'HEAVYWEIGHT BLUE TEE',
+      slug: 'heavyweight-blue-tee',
+      description: '275 GSM JERSEY',
       price: 35.00,
       images: [
         {
-          url: 'https://www.houseofblanks.com/cdn/shop/files/MidweightTshirt_White_01.jpg?v=1726669963&width=360',
-          altText: '1009 Heavyweight T-Shirt White',
+          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_Navy_01.jpg?v=1726511324&width=823',
+          altText: 'Heavyweight Blue T-Shirt',
           isDefault: true,
+          format: ImageFormat.JPEG,
+          isVector: false,
+          printResolution: 300,
+          usage: [ImageUsage.PRINT, ImageUsage.WEB],
         },
       ],
       variants: [
         {
-          name: 'White',
-          sku: '1009-WHT',
+          name: 'Blue',
+          sku: 'HW-BLU',
           price: 35.00,
           stockQuantity: 100,
         },
       ],
     },
     {
-      name: '1008 MIDWEIGHT T-SHIRT',
-      slug: 'midweight-t-shirt-white',
-      description: 'Comfortable midweight cotton t-shirt',
-      price: 30.00,
-      images: [
-        {
-          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_HeatherGrey_01_2.jpg?v=1726511909&width=360',
-          altText: '1008 Midweight T-Shirt White',
-          isDefault: true,
-        },
-      ],
-      variants: [
-        {
-          name: 'White',
-          sku: '1008-WHT',
-          price: 30.00,
-          stockQuantity: 100,
-        },
-      ],
-    },
-    {
-      name: '1009 HEAVYWEIGHT T-SHIRT',
-      slug: 'heavyweight-t-shirt-heather-grey',
-      description: 'Premium heavyweight cotton t-shirt',
+      name: 'HEAVYWEIGHT GREEN TEE',
+      slug: 'heavyweight-green-tee',
+      description: '275 GSM JERSEY',
       price: 35.00,
       images: [
         {
-          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_02_1.jpg?v=1726516823&width=360',
-          altText: '1009 Heavyweight T-Shirt Heather Grey',
+          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_Olive_01.jpg?v=1726511324&width=823',
+          altText: 'Heavyweight Green T-Shirt',
           isDefault: true,
+          format: ImageFormat.JPEG,
+          isVector: false,
+          printResolution: 300,
+          usage: [ImageUsage.PRINT, ImageUsage.WEB],
         },
       ],
       variants: [
         {
-          name: 'Heather Grey',
-          sku: '1009-HGR',
+          name: 'Green',
+          sku: 'HW-GRN',
           price: 35.00,
           stockQuantity: 100,
         },

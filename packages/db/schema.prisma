@@ -99,6 +99,22 @@ enum InvoiceType {
   ND_B  // Debit note type B
 }
 
+enum ImageFormat {
+  JPEG
+  PNG
+  SVG
+  WEBP
+  GIF
+}
+
+enum ImageUsage {
+  THUMBNAIL
+  GALLERY
+  PRINT
+  WEB
+  MOBILE
+}
+
 // ----------------------------------------
 // USER & ACCOUNT MANAGEMENT
 // ----------------------------------------
@@ -228,6 +244,12 @@ model ProductImage {
   // updatedAt DateTime @updatedAt // Typically not needed for images unless you allow editing URL/alt
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Print quality fields
+  format       ImageFormat @default(JPEG)
+  isVector     Boolean     @default(false)
+  printResolution Int?     // DPI for print quality (300+ recommended)
+  usage        ImageUsage[]
 
   @@index([productId])
 }

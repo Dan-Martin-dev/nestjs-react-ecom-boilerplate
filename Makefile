@@ -12,7 +12,8 @@ COMPOSE_PROD = docker compose -f $(PROD_COMPOSE_FILE) --env-file=.env
 .DEFAULT_GOAL := help
 .PHONY: help dev dev-docker dev-setup build-dev up-dev down-dev \
 	prod-build prod-deploy prod-down prod-backup logs shell \
-	db-generate db-migrate db-studio db-init clean health-check deploy
+	db-generate db-migrate db-studio db-init db-local db-push db-reset db-status db-seed db-migrate-dev db-fresh-start \
+	clean health-check deploy
 
 # ==============================================================================
 # HELP
@@ -44,10 +45,22 @@ help:
 	@echo "  logs [service]    Follow logs (all services or specific: api, web, db)"
 	@echo "  shell [service]   Open shell in container (api or web)"
 	@echo ""
-	@echo "Database:"
+	@echo "Database - Hybrid Approach (make dev):"
 	@echo "  db-generate       Generate Prisma client"
-	@echo "  db-migrate        Run database migrations"
-	@echo "  db-studio         Open Prisma Studio"
+	@echo "  db-generate-dev   Generate Prisma client (development alias)"
+	@echo "  db-local          Open Prisma Studio (local - for hybrid dev)"
+	@echo "  db-push           Push schema changes (development only)"
+	@echo "  db-status         Check migration status"
+	@echo "  db-seed           Seed database with initial data"
+	@echo "  db-migrate-dev    Create new development migration"
+	@echo "  db-fresh-start    Complete database reset and setup (DELETES EVERYTHING)"
+	@echo ""
+	@echo "Database - Docker Approach (make dev-docker):"
+	@echo "  db-migrate        Run database migrations (Docker)"
+	@echo "  db-studio         Open Prisma Studio (Docker)"
+	@echo ""
+	@echo "Database - Shared Commands:"
+	@echo "  db-reset          Reset database and migrations (DELETES DATA)"
 	@echo "  db-init           Initialize database and migrations"
 	@echo ""
 	@echo "Maintenance:"
@@ -231,18 +244,6 @@ db-dev:
 redis-dev:
 	$(COMPOSE_DEV) build redis
 
-build-dev:
-	$(COMPOSE_DEV) build
-
-up-dev:
-	$(COMPOSE_DEV) up -d
-
-down-dev:	
-	$(COMPOSE_DEV) down --remove-orphans
-
-down-dev-v:
-	$(COMPOSE_DEV) down -v --remove-orphans
-
 # Flexible logging - usage: make logs [service=api]
 logs:
 	@$(COMPOSE_DEV) logs -f $(if $(service),$(service),)
@@ -266,20 +267,77 @@ docker-web:
 # DATABASE
 
 .PHONY: help dev dev-docker dev-setup build-dev up-dev down-dev \
-    prod-build prod-deploy prod-down prod-backup logs shell \
-    db-generate db-migrate db-studio db-init clean health-check deploy \
-    api-dev web-dev down-dev-v docker-ui docker-web check-connections verify-env-prod
+	prod-build prod-deploy prod-down prod-backup logs shell \
+	db-generate db-generate-dev db-migrate db-studio db-init db-local db-push db-reset db-status db-seed db-migrate-dev db-fresh-start \
+	clean health-check deploy
 
-# ==============================================================================
-
+# -----------------------------------------------------------------------------
+# HYBRID APPROACH (DB in Docker, Apps on Host - make dev)
+# -----------------------------------------------------------------------------
 db-generate:
 	cd packages/db && pnpm db:generate
 
+# Development-specific Prisma client generation
+db-generate-dev:
+	@echo "🔄 Generating Prisma client for development..."
+	cd packages/db && pnpm db:generate
+
+# Hybrid development Prisma commands (DB in Docker, Prisma on host)
+db-local:
+	@echo "🖥️ Opening Prisma Studio (local - for hybrid dev)..."
+	cd packages/db && pnpm db:studio
+
+db-push:
+	@echo "🔄 Pushing schema changes to database (development only)..."
+	cd packages/db && pnpm db:push
+
+db-status:
+	@echo "📊 Checking migration status..."
+	cd packages/db && pnpm db:migrate:status
+
+db-seed:
+	@echo "🌱 Seeding database with initial data..."
+	cd packages/db && pnpm db:seed
+
+db-migrate-dev:
+	@echo "🔄 Creating and applying development migration..."
+	@read -p "Migration name: " name && cd packages/db && pnpm db:migrate:dev --name $$name
+
+# Complete database reset and setup for hybrid development
+db-fresh-start:
+	@echo "🔄 Starting fresh database setup for hybrid development..."
+	@echo "⚠️  This will DELETE ALL DATA and reset everything!"
+	@read -p "Are you absolutely sure? (type 'YES' to confirm): " confirm && \
+	if [ "$$confirm" = "YES" ]; then \
+		echo "🗑️  Resetting database..."; \
+		cd packages/db && pnpm db:reset --force; \
+		echo "🔄 Generating Prisma client..."; \
+		make db-generate-dev; \
+		echo "📊 Checking migration status..."; \
+		cd packages/db && pnpm db:migrate:status; \
+		echo "🌱 Seeding database..."; \
+		cd packages/db && pnpm db:seed; \
+		echo "✅ Database fresh start complete!"; \
+	else \
+		echo "❌ Operation cancelled"; \
+	fi
+
+# -----------------------------------------------------------------------------
+# DOCKER-ONLY APPROACH (Everything in Docker - make dev-docker)
+# -----------------------------------------------------------------------------
 db-migrate:
 	$(COMPOSE_DEV) exec api pnpm --filter @repo/db db:migrate
 
 db-studio:
 	$(COMPOSE_DEV) exec api pnpm --filter @repo/db db:studio
+
+# -----------------------------------------------------------------------------
+# SHARED DATABASE COMMANDS (Work with both approaches)
+# -----------------------------------------------------------------------------
+db-reset:
+	@echo "⚠️ Resetting database and applying all migrations..."
+	@echo "This will DELETE ALL DATA!"
+	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] && cd packages/db && pnpm db:reset || echo "❌ Reset cancelled"
 
 db-init:
 	@echo "🗄️ Initializing database..."
