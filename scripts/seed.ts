@@ -96,8 +96,8 @@ async function seedBestsellers() {
       price: 35.00,
       images: [
         {
-          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_Olive_01.jpg?v=1726511324&width=823',
-          altText: 'Heavyweight Green T-Shirt',
+          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_OliveDrab_01_1.jpg?v=1726516633&width=360',
+          altText: 'Heavyweight Olive Green T-Shirt',
           isDefault: true,
           format: ImageFormat.JPEG,
           isVector: false,
@@ -117,10 +117,25 @@ async function seedBestsellers() {
   ];
 
   for (const productData of products) {
-    // Create product
+    // Create or update product with proper data updates
     const product = await prisma.product.upsert({
       where: { slug: productData.slug },
-      update: {},
+      update: {
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        isActive: true,
+        // Update images - delete existing and create new ones
+        images: {
+          deleteMany: {}, // Clear existing images
+          create: productData.images,
+        },
+        // Update variants - delete existing and create new ones
+        variants: {
+          deleteMany: {}, // Clear existing variants
+          create: productData.variants,
+        },
+      },
       create: {
         name: productData.name,
         slug: productData.slug,
@@ -139,7 +154,7 @@ async function seedBestsellers() {
       },
     });
 
-    console.log(`Created product: ${product.name} (${product.slug})`);
+    console.log(`Created/updated product: ${product.name} (${product.slug})`);
   }
 
   console.log('Seeding completed!');
