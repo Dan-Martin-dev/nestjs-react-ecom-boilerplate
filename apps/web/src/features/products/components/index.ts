@@ -8,3 +8,5 @@ export { ProductAccordion } from './ProductAccordion';
 export { ProductRecommendations } from './ProductRecommendations';
 export { LoadingSkeleton } from './LoadingSkeleton';
 export { ErrorState } from './ErrorState';
+export { ProductDetailContent } from './ProductDetailContent';
+export { ProductDetailLayout } from './ProductDetailLayout';
