@@ -6,6 +6,7 @@ import { ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Minus, Plus, Shoppin
 import { useProductBySlug } from '../../../hooks/useProducts'
 import { useState, useEffect } from 'react'
 import type { Product, ProductImage, ProductVariant } from '@repo/shared'
+import { toast } from 'sonner'
 import '../../auth/styles/auth-fonts.css'
 
 function ProductDetailPage() {
@@ -22,8 +23,6 @@ function ProductDetailPage() {
   const [quantity, setQuantity] = useState<number>(1)
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
   const [openAccordion, setOpenAccordion] = useState<string | null>('description')
-  const [notificationVisible, setNotificationVisible] = useState<boolean>(false)
-  const [notificationMessage, setNotificationMessage] = useState<string>('')
 
   // Find selected variant
   useEffect(() => {
@@ -42,16 +41,12 @@ function ProductDetailPage() {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      setNotificationMessage('Please login to add items to cart')
-      setNotificationVisible(true)
-      setTimeout(() => setNotificationVisible(false), 3000)
+      toast.error('Please login to add items to cart')
       return
     }
 
     if (!selectedVariantId) {
-      setNotificationMessage('Please select a variant')
-      setNotificationVisible(true)
-      setTimeout(() => setNotificationVisible(false), 3000)
+      toast.error('Please select a variant')
       return
     }
 
@@ -60,14 +55,10 @@ function ProductDetailPage() {
         productVariantId: selectedVariantId,
         quantity,
       })
-      setNotificationMessage(`${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart`)
-      setNotificationVisible(true)
-      setTimeout(() => setNotificationVisible(false), 3000)
+      toast.success(`${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart`)
     } catch (err) {
       console.error('Failed to add to cart:', err)
-      setNotificationMessage('Failed to add item to cart')
-      setNotificationVisible(true)
-      setTimeout(() => setNotificationVisible(false), 3000)
+      toast.error('Failed to add item to cart')
     }
   }
 
@@ -446,15 +437,6 @@ function ProductDetailPage() {
           </div>
         </div>
       </section>
-
-      {/* Toast notification */}
-      <div 
-        className={`fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded shadow-lg transition-opacity duration-300 flex items-center
-                  ${notificationVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        role="alert"
-      >
-        {notificationMessage}
-      </div>
     </div>
   )
 }
