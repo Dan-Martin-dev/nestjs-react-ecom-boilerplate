@@ -43,14 +43,14 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   // Global input validation
-  const { ValidationPipe } = await import('@nestjs/common');
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  // const { ValidationPipe } = await import('@nestjs/common');
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //     forbidNonWhitelisted: true,
+  //     transform: true,
+  //   }),
+  // );
 
   // Security middleware
   app.use(helmet());
