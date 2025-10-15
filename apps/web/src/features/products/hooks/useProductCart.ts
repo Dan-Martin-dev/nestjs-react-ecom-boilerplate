@@ -7,6 +7,9 @@ export const useProductCart = () => {
   const addToCartMutation = useAddToCart();
 
   const handleAddToCart = async (selectedVariantId: string | null, quantity: number) => {
+    // Check if user is authenticated and log auth status
+    console.log('Auth status:', { isAuthenticated });
+    
     if (!isAuthenticated) {
       toast.error('Please login to add items to cart');
       return;
@@ -18,13 +21,23 @@ export const useProductCart = () => {
     }
 
     try {
-      await addToCartMutation.mutateAsync({
+      // Ensure data is properly formatted as an object with the correct types
+      const cartData = {
         productVariantId: selectedVariantId,
-        quantity,
-      });
+        quantity: Number(quantity), // Ensure quantity is a number
+      };
+      
+      console.log('Adding to cart:', cartData); // Debug log
+      
+      const result = await addToCartMutation.mutateAsync(cartData);
+      console.log('Add to cart success:', result);
       toast.success(`${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart`);
     } catch (err) {
       console.error('Failed to add to cart:', err);
+      // Log more detailed error information
+      if (err && typeof err === 'object' && 'message' in err) {
+        console.error('Error details:', err.message);
+      }
       toast.error('Failed to add item to cart');
     }
   };

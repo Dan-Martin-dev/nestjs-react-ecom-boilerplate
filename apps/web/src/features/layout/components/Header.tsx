@@ -78,7 +78,7 @@ export function Header() {
           </div>
         </div>
       </div>
-=
+
       {/* Mobile: Hamburger + Search (left),  Title (center), Heart + Cart (right) */}
       <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
 

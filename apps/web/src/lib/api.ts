@@ -318,9 +318,17 @@ export class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: unknown): Promise<T> {
+    // Ensure data is not null or undefined before stringifying
+    const body = data ? JSON.stringify(data) : undefined;
+    
+    // Log the request payload in development for debugging
+    if (IS_DEV) {
+      console.log('POST Request Payload:', { endpoint, data, body });
+    }
+    
     return this.request<T>(endpoint, {
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
+      body,
     })
   }
 
