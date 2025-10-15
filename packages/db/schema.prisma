@@ -229,6 +229,12 @@ model Product {
   // For linking to discounts (many-to-many)
   applicableDiscounts Discount[] @relation("DiscountProducts")
 
+  // Direct relation to attributes for this product
+  attributes          ProductAttribute[] @relation("ProductToAttribute")
+
+  // Attribute values specific to this product
+  attributeValues     ProductAttributeValue[]
+
   ProductView ProductView[]
 
   @@index([isActive])
@@ -262,6 +268,26 @@ model ProductAttribute {
   // updatedAt DateTime @updatedAt // Optional
 
   ProductVariantAttribute ProductVariantAttribute[]
+  products                Product[]                 @relation("ProductToAttribute")
+  attributeValues         ProductAttributeValue[]
+}
+
+// Model to store available attribute values for a product
+model ProductAttributeValue {
+  id           String @id @default(cuid())
+  value        String // "Red", "XL", "Cotton"
+  displayOrder Int    @default(0) // Controls the order of display in UI
+
+  // Relations
+  attributeId String
+  attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([attributeId, productId, value])
+  @@index([attributeId])
+  @@index([productId])
 }
 
 model ProductVariant {
