@@ -52,6 +52,7 @@ export class ProductsService {
           ? {
               create: variants.map((variant) => ({
                 name: variant.name,
+                slug: variant.slug,
                 sku: variant.sku,
                 price: variant.price.toString(),
                 stockQuantity: variant.stockQuantity,
@@ -325,6 +326,7 @@ export class ProductsService {
         deleteMany: {}, // Delete all existing variants
         create: variants.map((variant) => ({
           name: variant.name,
+          slug: variant.slug,
           sku: variant.sku,
           price: variant.price.toString(),
           stockQuantity: variant.stockQuantity,

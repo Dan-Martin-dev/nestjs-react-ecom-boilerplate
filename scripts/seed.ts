@@ -43,14 +43,14 @@ async function seedBestsellers() {
 
   const products = [
     {
-      name: 'HEAVYWEIGHT WHITE TEE',
-      slug: 'heavyweight-white-tee',
-      description: '275 GSM JERSEY',
+      name: 'HEAVYWEIGHT TEE',
+      slug: 'heavyweight-tee',
+      description: '275 GSM JERSEY - Available in multiple colors',
       price: 35.00,
       images: [
         {
           url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_01_2.jpg?v=1726516822&width=360',
-          altText: 'Heavyweight White T-Shirt',
+          altText: 'Heavyweight T-Shirt',
           isDefault: true,
           format: ImageFormat.JPEG,
           isVector: false,
@@ -58,103 +58,59 @@ async function seedBestsellers() {
           usage: [ImageUsage.PRINT, ImageUsage.WEB],
         },
       ],
-      // Connect to global color attribute
-      globalAttributeValues: [whiteColor.id],
-      // Create variants for all sizes in white
-      variants: sizes.map(size => ({
-        name: `White / ${size.value}`,
-        sku: `HW-WHT-${size.value}`,
-        price: 35.00,
-        stockQuantity: 100,
-        attributes: [
-          { attributeId: colorAttribute.id, value: 'White' },
-          { attributeId: sizeAttribute.id, value: size.value },
-        ],
-      })),
-    },
-    {
-      name: 'HEAVYWEIGHT BLACK TEE',
-      slug: 'heavyweight-black-tee',
-      description: '275 GSM JERSEY',
-      price: 35.00,
-      images: [
-        {
-          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_Black_01_2.jpg?v=1726510061&width=823',
-          altText: 'Heavyweight Black T-Shirt',
-          isDefault: true,
-          format: ImageFormat.JPEG,
-          isVector: false,
-          printResolution: 300,
-          usage: [ImageUsage.PRINT, ImageUsage.WEB],
-        },
+      // Connect to all color global attribute values
+      globalAttributeValues: [whiteColor.id, blackColor.id, blueColor.id, greenColor.id],
+            // Create variants for all colors and sizes
+      variants: [
+        // White variants
+        ...sizes.map(size => ({
+          name: `White / ${size.value}`,
+          slug: `heavyweight-tee-white-${size.value.toLowerCase()}`,
+          sku: `HW-WHT-${size.value}`,
+          price: 35.00,
+          stockQuantity: 100,
+          attributes: [
+            { attributeId: colorAttribute.id, value: 'White' },
+            { attributeId: sizeAttribute.id, value: size.value },
+          ],
+        })),
+        // Black variants
+        ...sizes.map(size => ({
+          name: `Black / ${size.value}`,
+          slug: `heavyweight-tee-black-${size.value.toLowerCase()}`,
+          sku: `HW-BLK-${size.value}`,
+          price: 35.00,
+          stockQuantity: 100,
+          attributes: [
+            { attributeId: colorAttribute.id, value: 'Black' },
+            { attributeId: sizeAttribute.id, value: size.value },
+          ],
+        })),
+        // Blue variants
+        ...sizes.map(size => ({
+          name: `Blue / ${size.value}`,
+          slug: `heavyweight-tee-blue-${size.value.toLowerCase()}`,
+          sku: `HW-BLU-${size.value}`,
+          price: 35.00,
+          stockQuantity: 100,
+          attributes: [
+            { attributeId: colorAttribute.id, value: 'Blue' },
+            { attributeId: sizeAttribute.id, value: size.value },
+          ],
+        })),
+        // Green variants
+        ...sizes.map(size => ({
+          name: `Green / ${size.value}`,
+          slug: `heavyweight-tee-green-${size.value.toLowerCase()}`,
+          sku: `HW-GRN-${size.value}`,
+          price: 35.00,
+          stockQuantity: 100,
+          attributes: [
+            { attributeId: colorAttribute.id, value: 'Green' },
+            { attributeId: sizeAttribute.id, value: size.value },
+          ],
+        })),
       ],
-      globalAttributeValues: [blackColor.id],
-      variants: sizes.map(size => ({
-        name: `Black / ${size.value}`,
-        sku: `HW-BLK-${size.value}`,
-        price: 35.00,
-        stockQuantity: 100,
-        attributes: [
-          { attributeId: colorAttribute.id, value: 'Black' },
-          { attributeId: sizeAttribute.id, value: size.value },
-        ],
-      })),
-    },
-    {
-      name: 'HEAVYWEIGHT BLUE TEE',
-      slug: 'heavyweight-blue-tee',
-      description: '275 GSM JERSEY',
-      price: 35.00,
-      images: [
-        {
-          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_Navy_01.jpg?v=1726511324&width=823',
-          altText: 'Heavyweight Blue T-Shirt',
-          isDefault: true,
-          format: ImageFormat.JPEG,
-          isVector: false,
-          printResolution: 300,
-          usage: [ImageUsage.PRINT, ImageUsage.WEB],
-        },
-      ],
-      globalAttributeValues: [blueColor.id],
-      variants: sizes.map(size => ({
-        name: `Blue / ${size.value}`,
-        sku: `HW-BLU-${size.value}`,
-        price: 35.00,
-        stockQuantity: 100,
-        attributes: [
-          { attributeId: colorAttribute.id, value: 'Blue' },
-          { attributeId: sizeAttribute.id, value: size.value },
-        ],
-      })),
-    },
-    {
-      name: 'HEAVYWEIGHT GREEN TEE',
-      slug: 'heavyweight-green-tee',
-      description: '275 GSM JERSEY',
-      price: 35.00,
-      images: [
-        {
-          url: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_OliveDrab_01_1.jpg?v=1726516633&width=360',
-          altText: 'Heavyweight Olive Green T-Shirt',
-          isDefault: true,
-          format: ImageFormat.JPEG,
-          isVector: false,
-          printResolution: 300,
-          usage: [ImageUsage.PRINT, ImageUsage.WEB],
-        },
-      ],
-      globalAttributeValues: [greenColor.id],
-      variants: sizes.map(size => ({
-        name: `Green / ${size.value}`,
-        sku: `HW-GRN-${size.value}`,
-        price: 35.00,
-        stockQuantity: 100,
-        attributes: [
-          { attributeId: colorAttribute.id, value: 'Green' },
-          { attributeId: sizeAttribute.id, value: size.value },
-        ],
-      })),
     },
   ];
 
@@ -181,6 +137,7 @@ async function seedBestsellers() {
           deleteMany: {}, // Clear existing variants
           create: productData.variants.map(variant => ({
             name: variant.name,
+            slug: variant.slug,
             sku: variant.sku,
             price: variant.price,
             stockQuantity: variant.stockQuantity,
@@ -211,6 +168,7 @@ async function seedBestsellers() {
         variants: {
           create: productData.variants.map(variant => ({
             name: variant.name,
+            slug: variant.slug,
             sku: variant.sku,
             price: variant.price,
             stockQuantity: variant.stockQuantity,

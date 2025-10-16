@@ -90,13 +90,66 @@ const ProductsPage: React.FC = () => {
                   {/* Color variants */}
                   {p.variants && p.variants.length > 1 && (
                     <div className="mt-2 flex gap-1">
-                      {p.variants.slice(0, 6).map((variant) => (
-                        <div
-                          key={variant.id}
-                          className="w-4 h-4 rounded-full border border-gray-300 bg-gray-200"
-                          title={variant.name}
-                        />
-                      ))}
+                      {(() => {
+                        // Group variants by color and get unique colors
+                        const colorVariants = p.variants.reduce((acc, variant) => {
+                          const colorAttr = variant.ProductVariantAttribute?.find(
+                            attr => attr.attribute.type === 'COLOR'
+                          );
+                          if (colorAttr) {
+                            const color = colorAttr.value;
+                            if (!acc[color]) {
+                              acc[color] = [];
+                            }
+                            acc[color].push(variant);
+                          }
+                          return acc;
+                        }, {} as Record<string, typeof p.variants>);
+
+                        // Get unique colors and their first variant (smallest size)
+                        const uniqueColors = Object.keys(colorVariants).slice(0, 6).map(color => {
+                          const variants = colorVariants[color];
+                          // Sort by size (S, M, L, XL, XXL) and take first
+                          const sortedVariants = variants.sort((a, b) => {
+                            const sizeA = a.ProductVariantAttribute?.find(attr => attr.attribute.type === 'SIZE')?.value || '';
+                            const sizeB = b.ProductVariantAttribute?.find(attr => attr.attribute.type === 'SIZE')?.value || '';
+                            const sizeOrder = ['S', 'M', 'L', 'XL', 'XXL'];
+                            return sizeOrder.indexOf(sizeA) - sizeOrder.indexOf(sizeB);
+                          });
+                          return {
+                            color,
+                            variant: sortedVariants[0]
+                          };
+                        });
+
+                        return uniqueColors.map(({ color, variant }) => {
+                          // Map color names to CSS colors
+                          const colorMap: Record<string, string> = {
+                            'White': '#ffffff',
+                            'Black': '#000000',
+                            'Blue': '#3b82f6',
+                            'Green': '#10b981',
+                            'Red': '#ef4444',
+                            'Gray': '#6b7280',
+                            'Yellow': '#f59e0b',
+                            'Purple': '#8b5cf6',
+                            'Pink': '#ec4899',
+                            'Orange': '#f97316'
+                          };
+
+                          const bgColor = colorMap[color] || '#6b7280'; // Default to gray
+
+                          return (
+                            <Link
+                              key={variant.id}
+                              to={`/products/${variant.slug}`}
+                              className="w-4 h-4 rounded-full border border-gray-300 hover:border-gray-500 transition-colors block"
+                              style={{ backgroundColor: bgColor }}
+                              title={`${color} variant`}
+                            />
+                          );
+                        });
+                      })()}
                     </div>
                   )}
                 </div>

@@ -11,6 +11,7 @@ export interface ProductImage {
 export interface ProductVariant {
   id: string;
   name: string;
+  slug: string;
   sku: string;
   price: string;
   stockQuantity: number;

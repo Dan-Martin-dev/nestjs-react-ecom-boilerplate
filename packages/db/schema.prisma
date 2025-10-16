@@ -318,6 +318,7 @@ model ProductAttributeValue {
 model ProductVariant {
   id            String   @id @default(cuid())
   name          String   // e.g., "Red / Large"
+  slug          String   @unique // URL-friendly identifier for variant pages
   sku           String   @unique // Stock Keeping Unit
   price         Decimal  // Can override product's base price
   stockQuantity Int      @default(0)
@@ -332,6 +333,7 @@ model ProductVariant {
 
   @@index([productId])
   @@index([sku])
+  @@index([slug])
 }
 
 model ProductVariantAttribute {

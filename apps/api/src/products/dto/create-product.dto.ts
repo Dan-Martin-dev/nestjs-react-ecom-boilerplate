@@ -19,6 +19,7 @@ export const CreateProductSchema = z.object({
     .array(
       z.object({
         name: z.string().min(1, 'Variant name is required'),
+        slug: z.string().min(1, 'Variant slug is required'),
         sku: z.string().min(1, 'SKU is required'),
         price: z.number().positive('Variant price must be positive'),
         stockQuantity: z
