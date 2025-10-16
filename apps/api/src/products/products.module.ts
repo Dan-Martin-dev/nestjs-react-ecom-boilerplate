@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
+import { InventoryService } from './inventory.service';
+import { InventoryController } from './inventory.controller';
 
 // --- Import modules this module depends on ---
 
@@ -16,13 +18,13 @@ import { AuthModule } from '../auth/auth.module';
   imports: [PrismaModule, AuthModule],
 
   // 'controllers' registers our controller to handle incoming HTTP requests.
-  controllers: [ProductsController],
+  controllers: [ProductsController, InventoryController],
 
   // 'providers' registers the service with the NestJS DI container.
-  providers: [ProductsService],
+  providers: [ProductsService, InventoryService],
 
   // 'exports' makes ProductsService available to any other module that imports
   // the ProductModule (e.g., the CartModule).
-  exports: [ProductsService],
+  exports: [ProductsService, InventoryService],
 })
 export class ProductsModule {}

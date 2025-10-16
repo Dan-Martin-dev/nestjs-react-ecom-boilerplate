@@ -235,6 +235,9 @@ model Product {
   // Attribute values specific to this product
   attributeValues     ProductAttributeValue[]
 
+  // NEW: Links to global attribute values used by this product
+  globalAttributeValues ProductAttributeGlobalValue[]
+
   ProductView ProductView[]
 
   @@index([isActive])
@@ -261,15 +264,37 @@ model ProductImage {
 }
 
 model ProductAttribute {
-  id   String @id @default(cuid())
-  name String @unique // "Color", "Size", "Material"
-  type ProductAttributeType // "COLOR", "SIZE", "TEXT", "NUMBER" (Consider an enum if these are fixed)
-  // createdAt DateTime @default(now()) // Optional
-  // updatedAt DateTime @updatedAt // Optional
-
+  id         String @id @default(cuid())
+  name       String // "Size", "Color", "Material"
+  type       ProductAttributeType
+  isGlobal   Boolean @default(false) // NEW: Marks reusable attributes
+  
+  // For global attributes: predefined values available to all products
+  globalValues ProductAttributeGlobalValue[]
+  
+  // For product-specific attributes: values specific to certain products
+  attributeValues ProductAttributeValue[]
+  
+  // Relations
+  products  Product[] @relation("ProductToAttribute")
   ProductVariantAttribute ProductVariantAttribute[]
-  products                Product[]                 @relation("ProductToAttribute")
-  attributeValues         ProductAttributeValue[]
+  
+  @@unique([name, type]) // Prevent duplicate attribute types
+}
+
+// NEW: Global attribute values (reusable across products)
+model ProductAttributeGlobalValue {
+  id          String @id @default(cuid())
+  value       String // "S", "M", "L", "Black", "White"
+  displayOrder Int   @default(0)
+  
+  attributeId String
+  attribute   ProductAttribute @relation(fields: [attributeId], references: [id])
+  
+  // Products that use this global attribute value
+  products    Product[]
+  
+  @@unique([attributeId, value]) // No duplicate values per attribute
 }
 
 // Model to store available attribute values for a product
