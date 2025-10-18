@@ -123,12 +123,12 @@ const ProductsPage: React.FC = () => {
                         });
 
                         return uniqueColors.map(({ color, variant }) => {
-                          // Map color names to CSS colors
+                          // Map color names to CSS colors (darker green and blue)
                           const colorMap: Record<string, string> = {
                             'White': '#ffffff',
                             'Black': '#000000',
-                            'Blue': '#3b82f6',
-                            'Green': '#10b981',
+                            'Blue': '#1e40af', // Darker blue
+                            'Green': '#047857', // Darker green
                             'Red': '#ef4444',
                             'Gray': '#6b7280',
                             'Yellow': '#f59e0b',
@@ -143,7 +143,7 @@ const ProductsPage: React.FC = () => {
                             <Link
                               key={variant.id}
                               to={`/products/${variant.slug}`}
-                              className="w-4 h-4 rounded-full border border-gray-300 hover:border-gray-500 transition-colors block"
+                              className="w-4 h-4 border border-black hover:border-gray-600 transition-colors block"
                               style={{ backgroundColor: bgColor }}
                               title={`${color} variant`}
                             />

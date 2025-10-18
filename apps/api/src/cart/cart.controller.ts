@@ -8,12 +8,10 @@ import {
   Param,
   Delete,
   UseGuards,
-  UsePipes,
   BadRequestException,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { AddToCartDto, AddToCartSchema } from './dto/add-to-cart.dto';
+import { AddToCartDto } from './dto/add-to-cart.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 
@@ -31,11 +29,12 @@ export class CartController {
   }
 
   @Post('items')
-  @UsePipes(new ZodValidationPipe(AddToCartSchema))
   addToCart(
     @GetUser('id') userId: string,
     @Body() addToCartDto: AddToCartDto,
   ): Promise<any> {
+    console.log('Received body:', addToCartDto);
+    console.log('Type of body:', typeof addToCartDto);
     if (!userId) {
       throw new BadRequestException('User not authenticated');
     }

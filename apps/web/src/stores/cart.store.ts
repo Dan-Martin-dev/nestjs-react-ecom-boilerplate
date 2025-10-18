@@ -118,7 +118,7 @@ export const useCartStore = create<CartState>()(
               }
             }
             
-            const updatedCart = await apiClient.post<Cart>('/cart/add', {
+            const updatedCart = await apiClient.post<Cart>('/cart/items', {
               productVariantId,
               quantity,
             })

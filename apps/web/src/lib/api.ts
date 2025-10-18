@@ -1,10 +1,9 @@
 import type { ApiError } from '../types/api'
-import { API_URL } from '../config'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1'
 const IS_DEV = import.meta.env.DEV
 
 export const API_ENDPOINTS = {
-  
   // Auth
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
