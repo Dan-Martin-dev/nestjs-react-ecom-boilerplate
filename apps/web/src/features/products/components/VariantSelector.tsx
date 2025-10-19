@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { ProductVariant } from '@repo/shared';
 
 interface VariantSelectorProps {
@@ -12,6 +12,7 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
   selectedVariantId,
   onVariantSelect,
 }) => {
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null);
   // Extract unique attribute values
   const { uniqueColors, uniqueSizes } = useMemo(() => {
     const colors = new Set<string>();
@@ -98,23 +99,22 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
     <div className="mb-5">
       {uniqueColors.length > 0 && (
         <>
-          <h3 className="text-sm font-medium mb-3 uppercase">Color</h3>
-          <div className="flex flex-wrap gap-2 mb-6">
+          <h3 className="text-sm font-medium mb-3 uppercase flex items-center">
+            Color
+            {(hoveredColor || selectedAttributes.color) && <span className="ml-2 text-gray-600">{hoveredColor || selectedAttributes.color}</span>}
+          </h3>
+          <div className="flex flex-wrap gap-1 mb-6">
             {uniqueColors.map((color) => (
               <button
                 key={color}
                 onClick={() => handleColorSelect(color)}
-                className={`w-6 h-6 flex items-center justify-center focus:outline-none rounded border border-black ${
-                  selectedAttributes.color === color ? 'ring-2 ring-gray-400' : ''
-                }`}
+                onMouseEnter={() => setHoveredColor(color)}
+                onMouseLeave={() => setHoveredColor(null)}
+                className="w-5 h-5 border border-gray-300 hover:border-gray-400"
                 title={color}
                 aria-label={`Select ${color} color`}
-              >
-                <span
-                  className="w-5 h-5 rounded"
-                  style={{ backgroundColor: getColorBackground(color) }}
-                ></span>
-              </button>
+                style={{ backgroundColor: getColorBackground(color) }}
+              ></button>
             ))}
           </div>
         </>
@@ -128,10 +128,10 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
               <button
                 key={size}
                 onClick={() => handleSizeSelect(size)}
-                className={`w-10 h-10 rounded border flex items-center justify-center text-sm font-medium ${
+                className={`w-6 h-6 rounded border flex items-center justify-center text-xs font-medium transition-colors ${
                   selectedAttributes.size === size
-                    ? 'border-black bg-black text-white'
-                    : 'border-black bg-white hover:border-gray-600'
+                    ? 'border-gray-800 bg-gray-800 text-white'
+                    : 'border-gray-200 bg-white hover:border-gray-400 text-gray-900'
                 }`}
                 title={size}
                 aria-label={`Select ${size} size`}

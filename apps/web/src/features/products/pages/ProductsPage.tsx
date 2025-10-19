@@ -9,12 +9,13 @@ const ProductsPage: React.FC = () => {
   const { data: products, isLoading, error } = useAllProducts(8);
 
   return (
-    <main className="max-w-6xl mx-auto py-12 px-4 auth-font-inco auth-uppercase font-inter">
+    <div className="bg-gray-50 min-h-screen auth-font-inco">
+      <main className="max-w-6xl mx-auto py-12 px-4 auth-uppercase font-inco">
       {/* ------------------------- */}
       {/* Header */}
       {/* ------------------------- */}
       <header className="mb-6">
-        <h2 className="text-2xl font-inter font-medium tracking-wide text-black">BESTSELLERS</h2>
+        <h2 className="text-2xl font-inco font-medium tracking-wide text-black">BESTSELLERS</h2>
       </header>
 
       {/* Loading State */}
@@ -72,7 +73,7 @@ const ProductsPage: React.FC = () => {
                 <div className="mt-2">
 
                   {/* title */}
-                  <h3 className="text-sm sm:text-base font-inter font-semibold text-gray-900 leading-tight">
+                  <h3 className="text-sm sm:text-base font-inco font-semibold text-gray-900 leading-tight">
                     <Link to={`/products/${p.slug}`} className="hover:underline">
                       {titleWithBadge}
                     </Link>
@@ -160,6 +161,7 @@ const ProductsPage: React.FC = () => {
       )}
 
     </main>
+    </div>
   );
 };
 

@@ -1,11 +1,11 @@
 .auth-font-inco, .auth-font-inco * {
-  /* Import Inconsolata locally for auth pages and apply it to all children */
-  @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;400;700;900&display=swap');
-  font-family: 'Inconsolata', monospace !important;
+  /* Import Antarctican Mono locally for auth pages and apply it to all children */
+  @import url('https://fonts.googleapis.com/css2?family=Antarctican:wght@200;400;700;900&display=swap');
+  font-family: 'Antarctican', monospace !important;
 }
 
 .font-inco {
-  font-family: 'Inconsolata', monospace !important;
+  font-family: 'Antarctican', monospace !important;
 }
 
 /* Text controls like inputs should NEVER be uppercase */

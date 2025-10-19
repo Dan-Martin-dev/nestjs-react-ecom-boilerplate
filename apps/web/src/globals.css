@@ -1,10 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Antarctican:wght@200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Antarctican Mono';
+  src: url('https://www.houseofblanks.com/cdn/shop/files/AntarcticanMono-Book.woff2?v=2243162862829819701') format('woff2');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 .font-teko { font-family: 'Teko', sans-serif; }
-.font-inco { font-family: 'Inconsolata', sans-serif; }
+.font-inco { font-family: 'Antarctican', monospace; }
 .font-inter { font-family: 'Inter', sans-serif; }
 .bg_varels_orange {
   background-color: rgb(224, 146, 36);

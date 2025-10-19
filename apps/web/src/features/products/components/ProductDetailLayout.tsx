@@ -1,5 +1,5 @@
 import React from 'react';
-import { Breadcrumb, ProductRecommendations } from './index';
+import { Breadcrumb, /* ProductRecommendations */ } from './index';
 
 interface ProductDetailLayoutProps {
   productName: string;
@@ -11,10 +11,10 @@ export const ProductDetailLayout: React.FC<ProductDetailLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="bg-white auth-font-inco">
+    <div className="bg-gray-50 min-h-screen auth-font-inco">
       <Breadcrumb productName={productName} />
       {children}
-      <ProductRecommendations />
+      {/* <ProductRecommendations /> */}
     </div>
   );
 };

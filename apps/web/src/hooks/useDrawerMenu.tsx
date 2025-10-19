@@ -163,7 +163,7 @@ export function useDrawerMenu({
 
           {/* Accordion Header */}
           <div className="flex items-center justify-between px-4 pt-4">
-            <h2 id="drawer-title" className="text-xl font-teko"></h2>
+            <h2 id="drawer-title" className="text-xl font-inco"></h2>
             <button
               aria-label="Close menu"
               onClick={closeDrawer}
@@ -198,7 +198,7 @@ export function useDrawerMenu({
                 <div key={s.title} className="font-inco font-normal text-sm md:text-xl md:text-base lg:text-xl uppercase font- border-b border-gray-100 py-3">
                   <div className="flex items-center justify-between">
                     <button
-                      className="text-left w-full flex items-center justify-between font-teko text-base"
+                      className="text-left w-full flex items-center justify-between font-inco text-base"
                       onClick={() => toggleSection(idx)}
                       aria-expanded={openIndex === idx}
                     >
