@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Antarctican:wght@200..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 @import "tailwindcss";
 
@@ -12,7 +11,7 @@
 }
 
 .font-teko { font-family: 'Teko', sans-serif; }
-.font-inco { font-family: 'Antarctican', monospace; }
+.font-antarctican { font-family: 'Antarctican Mono', monospace; }
 .font-inter { font-family: 'Inter', sans-serif; }
 .bg_varels_orange {
   background-color: rgb(224, 146, 36);
