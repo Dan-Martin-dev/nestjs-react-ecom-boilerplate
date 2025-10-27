@@ -44,7 +44,7 @@ const ProductsPage: React.FC = () => {
         <section className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {products.map((p: SharedProduct) => {
             const defaultImage = p.images?.find((i) => i.isDefault) ?? p.images?.[0];
-            const badge = "BUY 3 - SAVE 10%"; // For now, hardcode the badge as in House of Blanks
+            const badge = ""; // For now, hardcode the badge as in House of Blanks
             const titleWithBadge = badge ? `${p.name} ${badge}` : p.name;
 
             return (
