@@ -24,6 +24,9 @@ const AccountPage = lazy(() => import('./features/dashboard/pages/AccountPage'))
 const OrdersPage = lazy(() => import('./features/dashboard/pages/OrdersPage'));
 const AddressesPage = lazy(() => import('./features/dashboard/pages/AddressesPage'));
 
+// Admin Routes
+const AdminLayout = lazy(() => import('./features/admin/components/AdminLayout'));
+
 
 const router = createBrowserRouter([
 
@@ -184,6 +187,18 @@ const router = createBrowserRouter([
         )
       }
     ]
+  },
+
+  // Admin routes (render without RootLayout header/footer)
+  {
+    path: '/admin',
+    element: (
+      <ProtectedRoute>
+        <Loadable fallback={<div className="p-8 text-center">Loading admin panel...</div>}>
+          <AdminLayout />
+        </Loadable>
+      </ProtectedRoute>
+    )
   },
 
 ]);

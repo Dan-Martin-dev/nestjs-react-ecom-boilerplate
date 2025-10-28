@@ -18,6 +18,7 @@ import { AddressesModule } from './addresses/addresses.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { UsersModule } from './users/users.module';
+import { AuditModule } from './audit/audit.module';
 
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -67,6 +68,7 @@ import { MetricsModule } from './metrics/metrics.module';
     AddressesModule,
     ReviewsModule,
     DiscountsModule,
+    AuditModule,
     // Make sure AuthGuardModule is imported at the app level
   ],
   controllers: [AppController], // Keep the basic app controller for root health checks

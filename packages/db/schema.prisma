@@ -143,6 +143,9 @@ model User {
 
   // DB-backed refresh tokens for secure rotation/revocation
   RefreshToken RefreshToken[]
+  
+  // Audit logs for admin actions
+  auditLogs   AuditLog[]
 
   @@index([provider, providerId])
 }
@@ -611,6 +614,23 @@ model Review {
 // ----------------------------------------
 // ANALYTICS & TRACKING
 // ----------------------------------------
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  action        String   // The action performed (e.g., "CREATE_PRODUCT", "UPDATE_ORDER")
+  entityType    String   // The type of entity affected (e.g., "Product", "Order")
+  entityId      String   // The ID of the affected entity
+  userId        String   // The admin who performed the action
+  user          User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  details       Json?    // Additional details about the action (e.g., changes made)
+  ipAddress     String?  // IP address of the admin
+  userAgent     String?  // Browser/client info
+  timestamp     DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([timestamp])
+}
 
 model ShoppingSession {
   id        String   @id @default(cuid())
