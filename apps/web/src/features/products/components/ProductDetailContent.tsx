@@ -22,7 +22,8 @@ interface ProductDetailContentProps {
   isAddToCartLoading: boolean;
 }
 
-export const ProductDetailContent: React.FC<ProductDetailContentProps> = ({
+export const 
+ProductDetailContent: React.FC<ProductDetailContentProps> = ({
   product,
   images,
   selectedVariant,
