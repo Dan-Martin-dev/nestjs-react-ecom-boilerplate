@@ -3,11 +3,7 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import {
-  ConflictException,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Role } from '@repo/db'; // Correctly import the Role enum
 
@@ -23,6 +19,9 @@ describe('AuthService', () => {
   const mockPrismaService = {
     user: {
       findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+    refreshToken: {
       create: jest.fn(),
     },
   };
@@ -82,7 +81,10 @@ describe('AuthService', () => {
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { email: registerDto.email },
       });
-      expect(mockConfigService.get).toHaveBeenCalledWith('BCRYPT_SALT_ROUNDS');
+      expect(mockConfigService.get).toHaveBeenCalledWith(
+        'BCRYPT_SALT_ROUNDS',
+        10,
+      );
       expect(bcryptHash).toHaveBeenCalledWith(registerDto.password, 10);
       expect(mockPrismaService.user.create).toHaveBeenCalledWith({
         data: {
@@ -97,14 +99,18 @@ describe('AuthService', () => {
           createdAt: true,
         },
       });
-      expect(mockJwtService.signAsync).toHaveBeenCalledWith({
-        sub: createdUser.id,
-        email: createdUser.email,
-        role: createdUser.role,
-      });
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
+        {
+          sub: createdUser.id,
+          email: createdUser.email,
+          role: createdUser.role,
+        },
+        expect.any(Object),
+      );
       expect(result).toEqual({
         user: createdUser,
         access_token: 'mockAccessToken',
+        refresh_token: expect.any(String) as unknown as string,
       });
     });
 
@@ -115,12 +121,20 @@ describe('AuthService', () => {
       );
     });
 
-    it('should throw InternalServerErrorException if salt rounds are not configured', async () => {
+    it('should use default salt rounds when not configured', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
-      mockConfigService.get.mockReturnValue(undefined);
-      await expect(service.register(registerDto)).rejects.toThrow(
-        InternalServerErrorException,
-      );
+      // Simulate ConfigService returning undefined; service should use default (10)
+      mockConfigService.get.mockImplementation(<T>(key: string, def: T) => def);
+      bcryptHash.mockResolvedValue('hashedPassword');
+      mockPrismaService.user.create.mockResolvedValue(createdUser);
+      mockJwtService.signAsync.mockResolvedValue('mockAccessToken');
+
+      const result = await service.register(registerDto);
+      expect(result).toEqual({
+        user: createdUser,
+        access_token: 'mockAccessToken',
+        refresh_token: expect.any(String) as unknown as string,
+      });
     });
   });
 
@@ -150,11 +164,14 @@ describe('AuthService', () => {
         loginDto.password,
         userInDb.password,
       );
-      expect(mockJwtService.signAsync).toHaveBeenCalledWith({
-        sub: userInDb.id,
-        email: userInDb.email,
-        role: userInDb.role,
-      });
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
+        {
+          sub: userInDb.id,
+          email: userInDb.email,
+          role: userInDb.role,
+        },
+        expect.any(Object),
+      );
       expect(result).toEqual({
         user: {
           id: userInDb.id,
@@ -163,6 +180,7 @@ describe('AuthService', () => {
           role: userInDb.role,
         },
         access_token: 'mockAccessToken',
+        refresh_token: expect.any(String) as unknown as string,
       });
     });
 

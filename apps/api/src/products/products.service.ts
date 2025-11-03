@@ -660,7 +660,7 @@ export class ProductsService {
     const colorsDto = availableColors.map((ac) => ({
       id: ac.id,
       value: ac.value,
-      slug: ac.slug as string,
+      slug: ac.slug,
       attribute: { name: ac.attribute.name },
     }));
 

@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto, RegisterSchema } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 // We don't need to test the pipe itself in a unit test, so we can mock it
 jest.mock('../common/pipes/zod-validation.pipe');
@@ -28,6 +29,10 @@ describe('AuthController', () => {
         },
       ],
     })
+      // Override the ThrottlerGuard so the actual guard implementation (and its module
+      // options dependency) is not instantiated during tests.
+      .overrideGuard(ThrottlerGuard)
+      .useValue({ canActivate: jest.fn().mockReturnValue(true) })
       .overridePipe(ZodValidationPipe)
       .useValue(new ZodValidationPipe(RegisterSchema)) // Use a mock instance
       .compile();
