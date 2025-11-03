@@ -223,7 +223,7 @@ model Product {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   categories Category[]      
-  images     ProductImage[]
+  images     Image[]
   variants   ProductVariant[]
   reviews    Review[]
   Wishlist   Wishlist[]
@@ -247,23 +247,26 @@ model Product {
   @@index([createdAt])
 }
 
-model ProductImage {
-  id        String   @id @default(cuid())
-  url       String   // URL to the image (e.g., S3, Cloudinary)
-  altText   String?
-  isDefault Boolean  @default(false) // For a primary product image
-  createdAt DateTime @default(now())
-  // updatedAt DateTime @updatedAt // Typically not needed for images unless you allow editing URL/alt
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+model Image {
+  id              String    @id @default(cuid())
+  url             String
+  altText         String?
+  isDefault       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  // Print quality fields
-  format       ImageFormat @default(JPEG)
-  isVector     Boolean     @default(false)
-  printResolution Int?     // DPI for print quality (300+ recommended)
-  usage        ImageUsage[]
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id])
+  variantId       String?
+  variant         ProductVariant? @relation(fields: [variantId], references: [id])
+
+  format          ImageFormat?
+  isVector        Boolean?  @default(false)
+  printResolution Int?
+  usage           ImageUsage[]
 
   @@index([productId])
+  @@index([variantId])
 }
 
 model ProductAttribute {
@@ -289,6 +292,7 @@ model ProductAttribute {
 model ProductAttributeGlobalValue {
   id          String @id @default(cuid())
   value       String // "S", "M", "L", "Black", "White"
+  slug        String @unique // For SEO-friendly URLs, e.g., "white", "black"
   displayOrder Int   @default(0)
   
   attributeId String
@@ -304,6 +308,7 @@ model ProductAttributeGlobalValue {
 model ProductAttributeValue {
   id           String @id @default(cuid())
   value        String // "Red", "XL", "Cotton"
+  slug         String @unique // For SEO-friendly URLs, e.g., "red", "xl"
   displayOrder Int    @default(0) // Controls the order of display in UI
 
   // Relations
@@ -333,6 +338,7 @@ model ProductVariant {
   orderItems              OrderItem[]
   cartItems               CartItem[]
   InventoryLog            InventoryLog[]
+  images                  Image[]
 
   @@index([productId])
   @@index([sku])

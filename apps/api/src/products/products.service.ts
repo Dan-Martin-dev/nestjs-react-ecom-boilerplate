@@ -8,6 +8,31 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from '../common/validators';
 import { ProductFilterDto } from './dto/product-filter.dto';
 import { ProductDtoSchema } from '@repo/shared';
+import { ProductResponseDto } from './dto/product-response.dto';
+import {
+  Product,
+  ProductVariant,
+  Image,
+  ProductAttributeValue,
+  ProductAttribute,
+  Category,
+  ProductAttributeGlobalValue,
+} from '@repo/db';
+
+type ProductWithRelations = Product & {
+  categories: Category[];
+  images: Image[];
+  variants: (ProductVariant & {
+    ProductVariantAttribute: {
+      attribute: ProductAttribute;
+      attributeValue: ProductAttributeValue | null;
+    }[];
+    images: Image[];
+  })[];
+  globalAttributeValues: (ProductAttributeGlobalValue & {
+    attribute: ProductAttribute;
+  })[];
+};
 
 @Injectable()
 export class ProductsService {
@@ -533,5 +558,98 @@ export class ProductsService {
     });
 
     return dtos;
+  }
+
+  async findProductByColorSlug(
+    productColorSlug: string,
+  ): Promise<ProductResponseDto | null> {
+    // 1. Parse the productColorSlug to get the base product slug and the desired color slug
+    // Example: "basic-tshirt-white" -> baseSlug: "basic-tshirt", colorSlug: "white"
+    const parts = productColorSlug.split('-');
+    if (parts.length < 2) {
+      // Handle invalid slug format
+      return null;
+    }
+    const colorSlug = parts[parts.length - 1]; // Assuming color is always the last part
+    const baseSlug = parts.slice(0, -1).join('-'); // The rest is the base product slug
+
+    // 2. Find the base product
+    const product: ProductWithRelations | null = await this.prisma.product.findUnique({
+      where: { slug: baseSlug },
+      include: {
+        categories: true,
+        images: { where: { variantId: null }, orderBy: { isDefault: 'desc' } }, // General product images
+        variants: {
+          include: {
+            ProductVariantAttribute: {
+              include: {
+                attribute: true,
+                attributeValue: true, // This should be correct now after schema update
+              },
+            },
+            images: { orderBy: { isDefault: 'desc' } }, // Variant-specific images
+          },
+        },
+        globalAttributeValues: {
+          include: {
+            attribute: true,
+          },
+          where: {
+            attribute: { name: 'Color' }, // Fetch all available colors for this product
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      return null;
+    }
+
+    // 3. Filter variants and images for the requested color
+    const variantsForColor = product.variants.filter((variant) =>
+      variant.ProductVariantAttribute.some(
+        (attr) =>
+          attr.attribute.name === 'Color' &&
+          attr.attributeValue?.slug === colorSlug,
+      ),
+    );
+
+    // Get images specific to this color. Prioritize variant images, then general product images.
+    // This logic might need refinement based on how you structure your image uploads.
+    // For simplicity, we'll take images from the first variant of this color, or general product images if none.
+    const colorSpecificImages =
+      variantsForColor.length > 0 && variantsForColor[0].images.length > 0
+        ? variantsForColor[0].images
+        : product.images;
+
+    // 4. Extract available colors for swatches
+    const availableColors = product.globalAttributeValues.filter(
+      (attrValue) => attrValue.attribute.name === 'Color',
+    );
+
+    // 5. Construct the response DTO
+    return {
+      id: product.id,
+      name: product.name,
+      baseSlug: product.slug,
+      colorSlug: colorSlug,
+      description: product.description || undefined,
+      price: product.price.toNumber(), // Convert Decimal to number
+      colorSpecificImages: colorSpecificImages,
+      variantsForColor: variantsForColor.map((variant) => ({
+        ...variant,
+        price: variant.price.toNumber(), // Convert Decimal to number
+        ProductVariantAttribute: variant.ProductVariantAttribute.map(pva => ({
+          attribute: pva.attribute,
+          value: pva.value, // Ensure value is explicitly mapped
+          attributeValue: pva.attributeValue ? { ...pva.attributeValue, attribute: pva.attribute } : null,
+        })),
+        images: variant.images.map(img => ({ ...img, altText: img.altText || undefined })),
+      })),
+      availableColors: availableColors.map(ac => ({
+        ...ac,
+        attribute: ac.attribute,
+        slug: ac.slug, // Ensure slug is explicitly mapped
+      })),
   }
 }

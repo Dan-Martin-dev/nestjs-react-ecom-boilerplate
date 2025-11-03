@@ -18,6 +18,8 @@ import {
   ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { ProductResponseDto } from './dto/product-response.dto';
+import { NotFoundException } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -196,6 +198,41 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   findBySlug(@Param('slug') slug: string): Promise<import('@repo/db').Product> {
     return this.productsService.findBySlug(slug);
+  }
+
+  /**
+   * Get a product by color-specific slug
+   *
+   * Retrieves a single product by its URL-friendly slug, which includes color information.
+   * This endpoint is designed for color-specific Product Detail Pages (PDPs).
+   *
+   * @param productColorSlug - Product URL slug including color (e.g., 'basic-tshirt-white')
+   * @returns Promise<ProductResponseDto> - The requested product data, filtered by color
+   */
+  @Get('color/:productColorSlug') // New route for color-specific PDPs
+  @ApiOperation({ summary: 'Get a product by color-specific slug' })
+  @ApiParam({
+    name: 'productColorSlug',
+    description: 'Product slug including color (e.g., basic-tshirt-white)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Product retrieved successfully for the specified color',
+    type: ProductResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Product or color not found' })
+  async findOneByColorSlug(
+    @Param('productColorSlug') productColorSlug: string,
+  ): Promise<ProductResponseDto> {
+    const productData = await this.productsService.findProductByColorSlug(
+      productColorSlug,
+    );
+    if (!productData) {
+      throw new NotFoundException(
+        `Product with slug "${productColorSlug}" not found.`,
+      );
+    }
+    return productData;
   }
 
   /**
