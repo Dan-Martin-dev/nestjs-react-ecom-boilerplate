@@ -13,6 +13,7 @@ import {
   Product,
   ProductVariant,
   Image,
+  ProductAttributeValue,
   ProductAttribute,
   Category,
   ProductAttributeGlobalValue,
@@ -24,6 +25,7 @@ type ProductWithRelations = Product & {
   variants: (ProductVariant & {
     ProductVariantAttribute: {
       attribute: ProductAttribute;
+      attributeValue: ProductAttributeValue | null;
       value: string;
     }[];
     images: Image[];
@@ -604,18 +606,11 @@ export class ProductsService {
     }
 
     // 3. Filter variants and images for the requested color
-    const slugify = (s?: string) =>
-      s
-        ? s
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, '')
-        : '';
-
     const variantsForColor = product.variants.filter((variant) =>
       variant.ProductVariantAttribute.some(
         (attr) =>
-          attr.attribute.name === 'Color' && slugify(attr.value) === colorSlug,
+          attr.attribute.name === 'Color' &&
+          attr.attributeValue?.slug === colorSlug,
       ),
     );
 

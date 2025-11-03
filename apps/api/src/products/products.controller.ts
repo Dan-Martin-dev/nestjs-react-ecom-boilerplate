@@ -166,7 +166,7 @@ export class ProductsController {
    * @param id - Product unique identifier
    * @returns Promise<Product> - The requested product with all relations
    */
-  @Get(':id')
+  @Get('id/:id')
   @ApiOperation({ summary: 'Get a product by ID' })
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiResponse({
@@ -209,30 +209,37 @@ export class ProductsController {
    * @param productColorSlug - Product URL slug including color (e.g., 'basic-tshirt-white')
    * @returns Promise<ProductResponseDto> - The requested product data, filtered by color
    */
-  @Get('color/:productColorSlug') // New route for color-specific PDPs
-  @ApiOperation({ summary: 'Get a product by color-specific slug' })
+  @Get(':productColorSlug') // Concise color-specific PDP route (e.g. /products/basic-tshirt-white)
+  @ApiOperation({ summary: 'Get a product by slug or color-specific slug' })
   @ApiParam({
     name: 'productColorSlug',
-    description: 'Product slug including color (e.g., basic-tshirt-white)',
+    description:
+      'Product slug or product+color slug (e.g., basic-tshirt or basic-tshirt-white)',
   })
   @ApiResponse({
     status: 200,
-    description: 'Product retrieved successfully for the specified color',
+    description: 'Product retrieved successfully',
     type: ProductResponseDto,
   })
-  @ApiResponse({ status: 404, description: 'Product or color not found' })
-  async findOneByColorSlug(
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  async findByProductSlug(
     @Param('productColorSlug') productColorSlug: string,
-  ): Promise<ProductResponseDto> {
-    const productData = await this.productsService.findProductByColorSlug(
-      productColorSlug,
+  ): Promise<any> {
+    // Try to resolve as a color-specific PDP first
+    const colorData = await this.productsService
+      .findProductByColorSlug(productColorSlug)
+      .catch(() => null);
+    if (colorData) return colorData;
+
+    // Fallback to base product slug
+    const baseProduct = await this.productsService
+      .findBySlug(productColorSlug)
+      .catch(() => null);
+    if (baseProduct) return baseProduct;
+
+    throw new NotFoundException(
+      `Product with slug "${productColorSlug}" not found.`,
     );
-    if (!productData) {
-      throw new NotFoundException(
-        `Product with slug "${productColorSlug}" not found.`,
-      );
-    }
-    return productData;
   }
 
   /**
