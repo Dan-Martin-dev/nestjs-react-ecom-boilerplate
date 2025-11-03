@@ -167,7 +167,7 @@ export function Header() {
               <input
                 type="text"
                 placeholder="SEARCH FOR PRODUCTS..."
-                className="w-full rounded-md border text-sm font-inco text-black border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-md border text-sm font-antarctican text-black border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                 aria-label="Search products"
               />
             </form>
