@@ -1,63 +1,5 @@
-const { prisma } = require('../packages/db');
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const sharp = require('sharp');
-
-// Initialize S3 client for Hetzner Storage Box (S3-compatible)
-const s3 = new S3Client({
-  region: 'fsn1', // Hetzner region, e.g., fsn1, nbg1; adjust as needed
-  endpoint: process.env.HETZNER_ENDPOINT, // e.g., https://fsn1.your-storagebox.de
-  credentials: {
-    accessKeyId: process.env.HETZNER_ACCESS_KEY, // Your Storage Box username
-    secretAccessKey: process.env.HETZNER_SECRET_KEY, // Your Storage Box password
-  },
-  forcePathStyle: true, // Required for Hetzner
-});
-
-async function downloadImage(url, localPath) {
-  const response = await axios.get(url, { responseType: 'arraybuffer' });
-  fs.writeFileSync(localPath, response.data);
-}
-
-async function uploadImage(localPath, key) {
-  const body = fs.readFileSync(localPath);
-  const contentType = require('mime').getType(localPath) || 'image/jpeg';
-
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: process.env.HETZNER_BUCKET, // Your Storage Box name, e.g., 'your-storagebox'
-      Key: key,
-      Body: body,
-      ContentType: contentType,
-      CacheControl: 'public, max-age=31536000, immutable',
-      ACL: 'public-read', // Ensure public access if needed
-    }),
-  );
-
-  // Hetzner Storage Box public URL format: https://<username>.your-storagebox.de/<key>
-  return `${process.env.HETZNER_CDN_HOST.replace(/\/$/, '')}/${key}`;
-}
-
-async function processImage(localPath, productId, variant) {
-  const buf = fs.readFileSync(localPath);
-  const hash = crypto.createHash('sha1').update(buf).digest('hex').slice(0, 12);
-  const ext = path.extname(localPath);
-
-  // Upload original
-  const originalKey = `products/${productId}/original-${hash}${ext}`;
-  const originalUrl = await uploadImage(localPath, originalKey);
-
-  // Create and upload thumbnail
-  const thumbBuf = await sharp(buf).resize(300).webp({ quality: 80 }).toBuffer();
-  const thumbKey = `products/${productId}/thumb-${hash}.webp`;
-  fs.writeFileSync(localPath.replace(ext, '.webp'), thumbBuf);
-  const thumbUrl = await uploadImage(localPath.replace(ext, '.webp'), thumbKey);
-
-  return { original: originalUrl, thumbnail: thumbUrl };
-}
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 async function seedBestsellers() {
   console.log('Seeding bestsellers products...');
@@ -74,6 +16,26 @@ async function seedBestsellers() {
       },
     });
 
+    // Create or upsert ProductAttribute for Color
+    const colorAttribute = await prisma.productAttribute.upsert({
+      where: { name_type: { name: 'Color', type: 'COLOR' } },
+      update: {},
+      create: {
+        name: 'Color',
+        type: 'COLOR',
+      },
+    });
+
+    // Create or upsert ProductAttribute for Size
+    const sizeAttribute = await prisma.productAttribute.upsert({
+      where: { name_type: { name: 'Size', type: 'SIZE' } },
+      update: {},
+      create: {
+        name: 'Size',
+        type: 'SIZE',
+      },
+    });
+
     // Create products
     const products = [
       {
@@ -83,6 +45,7 @@ async function seedBestsellers() {
         price: 35.00,
         externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_01_2.jpg?v=1726516822&width=360',
         altText: '1009 Heavyweight T-Shirt Black',
+        skuPrefix: '1009-HWT',
         variants: [
           {
             name: 'Black',
@@ -99,6 +62,7 @@ async function seedBestsellers() {
         price: 35.00,
         externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/MidweightTshirt_White_01.jpg?v=1726669963&width=360',
         altText: '1009 Heavyweight T-Shirt White',
+        skuPrefix: '1009-HWT',
         variants: [
           {
             name: 'White',
@@ -115,6 +79,7 @@ async function seedBestsellers() {
         price: 30.00,
         externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_HeatherGrey_01_2.jpg?v=1726511909&width=360',
         altText: '1008 Midweight T-Shirt White',
+        skuPrefix: '1008-MWT',
         variants: [
           {
             name: 'White',
@@ -131,6 +96,7 @@ async function seedBestsellers() {
         price: 35.00,
         externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_02_1.jpg?v=1726516823&width=360',
         altText: '1009 Heavyweight T-Shirt Heather Grey',
+        skuPrefix: '1009-HWT',
         variants: [
           {
             name: 'Heather Grey',
@@ -140,19 +106,99 @@ async function seedBestsellers() {
           },
         ],
       },
+      {
+        name: 'Basic T-Shirt',
+        slug: 'basic-tshirt',
+        description: 'A comfortable and versatile basic t-shirt.',
+        price: 19.99,
+        externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_01_2.jpg?v=1726516822&width=360', // Placeholder image
+        altText: 'Basic T-Shirt',
+        skuPrefix: 'BAS-T',
+        colors: ['black', 'white', 'heather-grey', 'navy'],
+        sizes: ['S', 'M', 'L', 'XL'],
+      },
     ];
 
     for (const productData of products) {
-      // Download image
-      const tempDir = path.join(__dirname, 'temp');
-      if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-      const localImagePath = path.join(tempDir, `${productData.slug}.jpg`);
-      await downloadImage(productData.externalImageUrl, localImagePath);
+      const productVariantsToCreate = [];
+      const globalAttributeValuesToConnect = [];
 
-      // Process and upload image
-      const imageUrls = await processImage(localImagePath, productData.slug, productData.variants[0].name);
+      if (productData.colors && productData.sizes) {
+        for (const color of productData.colors) {
+          // Use global attribute values (reusable across products)
+          let colorGlobalValue = await prisma.productAttributeGlobalValue.findFirst({
+            where: { attributeId: colorAttribute.id, value: color },
+          });
+          if (!colorGlobalValue) {
+            colorGlobalValue = await prisma.productAttributeGlobalValue.create({
+              data: {
+                value: color,
+                slug: color,
+                attribute: { connect: { id: colorAttribute.id } },
+              },
+            });
+          }
+          globalAttributeValuesToConnect.push({ id: colorGlobalValue.id });
 
-      // Create product
+          for (const size of productData.sizes) {
+            let sizeGlobalValue = await prisma.productAttributeGlobalValue.findFirst({
+              where: { attributeId: sizeAttribute.id, value: size },
+            });
+            if (!sizeGlobalValue) {
+              sizeGlobalValue = await prisma.productAttributeGlobalValue.create({
+                data: {
+                  value: size,
+                  slug: size.toLowerCase(),
+                  attribute: { connect: { id: sizeAttribute.id } },
+                },
+              });
+            }
+            globalAttributeValuesToConnect.push({ id: sizeGlobalValue.id });
+
+            const variantName = `${productData.name} - ${color} - ${size}`;
+            const variantSlug = `${productData.slug}-${color.toLowerCase()}-${size.toLowerCase()}`;
+            const variantSku = `${productData.skuPrefix}-${color.substring(0, 3).toUpperCase()}-${size.toUpperCase()}`;
+
+            productVariantsToCreate.push({
+              name: variantName,
+              slug: variantSlug,
+              sku: variantSku,
+              price: productData.price,
+              stockQuantity: 50, // Default stock for each variant
+              ProductVariantAttribute: {
+                create: [
+                  {
+                    attribute: { connect: { id: colorAttribute.id } },
+                    value: color,
+                  },
+                  {
+                    attribute: { connect: { id: sizeAttribute.id } },
+                    value: size,
+                  },
+                ],
+              },
+            });
+          }
+        }
+      } else if (productData.variants) {
+        // Existing logic for simple variants - ensure required fields (slug, stockQuantity)
+        const mapped = productData.variants.map((v) => ({
+          name: v.name,
+          sku: v.sku,
+          slug:
+            v.slug ||
+            `${productData.slug}-${(v.sku || v.name)
+              .toString()
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')}`,
+          price: v.price,
+          stockQuantity: v.stockQuantity ?? 0,
+          // preserve any attributes if present
+          attributes: v.attributes ? { create: v.attributes } : undefined,
+        }));
+        productVariantsToCreate.push(...mapped);
+      }
+
       const product = await prisma.product.upsert({
         where: { slug: productData.slug },
         update: {},
@@ -165,32 +211,16 @@ async function seedBestsellers() {
           categories: {
             connect: { id: clothingCategory.id },
           },
-          images: {
-            create: [
-              {
-                url: imageUrls.original,
-                altText: productData.altText,
-                isDefault: true,
-              },
-              {
-                url: imageUrls.thumbnail,
-                altText: `${productData.altText} Thumbnail`,
-                isDefault: false,
-              },
-            ],
+          globalAttributeValues: {
+            connect: globalAttributeValuesToConnect,
           },
           variants: {
-            create: productData.variants,
+            create: productVariantsToCreate,
           },
         },
       });
 
       console.log(`Created product: ${product.name} (${product.slug})`);
-
-      // Clean up temp file
-      fs.unlinkSync(localImagePath);
-      const webpPath = localImagePath.replace('.jpg', '.webp');
-      if (fs.existsSync(webpPath)) fs.unlinkSync(webpPath);
     }
 
     console.log('Seeding completed!');
