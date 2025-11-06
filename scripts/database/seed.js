@@ -5,6 +5,7 @@ async function seedBestsellers() {
   console.log('Seeding bestsellers products...');
 
   try {
+    
     // Create categories first if they don't exist
     const clothingCategory = await prisma.category.upsert({
       where: { slug: 'clothing' },
