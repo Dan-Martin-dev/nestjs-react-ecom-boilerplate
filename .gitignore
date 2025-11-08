@@ -104,4 +104,8 @@ Thumbs.db
 
 # Prisma
 prisma/generated/
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
 EOF

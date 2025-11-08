@@ -53,6 +53,8 @@ services:
         condition: service_started
     networks:
       - app-network
+    volumes:
+      - ./uploads:/var/www/uploads
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`api.${DOMAIN}`)"
@@ -74,6 +76,8 @@ services:
       - api
     networks:
       - app-network
+    volumes:
+      - ./uploads:/usr/share/nginx/html/uploads
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`${DOMAIN}`)"
