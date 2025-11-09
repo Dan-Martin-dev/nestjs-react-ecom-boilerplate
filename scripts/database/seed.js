@@ -3,7 +3,8 @@
 //
 const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
-const fs = require('fs/promises'); // Use the promises-based API
+const fs = require('fs');
+const fsPromises = require('fs/promises');
 const path = require('path');
 const crypto = require('crypto');
 const { Writable } = require('stream');
@@ -27,7 +28,12 @@ const PRODUCTS_DIR = path.join(CONFIG.UPLOADS_DIR, CONFIG.PRODUCTS_SUBDIR);
 // Async IIFE (Immediately Invoked Function Expression) to handle async setup.
 (async () => {
   try {
-    await fs.mkdir(PRODUCTS_DIR, { recursive: true });
+    // Ensure uploads and products directories exist
+    [CONFIG.UPLOADS_DIR, PRODUCTS_DIR].forEach(dir => {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    });
     console.log(`Ensured directory exists: ${PRODUCTS_DIR}`);
   } catch (error) {
     console.error('Failed to create necessary directories on startup:', error);
@@ -91,7 +97,7 @@ async function downloadImage(url, destinationPath) {
     });
     fileWriter.on('error', (error) => {
         // Clean up the partially written file on error
-        fs.unlink(destinationPath).catch(() => {});
+        fsPromises.unlink(destinationPath).catch(() => {});
         reject(error);
     });
   });
@@ -112,6 +118,7 @@ async function downloadImage(url, destinationPath) {
  * @param {string} productSlug - Slug of the product for filename generation.
  * @returns {Promise<object|null>} Image data for database creation or null.
  */
+
 async function processProductImage(productData, productSlug) {
   const { externalImageUrl, localImagePath, altText, name } = productData;
 
@@ -134,7 +141,7 @@ async function processProductImage(productData, productSlug) {
       const finalFilePath = path.join(PRODUCTS_DIR, finalFilename);
 
       // Rename the temp file to its final name with the correct extension
-      await fs.rename(tempFilePath, finalFilePath);
+      await fsPromises.rename(tempFilePath, finalFilePath);
 
       console.log(`Saved image to: ${finalFilePath}`);
       
@@ -152,7 +159,7 @@ async function processProductImage(productData, productSlug) {
       const fullLocalPath = path.join(CONFIG.UPLOADS_DIR, localImagePath);
 
       try {
-        await fs.access(fullLocalPath); // Check if file exists and is accessible
+        await fsPromises.access(fullLocalPath); // Check if file exists and is accessible
         console.log(`Using existing local image for ${productSlug}: ${localImagePath}`);
         
         return {
@@ -217,147 +224,76 @@ async function seedBestsellers() {
     // Create products
     const products = [
       {
-        name: '1009 HEAVYWEIGHT T-SHIRT',
-        slug: 'heavyweight-t-shirt-black',
-        description: 'Premium heavyweight cotton t-shirt',
-        price: 35.00,
-        externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_01_2.jpg?v=1726516822&width=360',
-        altText: '1009 Heavyweight T-Shirt Black',
-        skuPrefix: '1009-HWT',
-        variants: [
-          {
-            name: 'Black',
-            sku: '1009-BLK',
-            price: 35.00,
-            stockQuantity: 100,
-          },
-        ],
-      },
-      {
-        name: '1009 HEAVYWEIGHT T-SHIRT',
-        slug: 'heavyweight-t-shirt-white',
-        description: 'Premium heavyweight cotton t-shirt',
-        price: 35.00,
-        externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/MidweightTshirt_White_01.jpg?v=1726669963&width=360',
-        altText: '1009 Heavyweight T-Shirt White',
-        skuPrefix: '1009-HWT',
-        variants: [
-          {
-            name: 'White',
-            sku: '1009-WHT',
-            price: 35.00,
-            stockQuantity: 100,
-          },
-        ],
-      },
-      {
-        name: '1008 MIDWEIGHT T-SHIRT',
-        slug: 'midweight-t-shirt-white',
-        description: 'Comfortable midweight cotton t-shirt',
-        price: 30.00,
-        externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_HeatherGrey_01_2.jpg?v=1726511909&width=360',
-        altText: '1008 Midweight T-Shirt White',
-        skuPrefix: '1008-MWT',
-        variants: [
-          {
-            name: 'White',
-            sku: '1008-WHT',
-            price: 30.00,
-            stockQuantity: 100,
-          },
-        ],
-      },
-      {
-        name: '1009 HEAVYWEIGHT T-SHIRT',
-        slug: 'heavyweight-t-shirt-heather-grey',
-        description: 'Premium heavyweight cotton t-shirt',
-        price: 35.00,
-        externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_02_1.jpg?v=1726516823&width=360',
-        altText: '1009 Heavyweight T-Shirt Heather Grey',
-        skuPrefix: '1009-HWT',
-        variants: [
-          {
-            name: 'Heather Grey',
-            sku: '1009-HGR',
-            price: 35.00,
-            stockQuantity: 100,
-          },
-        ],
-      },
-      {
-        name: 'Basic T-Shirt',
-        slug: 'basic-tshirt',
-        description: 'A comfortable and versatile basic t-shirt.',
-        price: 19.99,
-        externalImageUrl: 'https://www.houseofblanks.com/cdn/shop/files/HeavyweightTshirt_White_01_2.jpg?v=1726516822&width=360', // Placeholder image
-        altText: 'Basic T-Shirt',
-        skuPrefix: 'BAS-T',
-        colors: ['black', 'white', 'heather-grey', 'navy'],
-        sizes: ['S', 'M', 'L', 'XL'],
-      },
-      {
-        name: 'Premium Hoodie',
-        slug: 'premium-hoodie',
-        description: 'High-quality hoodie with excellent comfort and style.',
-        price: 65.00,
-        localImagePath: 'products/premium-hoodie-black.jpg', // Example of using existing local image
-        altText: 'Premium Hoodie Black',
-        skuPrefix: 'PREM-H',
-        variants: [
-          {
-            name: 'Black',
-            sku: 'PREM-H-BLK',
-            price: 65.00,
-            stockQuantity: 50,
-          },
-        ],
-      },
-      {
-        name: 'Eco-Friendly Tote Bag',
-        slug: 'eco-tote-bag',
-        description: 'Sustainable tote bag made from recycled materials.',
+        name: 'White T-Shirt',
+        slug: 'white-t-shirt',
+        description: 'A comfortable and versatile white cotton t-shirt available in multiple colors.',
         price: 25.00,
-        // No image specified - will skip image creation
-        altText: 'Eco-Friendly Tote Bag',
-        skuPrefix: 'ECO-T',
-        variants: [
+        isActive: true,
+        skuPrefix: 'WTS',
+        // This will be the parent product
+        colors: [
           {
-            name: 'Natural',
-            sku: 'ECO-T-NAT',
-            price: 25.00,
-            stockQuantity: 75,
+            name: 'Red',
+            slug: 'red',
+            hexColor: '#FF0000',
+            externalImageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center',
+            altText: 'White T-Shirt in Red'
           },
+          {
+            name: 'Blue',
+            slug: 'blue',
+            hexColor: '#0000FF',
+            externalImageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=400&fit=crop&crop=center',
+            altText: 'White T-Shirt in Blue'
+          },
+          {
+            name: 'Black',
+            slug: 'black',
+            hexColor: '#000000',
+            externalImageUrl: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400&h=400&fit=crop&crop=center',
+            altText: 'White T-Shirt in Black'
+          },
+          {
+            name: 'Green',
+            slug: 'green',
+            hexColor: '#00FF00',
+            externalImageUrl: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&h=400&fit=crop&crop=center',
+            altText: 'White T-Shirt in Green'
+          }
         ],
-      },
+        sizes: ['S', 'M', 'L', 'XL']
+      }
     ];
 
     for (const productData of products) {
       const productVariantsToCreate = [];
       const globalAttributeValuesToConnect = [];
-      const productImagesToCreate = [];
 
-      // Process product image
-      const imageData = await processProductImage(productData, productData.slug);
-      if (imageData) {
-        productImagesToCreate.push(imageData);
-      }
+      // Skip product-level image processing - we'll handle images at variant level
 
       if (productData.colors && productData.sizes) {
-        for (const color of productData.colors) {
-          // Use global attribute values (reusable across products)
+        // Handle the new color structure with objects
+        for (const colorObj of productData.colors) {
+          // Create global attribute value for this color if it doesn't exist
           let colorGlobalValue = await prisma.productAttributeGlobalValue.findFirst({
-            where: { attributeId: colorAttribute.id, value: color },
+            where: { attributeId: colorAttribute.id, value: colorObj.name },
           });
           if (!colorGlobalValue) {
             colorGlobalValue = await prisma.productAttributeGlobalValue.create({
               data: {
-                value: color,
-                slug: color,
+                value: colorObj.name,
+                slug: colorObj.slug,
                 attribute: { connect: { id: colorAttribute.id } },
               },
             });
           }
           globalAttributeValuesToConnect.push({ id: colorGlobalValue.id });
+
+          // Download and save color-specific image
+          const colorImageData = await processProductImage({
+            externalImageUrl: colorObj.externalImageUrl,
+            altText: colorObj.altText
+          }, `${productData.slug}-${colorObj.slug}`);
 
           for (const size of productData.sizes) {
             let sizeGlobalValue = await prisma.productAttributeGlobalValue.findFirst({
@@ -372,26 +308,37 @@ async function seedBestsellers() {
                 },
               });
             }
-            globalAttributeValuesToConnect.push({ id: sizeGlobalValue.id });
 
-            const variantName = `${productData.name} - ${color} - ${size}`;
-            const variantSlug = `${productData.slug}-${color.toLowerCase()}-${size.toLowerCase()}`;
-            const variantSku = `${productData.skuPrefix}-${color.substring(0, 3).toUpperCase()}-${size.toUpperCase()}`;
+            const variantName = `${productData.name} - ${colorObj.name} - ${size}`;
+            const variantSlug = `${productData.slug}-${colorObj.slug}-${size.toLowerCase()}`;
+            const variantSku = `WTS-${colorObj.slug.substring(0, 3).toUpperCase()}-${size.toUpperCase()}`;
+
+            const variantImages = [];
+            if (colorImageData) {
+              variantImages.push({
+                url: colorImageData.url,
+                altText: `${productData.name} - ${colorObj.name}`,
+                isDefault: true,
+                format: colorImageData.format,
+                usage: ['WEB', 'GALLERY']
+              });
+            }
 
             productVariantsToCreate.push({
               name: variantName,
               slug: variantSlug,
               sku: variantSku,
               price: productData.price,
-              stockQuantity: 50, // Default stock for each variant
+              stockQuantity: 25, // Stock for each size variant
+              // images: variantImages.length > 0 ? { create: variantImages } : undefined,
               ProductVariantAttribute: {
                 create: [
                   {
-                    attribute: { connect: { id: colorAttribute.id } },
-                    value: color,
+                    attributeId: colorAttribute.id,
+                    value: colorObj.name,
                   },
                   {
-                    attribute: { connect: { id: sizeAttribute.id } },
+                    attributeId: sizeAttribute.id,
                     value: size,
                   },
                 ],
@@ -426,21 +373,58 @@ async function seedBestsellers() {
           slug: productData.slug,
           description: productData.description,
           price: productData.price,
-          isActive: true,
+          isActive: productData.isActive ?? true,
           categories: {
             connect: { id: clothingCategory.id },
           },
           globalAttributeValues: {
             connect: globalAttributeValuesToConnect,
           },
-          images: {
-            create: productImagesToCreate,
-          },
           variants: {
             create: productVariantsToCreate,
           },
         },
       });
+
+      // Now create images for each variant
+      if (productData.colors && productData.sizes) {
+        for (const colorObj of productData.colors) {
+          const colorImageData = await processProductImage({
+            externalImageUrl: colorObj.externalImageUrl,
+            altText: colorObj.altText
+          }, `${productData.slug}-${colorObj.slug}`);
+
+          if (colorImageData) {
+            // Find the variants for this color
+            const colorVariants = await prisma.productVariant.findMany({
+              where: {
+                productId: product.id,
+                ProductVariantAttribute: {
+                  some: {
+                    attributeId: colorAttribute.id,
+                    value: colorObj.name,
+                  },
+                },
+              },
+            });
+
+            // Create image for each variant of this color
+            for (const variant of colorVariants) {
+              await prisma.image.create({
+                data: {
+                  url: colorImageData.url,
+                  altText: `${productData.name} - ${colorObj.name}`,
+                  isDefault: true,
+                  format: 'JPEG',
+                  usage: ['WEB', 'GALLERY'],
+                  productId: product.id,
+                  variantId: variant.id,
+                },
+              });
+            }
+          }
+        }
+      }
 
       console.log(`Created product: ${product.name} (${product.slug})`);
     }
