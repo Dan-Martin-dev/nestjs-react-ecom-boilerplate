@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
 import {
-  HomeIcon, ShoppingCartIcon, UserIcon, MapPinIcon, LogOutIcon, MenuIcon, X 
+  Home,
+  ShoppingCart,
+  User,
+  MapPin,
+  LogOut,
+  Menu,
+  Package2,
+  ChevronLeft
 } from 'lucide-react';
 import { useAuthStore } from '../../../stores';
 import { notify } from '../../../lib/notify';
-import '../../auth/styles/auth-fonts.css';
+import { Button } from '../../../components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '../../../components/ui/sheet';
+import { Avatar, AvatarFallback } from '../../../components/ui/avatar';
+import { Separator } from '../../../components/ui/separator';
 
 const DashboardLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,148 +28,182 @@ const DashboardLayout: React.FC = () => {
     navigate('/auth/login');
   };
 
-  // Navigation items for the sidebar
   const navigationItems = [
     {
       name: 'Overview',
       path: '/dashboard',
-      icon: <HomeIcon className="w-5 h-5" />
+      icon: Home
     },
     {
       name: 'Orders',
       path: '/dashboard/orders',
-      icon: <ShoppingCartIcon className="w-5 h-5" />
+      icon: ShoppingCart
     },
     {
       name: 'Account',
       path: '/dashboard/account',
-      icon: <UserIcon className="w-5 h-5" />
+      icon: User
     },
     {
       name: 'Addresses',
       path: '/dashboard/addresses',
-      icon: <MapPinIcon className="w-5 h-5" />
+      icon: MapPin
     }
   ];
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const getUserInitials = () => {
+    if (!user?.name) return 'U';
+    const names = user.name.split(' ');
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-inco">
-      {/* Mobile navigation toggle */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white shadow-sm py-4 px-4 flex items-center justify-between">
-        <h1 className="text-xl font-medium">Dashboard</h1>
-        <button 
-          onClick={toggleMobileMenu} 
-          className="p-2 rounded-md text-gray-500 hover:bg-gray-100"
-          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {isMobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <MenuIcon className="h-6 w-6" />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile navigation menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-20 bg-white pt-16">
-          <nav className="p-6 space-y-2">
-            {navigationItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={({ isActive }) => 
-                  `flex items-center p-3 rounded-lg ${
-                    isActive 
-                      ? 'bg-gray-100 text-gray-900 font-medium' 
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`
-                }
-                end={item.path === '/dashboard'}
-              >
-                <span className="mr-3">{item.icon}</span>
-                {item.name}
-              </NavLink>
-            ))}
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center p-3 rounded-lg text-red-600 hover:bg-red-50"
-            >
-              <LogOutIcon className="w-5 h-5 mr-3" />
-              Sign out
-            </button>
-              {/* Back button below Sign out (same typography/weight, grey instead of red) */}
-              <button
-                type="button"
-                onClick={() => { setIsMobileMenuOpen(false); navigate('/'); }}
-                className="w-full flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50"
-              >
-                <ChevronLeft className="w-5 h-5 mr-3" />
-                Back
-              </button>
-          </nav>
-        </div>
-      )}
-
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex lg:fixed lg:inset-y-0 lg:z-10 lg:w-64">
-        <div className="flex flex-col flex-grow bg-white border-r shadow-sm">
-          <div className="px-4 py-6">
-            <h1 className="text-2xl font-medium text-gray-900">Dashboard</h1>
-            {user?.name && (
-              <p className="mt-1 text-sm text-gray-500">Welcome, {user.name}</p>
-            )}
+    <div className="flex min-h-screen">
+      {/* Desktop Sidebar */}
+      <aside className="hidden border-r bg-background lg:block lg:w-64">
+        <div className="flex h-full flex-col gap-2">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+            <NavLink to="/dashboard" className="flex items-center gap-2 font-semibold">
+              <Package2 className="h-6 w-6" />
+              <span className="">Dashboard</span>
+            </NavLink>
           </div>
-
-          <nav className="flex-1 p-4 space-y-2">
-            {navigationItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) => 
-                  `flex items-center p-3 rounded-lg transition-colors ${
-                    isActive 
-                      ? 'bg-gray-100 text-gray-900 font-medium' 
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`
-                }
-                end={item.path === '/dashboard'}
-              >
-                <span className="mr-3">{item.icon}</span>
-                {item.name}
-              </NavLink>
-            ))}
-          </nav>
-          
-          <div className="p-4 border-t">
-            <button
+          <div className="flex-1">
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              {navigationItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
+                      isActive
+                        ? 'bg-muted text-primary'
+                        : 'text-muted-foreground'
+                    }`
+                  }
+                  end={item.path === '/dashboard'}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.name}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
+          <div className="mt-auto p-4">
+            <Separator className="mb-4" />
+            <div className="flex items-center gap-3 mb-4">
+              <Avatar className="h-9 w-9">
+                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm font-medium leading-none truncate">{user?.name || 'User'}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-muted-foreground hover:text-foreground"
               onClick={handleLogout}
-              className="flex items-center p-3 rounded-lg text-red-600 hover:bg-red-50 w-full"
             >
-              <LogOutIcon className="w-5 h-5 mr-3" />
+              <LogOut className="mr-2 h-4 w-4" />
               Sign out
-            </button>
-            {/* Back button below Sign out (same typography/weight, grey instead of red) */}
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-muted-foreground hover:text-foreground mt-1"
               onClick={() => navigate('/')}
-              className="mt-2 flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-50 w-full"
             >
-              <ChevronLeft className="w-5 h-5 mr-3" />
-              Back
-            </button>
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Back to Store
+            </Button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Main content */}
-      <div className={`${isMobileMenuOpen ? 'hidden' : 'block'} lg:ml-64 pt-16 lg:pt-0`}>
-        <main className="max-w-6xl mx-auto p-4 lg:p-8">
+      {/* Main Content */}
+      <div className="flex flex-1 flex-col">
+        {/* Mobile Header */}
+        <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 lg:hidden">
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="shrink-0">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col">
+              <nav className="grid gap-2 text-lg font-medium">
+                <NavLink
+                  to="/dashboard"
+                  className="flex items-center gap-2 text-lg font-semibold mb-4"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Package2 className="h-6 w-6" />
+                  <span>Dashboard</span>
+                </NavLink>
+                {navigationItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center gap-4 rounded-lg px-3 py-2 transition-all hover:text-primary ${
+                        isActive
+                          ? 'bg-muted text-foreground'
+                          : 'text-muted-foreground'
+                      }`
+                    }
+                    end={item.path === '/dashboard'}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    {item.name}
+                  </NavLink>
+                ))}
+              </nav>
+              <div className="mt-auto">
+                <Separator className="mb-4" />
+                <div className="flex items-center gap-3 mb-4">
+                  <Avatar className="h-9 w-9">
+                    <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-sm font-medium leading-none truncate">{user?.name || 'User'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-muted-foreground hover:text-foreground mt-1"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    navigate('/');
+                  }}
+                >
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Back to Store
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+          <div className="flex-1">
+            <h1 className="text-lg font-semibold">Dashboard</h1>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 p-4 lg:p-6">
           <Outlet />
         </main>
       </div>
