@@ -4,6 +4,10 @@ import { apiClient } from '../../../lib/api';
 import { notify, formatApiError } from '../../../lib/notify';
 import type { Address } from '../../../types/api';
 import { AddressType } from '../../../types/api';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
+import { Button } from '../../../components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
 
 interface AddressFormProps {
   address?: Address | null;
@@ -29,7 +33,6 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
   const queryClient = useQueryClient();
   const isEditing = !!address;
   
-  // Form state
   const [formData, setFormData] = useState<AddressFormData>({
     street: '',
     streetNumber: '',
@@ -39,15 +42,13 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
     neighborhood: '',
     floor: '',
     apartment: '',
-    country: 'US', // Default country
+    country: 'US',
     type: 'SHIPPING',
     isDefault: false,
   });
   
-  // Form errors
   const [errors, setErrors] = useState<Partial<Record<keyof AddressFormData, string>>>({});
   
-  // Set initial form data if editing
   useEffect(() => {
     if (address) {
       setFormData({
@@ -66,23 +67,17 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
     }
   }, [address]);
   
-  // Create address mutation
   const createAddress = useMutation({
-    mutationFn: (data: AddressFormData) => {
-      return apiClient.post<Address>('/addresses', data);
-    },
+    mutationFn: (data: AddressFormData) => apiClient.post<Address>('/addresses', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] });
       notify.success('Address added successfully');
       onSuccess();
       onClose();
     },
-    onError: (error) => {
-      notify.error(formatApiError(error));
-    },
+    onError: (error) => notify.error(formatApiError(error)),
   });
   
-  // Update address mutation
   const updateAddress = useMutation({
     mutationFn: (data: AddressFormData) => {
       if (!address) throw new Error('No address to update');
@@ -94,30 +89,20 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
       onSuccess();
       onClose();
     },
-    onError: (error) => {
-      notify.error(formatApiError(error));
-    },
+    onError: (error) => notify.error(formatApiError(error)),
   });
   
-  // Handle form input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target as HTMLInputElement;
-    
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
-    
-    // Clear error when field is being edited
     if (errors[name as keyof AddressFormData]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
   
-  // Form validation
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof AddressFormData, string>> = {};
     let valid = true;
@@ -126,22 +111,18 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
       newErrors.street = 'Street is required';
       valid = false;
     }
-    
     if (!formData.city.trim()) {
       newErrors.city = 'City is required';
       valid = false;
     }
-    
     if (!formData.province.trim()) {
       newErrors.province = 'State/Province is required';
       valid = false;
     }
-    
     if (!formData.zipCode.trim()) {
       newErrors.zipCode = 'ZIP/Postal code is required';
       valid = false;
     }
-    
     if (!formData.country.trim()) {
       newErrors.country = 'Country is required';
       valid = false;
@@ -151,14 +132,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
     return valid;
   };
   
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-    
+    if (!validateForm()) return;
     if (isEditing) {
       updateAddress.mutate(formData);
     } else {
@@ -166,248 +142,157 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
     }
   };
   
-  // Is submitting state
   const isSubmitting = createAddress.isPending || updateAddress.isPending;
   
   return (
-    <div className="bg-white rounded-lg p-6">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">
+    <div className="p-6">
+      <h3 className="text-lg font-semibold mb-4">
         {isEditing ? 'Edit Address' : 'Add New Address'}
       </h3>
       
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-4">
-          {/* Street and Street Number */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="sm:col-span-2">
-              <label htmlFor="street" className="block text-sm font-medium text-gray-700">
-                Street*
-              </label>
-              <input
-                type="text"
-                id="street"
-                name="street"
-                value={formData.street}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2 border ${
-                  errors.street ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.street && (
-                <p className="mt-1 text-sm text-red-600">{errors.street}</p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="streetNumber" className="block text-sm font-medium text-gray-700">
-                Number
-              </label>
-              <input
-                type="text"
-                id="streetNumber"
-                name="streetNumber"
-                value={formData.streetNumber}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 border"
-              />
-            </div>
-          </div>
-          
-          {/* City and Province */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700">
-                City*
-              </label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2 border ${
-                  errors.city ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.city && (
-                <p className="mt-1 text-sm text-red-600">{errors.city}</p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="province" className="block text-sm font-medium text-gray-700">
-                State/Province*
-              </label>
-              <input
-                type="text"
-                id="province"
-                name="province"
-                value={formData.province}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2 border ${
-                  errors.province ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.province && (
-                <p className="mt-1 text-sm text-red-600">{errors.province}</p>
-              )}
-            </div>
-          </div>
-          
-          {/* ZIP and Country */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700">
-                ZIP/Postal Code*
-              </label>
-              <input
-                type="text"
-                id="zipCode"
-                name="zipCode"
-                value={formData.zipCode}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2 border ${
-                  errors.zipCode ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.zipCode && (
-                <p className="mt-1 text-sm text-red-600">{errors.zipCode}</p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                Country*
-              </label>
-              <select
-                id="country"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2 border ${
-                  errors.country ? 'border-red-500' : 'border-gray-300'
-                }`}
-              >
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="MX">Mexico</option>
-                <option value="GB">United Kingdom</option>
-                <option value="AU">Australia</option>
-                <option value="DE">Germany</option>
-                <option value="FR">France</option>
-                {/* Add more countries as needed */}
-              </select>
-              {errors.country && (
-                <p className="mt-1 text-sm text-red-600">{errors.country}</p>
-              )}
-            </div>
-          </div>
-          
-          {/* Neighborhood, Floor, Apartment */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label htmlFor="neighborhood" className="block text-sm font-medium text-gray-700">
-                Neighborhood
-              </label>
-              <input
-                type="text"
-                id="neighborhood"
-                name="neighborhood"
-                value={formData.neighborhood}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 border"
-              />
-            </div>
-            <div>
-              <label htmlFor="floor" className="block text-sm font-medium text-gray-700">
-                Floor
-              </label>
-              <input
-                type="text"
-                id="floor"
-                name="floor"
-                value={formData.floor}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 border"
-              />
-            </div>
-            <div>
-              <label htmlFor="apartment" className="block text-sm font-medium text-gray-700">
-                Apartment
-              </label>
-              <input
-                type="text"
-                id="apartment"
-                name="apartment"
-                value={formData.apartment}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 border"
-              />
-            </div>
-          </div>
-          
-          {/* Address Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Address Type
-            </label>
-            <div className="flex space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="type"
-                  value="SHIPPING"
-                  checked={formData.type === 'SHIPPING'}
-                  onChange={handleChange}
-                  className="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Shipping</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="type"
-                  value="BILLING"
-                  checked={formData.type === 'BILLING'}
-                  onChange={handleChange}
-                  className="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">Billing</span>
-              </label>
-            </div>
-          </div>
-          
-          {/* Default Address */}
-          <div className="flex items-center">
-            <input
-              id="isDefault"
-              name="isDefault"
-              type="checkbox"
-              checked={formData.isDefault}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="sm:col-span-2 space-y-2">
+            <Label htmlFor="street">Street*</Label>
+            <Input
+              id="street"
+              name="street"
+              value={formData.street}
               onChange={handleChange}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              className={errors.street ? 'border-destructive' : ''}
             />
-            <label htmlFor="isDefault" className="ml-2 block text-sm text-gray-700">
-              Set as default {formData.type === 'SHIPPING' ? 'shipping' : 'billing'} address
+            {errors.street && <p className="text-sm text-destructive">{errors.street}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="streetNumber">Number</Label>
+            <Input id="streetNumber" name="streetNumber" value={formData.streetNumber} onChange={handleChange} />
+          </div>
+        </div>
+        
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="city">City*</Label>
+            <Input
+              id="city"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className={errors.city ? 'border-destructive' : ''}
+            />
+            {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="province">State/Province*</Label>
+            <Input
+              id="province"
+              name="province"
+              value={formData.province}
+              onChange={handleChange}
+              className={errors.province ? 'border-destructive' : ''}
+            />
+            {errors.province && <p className="text-sm text-destructive">{errors.province}</p>}
+          </div>
+        </div>
+        
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="zipCode">ZIP/Postal Code*</Label>
+            <Input
+              id="zipCode"
+              name="zipCode"
+              value={formData.zipCode}
+              onChange={handleChange}
+              className={errors.zipCode ? 'border-destructive' : ''}
+            />
+            {errors.zipCode && <p className="text-sm text-destructive">{errors.zipCode}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="country">Country*</Label>
+            <Select
+              value={formData.country}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, country: value }))}
+            >
+              <SelectTrigger id="country">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="US">United States</SelectItem>
+                <SelectItem value="CA">Canada</SelectItem>
+                <SelectItem value="MX">Mexico</SelectItem>
+                <SelectItem value="GB">United Kingdom</SelectItem>
+                <SelectItem value="AU">Australia</SelectItem>
+                <SelectItem value="DE">Germany</SelectItem>
+                <SelectItem value="FR">France</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.country && <p className="text-sm text-destructive">{errors.country}</p>}
+          </div>
+        </div>
+        
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="neighborhood">Neighborhood</Label>
+            <Input id="neighborhood" name="neighborhood" value={formData.neighborhood} onChange={handleChange} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="floor">Floor</Label>
+            <Input id="floor" name="floor" value={formData.floor} onChange={handleChange} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="apartment">Apartment</Label>
+            <Input id="apartment" name="apartment" value={formData.apartment} onChange={handleChange} />
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label>Address Type</Label>
+          <div className="flex space-x-4">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="type"
+                value="SHIPPING"
+                checked={formData.type === 'SHIPPING'}
+                onChange={handleChange}
+                className="h-4 w-4"
+              />
+              <span className="text-sm">Shipping</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="type"
+                value="BILLING"
+                checked={formData.type === 'BILLING'}
+                onChange={handleChange}
+                className="h-4 w-4"
+              />
+              <span className="text-sm">Billing</span>
             </label>
           </div>
         </div>
         
-        {/* Form Actions */}
-        <div className="mt-6 flex justify-end space-x-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
-          >
+        <div className="flex items-center space-x-2">
+          <input
+            id="isDefault"
+            name="isDefault"
+            type="checkbox"
+            checked={formData.isDefault}
+            onChange={handleChange}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <Label htmlFor="isDefault" className="font-normal cursor-pointer">
+            Set as default {formData.type === 'SHIPPING' ? 'shipping' : 'billing'} address
+          </Label>
+        </div>
+        
+        <div className="flex justify-end space-x-3 pt-4">
+          <Button type="button" variant="outline" onClick={onClose}>
             Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none ${
-              isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-            }`}
-          >
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : isEditing ? 'Update' : 'Add'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>
