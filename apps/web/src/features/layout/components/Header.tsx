@@ -71,10 +71,10 @@ export function Header() {
       {/* MOVING BAR */}
       <div className="bg_varels_pink moving-bar moving-bar-pause-hover" aria-hidden="true">
         <div className="moving-bar-inner">
-          <div className="font-thin text- moving-bar-content text-black font-teko">
+          <div className="font-bold text-xs moving-bar-content text-black font-monos">
             {MOVING_BAR_MESSAGES.map((msg, idx) => (
               <span key={idx}>{msg}</span>
-            ))}
+            ))}s
           </div>
         </div>
       </div>
@@ -97,15 +97,17 @@ export function Header() {
             </Button>
           </div>
 
+          {/* title */}
           <Link
             to="/"
-            className="absolute left-1/2 transform -translate-x-1/2 text-4xl font-teko tracking-widest text-black"
+            className="absolute left-1/2 transform -translate-x-1/2 text-4xl font-monos tracking-widest text-black"
           >
             VARELS
           </Link>
-
+          
+          {/* heart */}
           <div className="flex items-center justify-end gap-2 w-28 pr-1">
-            <Button
+  {/*           <Button
               variant="subtle"
               component={Link}
               to="/wishlist"
@@ -113,7 +115,7 @@ export function Header() {
               aria-label="Wishlist"
             >
               <Heart className="h-5 w-5 text-gray-950" strokeWidth={1} />
-            </Button>
+            </Button> */}
             <Button
               variant="subtle"
               onClick={openCartDrawer}
@@ -154,7 +156,7 @@ export function Header() {
             {/* Small gap between icons and title so they don't touch */}
             <Link
               to="/"
-              className="text-4xl font-teko font-bold tracking-widest text-black ml-3"
+              className="text-4xl font-monos font-bold tracking-widest text-black ml-3"
             >
               VARELS
             </Link>
