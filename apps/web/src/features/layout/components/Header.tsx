@@ -140,7 +140,7 @@ export function Header() {
           <div className="flex items-center">
             
             {/* Left icon group always visible on md+ (flush to left corner) */}
-            <div className="flex items-center">
+            <div className="flex items-center lg:-ml-4">
               <Button
                 variant="subtle"
                 className="p-2.5 focus:outline-none "
@@ -156,7 +156,7 @@ export function Header() {
             {/* Small gap between icons and title so they don't touch */}
             <Link
               to="/"
-              className="text-4xl font-monos font-bold tracking-widest text-black ml-3"
+              className="text-4xl font-monos font-bold tracking-widest text-black sm:ml-7"
             >
               VARELS
             </Link>
