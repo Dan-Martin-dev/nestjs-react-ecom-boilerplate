@@ -108,7 +108,7 @@ export function CartDrawer({ open, onClose, onNavigate, onTrackEvent }: CartDraw
         <div className="h-full flex flex-col bg-white">
 
           <div className="flex items-center justify-between px-4 pt-4">
-            <h2 id="cart-drawer-title" className="text-xl font-teko">Your Cart</h2>
+            <h2 id="cart-drawer-title" className="text-xl font-monos">Your Cart</h2>
             <button
               aria-label="Close cart"
               onClick={onClose}
@@ -147,7 +147,7 @@ export function CartDrawer({ open, onClose, onNavigate, onTrackEvent }: CartDraw
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-gray-700">Subtotal</div>
-                <div className="text-lg font-teko">
+                <div className="text-lg font-monos">
                   ${(cart?.items?.reduce((s, it) => {
                     const price = Number(it.productVariant?.price ?? it.priceAtAddition ?? 0)
                     return s + price * it.quantity

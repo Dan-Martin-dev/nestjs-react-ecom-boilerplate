@@ -163,7 +163,7 @@ export function useDrawerMenu({
 
           {/* Accordion Header */}
           <div className="flex items-center justify-between px-4 pt-4">
-            <h2 id="drawer-title" className="text-xl font-inco"></h2>
+            <h2 id="drawer-title" className="text-xl font-monos"></h2>
             <button
               aria-label="Close menu"
               onClick={closeDrawer}
@@ -179,7 +179,7 @@ export function useDrawerMenu({
               <input
                 type="text"
                 placeholder="SEARCH FOR PRODUCTS..."
-                className="w-full rounded-md border-0 bg-[#F2F2F2] text-sm font-inco text-black px-4 py-3 pr-12 focus:outline-none"
+                className="w-full rounded-md border-0 bg-[#F2F2F2] text-sm font-monos text-black px-4 py-3 pr-12 focus:outline-none"
                 aria-label="Drawer search"
               />
               <button
@@ -195,14 +195,14 @@ export function useDrawerMenu({
           <div className="px-4 pt-6 overflow-y-auto flex-1 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
             <nav className="pr-2">
               {sections.map((s, idx) => (
-                <div key={s.title} className="font-inco font-normal text-sm md:text-xl md:text-base lg:text-xl uppercase font- border-b border-gray-100 py-3">
+                <div key={s.title} className="font-monos font-normal text-sm md:text-xl md:text-base lg:text-xl uppercase font- border-b border-gray-100 py-3">
                   <div className="flex items-center justify-between">
                     <button
-                      className="text-left w-full flex items-center justify-between font-inco text-base"
+                      className="text-left w-full flex items-center justify-between font-monos text-base"
                       onClick={() => toggleSection(idx)}
                       aria-expanded={openIndex === idx}
                     >
-                      <span className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100">{s.title}</span>
+                      <span className="font-monos font-normal text-sm md:text-md uppercase border-b border-gray-100">{s.title}</span>
                       <span className="ml-2">
                         <Plus className={`h-4 w-4 transition-transform ${openIndex === idx ? 'rotate-45' : ''}`} />
                       </span>
@@ -210,7 +210,7 @@ export function useDrawerMenu({
                   </div>
 
                   <div
-                    className={`mt-3 pl-2 font-inco text-sm text-gray-700 overflow-hidden transition-all duration-700 ease-in-out ${
+                    className={`mt-3 pl-2 font-monos text-sm text-gray-700 overflow-hidden transition-all duration-700 ease-in-out ${
                       (drawerOpen && openIndex === idx) ? 'max-h-[600px]' : 'max-h-0'
                     }`}
                     aria-hidden={!(drawerOpen && openIndex === idx)}
@@ -242,7 +242,7 @@ export function useDrawerMenu({
                 <Link
                   key={typeof it === 'string' ? it : it.label}
                   to={typeof it === 'string' ? '#' : it.to}
-                  className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
+                  className="font-monos font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
                   onClick={closeDrawer}
                 >
                   {typeof it === 'string' ? it : it.label}
@@ -260,7 +260,7 @@ export function useDrawerMenu({
                     onNavigate('/');
                     closeDrawer();
                   }}
-                  className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
+                  className="font-monos font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
                 >
                   CERRAR SESION
                 </button>
@@ -271,7 +271,7 @@ export function useDrawerMenu({
                     onTrackEvent('auth:click_sign_in', { location: 'drawer' });
                     closeDrawer();
                   }}
-                  className="font-inco font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
+                  className="font-monos font-normal text-sm md:text-md uppercase border-b border-gray-100 pb-2"
                 >
                   INICIAR SESION
                 </Link>

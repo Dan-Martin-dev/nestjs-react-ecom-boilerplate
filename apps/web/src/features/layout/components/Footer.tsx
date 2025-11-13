@@ -61,12 +61,12 @@ export function Footer() {
 
           {/* Newsletter section */}
           <div className="max-w-3xl mx-auto text-center">
-            <h3 className="font-antarctican text-sm md:text-xl font-semibold uppercase tracking-widest">
+            <h3 className="font-monos text-sm md:text-xl font-semibold uppercase tracking-widest">
               Join the newsletter for exclusive updates
             </h3>
             <form
               onSubmit={handleSubscribe}
-              className="font-antarctican font-normal mt-4 flex items-center justify-center"
+              className="font-monos font-normal mt-4 flex items-center justify-center"
               aria-label="Subscribe to newsletter"
             >
               <div className="relative w-full max-w-xl">
@@ -77,7 +77,7 @@ export function Footer() {
                     type="submit"
                     className="h-10 md:h-12 ml-1 mr-3 rounded-md bg-white/10 text-white px-3 md:px-4 text-sm md:text-base flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/60"
                   >
-                    <span className="font-antarctican uppercase text-black font-light">Subscribe</span>
+                    <span className="font-monos uppercase text-black font-light">Subscribe</span>
                     {/* arrow svg */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +115,7 @@ export function Footer() {
 
                 {/* Mobile header row with toggle */}
                 <div className="flex items-center justify-between md:block">
-                  <h4 className="font-antarctican text-sm md:text-xl md:text-base lg:text-xl font-normal uppercase mb-3">
+                  <h4 className="font-monos text-sm md:text-xl md:text-base lg:text-xl font-normal uppercase mb-3">
                     {col.title}
                   </h4>
 
@@ -142,7 +142,7 @@ export function Footer() {
                 >
                   {col.items.map((item) => (
                     <li key={item}>
-                      <Link to="#" className="font-antarctican= text-sm md:text-sm lg:text-lg font-light opacity-90 hover:underline block py-1">
+                      <Link to="#" className="font-monos= text-sm md:text-sm lg:text-lg font-light opacity-90 hover:underline block py-1">
                         {item}
                       </Link>
                     </li>
@@ -154,7 +154,7 @@ export function Footer() {
 
             {/* Social + Popular searches column (uses last grid column space) */}
             <div>
-              <h4 className="font-antarctican text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-3">
+              <h4 className="font-monos text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-3">
                 Social media
               </h4>
 
@@ -254,14 +254,14 @@ export function Footer() {
                 </a>
               </div>
 
-              <h4 className="font-antarctican text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-2 md:mb-3">
+              <h4 className="font-monos text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-2 md:mb-3">
                 Popular searches
               </h4>
               {/* Horizontal list that stays on one line at lg (no wrap) */}
               <ul className="flex flex-wrap items-center gap-3 mt-3 md:mt-4 justify-center md:justify-start lg:flex-nowrap">
                 {popularSearches.map((p) => (
                   <li key={p} className="inline-block">
-                    <Link to="#" className="font-antarctican text-sm underline opacity-90 px-2 py-0.5 whitespace-nowrap">
+                    <Link to="#" className="font-monos text-sm underline opacity-90 px-2 py-0.5 whitespace-nowrap">
                       {p}
                     </Link>
                   </li>
@@ -276,7 +276,7 @@ export function Footer() {
 
       {/* Copyright */}
       <div className="bg-white p-4">
-        <p className="text-sm font-antarctican font-semibold text-center text-black md:text-md opacity-90">
+        <p className="text-sm font-monos font-semibold text-center text-black md:text-md opacity-90">
           COPYRIGHT © 2025 VARELS – T-SHIRTS
         </p>
       </div>
