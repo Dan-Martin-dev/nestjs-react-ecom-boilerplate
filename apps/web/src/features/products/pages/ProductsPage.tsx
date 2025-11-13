@@ -9,13 +9,13 @@ const ProductsPage: React.FC = () => {
   const { data: products, isLoading, error } = useAllProducts(8);
 
   return (
-    <div className="bg-gray-50 min-h-screen auth-font-inco">
-      <main className="max-w-6xl mx-auto py-12 px-4 auth-uppercase font-inco">
+    <div className="bg-gray-50 min-h-screen auth-font-monos">
+      <main className="max-w-6xl mx-auto py-12 px-4 auth-uppercase font-monos">
       {/* ------------------------- */}
       {/* Header */}
       {/* ------------------------- */}
       <header className="mb-6">
-        <h2 className="text-2xl font-inco font-medium tracking-wide text-black">BESTSELLERS</h2>
+        <h2 className="text-2xl font-monos font-medium tracking-wide text-black">BESTSELLERS</h2>
       </header>
 
       {/* Loading State */}
@@ -73,7 +73,7 @@ const ProductsPage: React.FC = () => {
                 <div className="mt-2">
 
                   {/* title */}
-                  <h3 className="font-inco font-medium text-[18px] md:text-[21.6px] text-gray-900 leading-tight">
+                  <h3 className="font-monos font-medium text-[18px] md:text-[21.6px] text-gray-900 leading-tight">
                     <Link to={`/products/${p.slug}`} className="hover:underline">
                       {titleWithBadge}
                     </Link>
@@ -81,7 +81,7 @@ const ProductsPage: React.FC = () => {
                   
                   {/* description */}
                   {p.description && (
-                    <p className="font-inco text-gray-500 tracking-wide uppercase text-[12px] md:text-[14.4px] mt-0.5">{p.description}</p>
+                    <p className="font-monos text-gray-500 tracking-wide uppercase text-[12px] md:text-[14.4px] mt-0.5">{p.description}</p>
                   )}
 
                   <div className="mt-0.5 flex items-center justify-between text-sm text-gray-600">

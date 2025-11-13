@@ -11,7 +11,7 @@ export const ProductDetailLayout: React.FC<ProductDetailLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="bg-gray-50 min-h-screen auth-font-inco">
+    <div className="bg-gray-50 min-h-screen font-monos">
       <Breadcrumb productName={productName} />
       {children}
       {/* <ProductRecommendations /> */}

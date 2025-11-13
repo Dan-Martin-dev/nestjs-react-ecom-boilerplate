@@ -109,13 +109,13 @@ export function Footer() {
           </div>
 
           {/* Links area */}
-          <div className="bg_varels_pink mt-5 grid grid-cols-1 gap-3 md:gap-6 md:grid-cols-3 lg:grid-cols-5">
+          <div className="bg_varels_pink mt-10 grid grid-cols-1 gap-4 md:gap-8 md:grid-cols-3 lg:grid-cols-5">
             {columns.map((col, i) => (
               <div key={col.title} className="">
 
                 {/* Mobile header row with toggle */}
                 <div className="flex items-center justify-between md:block">
-                  <h4 className="font-monos text-sm md:text-xl md:text-base lg:text-xl font-normal uppercase mb-3">
+                  <h4 className="font-monos text-base md:text-lg lg:text-2xl font-normal uppercase mb-3">
                     {col.title}
                   </h4>
 
@@ -142,7 +142,7 @@ export function Footer() {
                 >
                   {col.items.map((item) => (
                     <li key={item}>
-                      <Link to="#" className="font-monos= text-sm md:text-sm lg:text-lg font-light opacity-90 hover:underline block py-1">
+                      <Link to="#" className="font-monos text-sm md:text-sm lg:text-base font-light opacity-90 hover:underline block py-1">
                         {item}
                       </Link>
                     </li>
@@ -154,12 +154,12 @@ export function Footer() {
 
             {/* Social + Popular searches column (uses last grid column space) */}
             <div>
-              <h4 className="font-monos text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-3">
+              <h4 className="font-monos text-base md:text-lg lg:text-2xl font-semibold uppercase tracking-widest text-center md:text-left mb-3">
                 Social media
               </h4>
 
               {/* Simple svg icons with accessible labels */}
-              <div className="flex items-center gap-3 mb-6 md:mb-8 justify-center md:justify-start">
+              <div className="flex items-center gap-3 mb-8 md:mb-12 justify-center md:justify-start">
                 <a
                   href="#"
                   aria-label="Facebook"
@@ -254,7 +254,7 @@ export function Footer() {
                 </a>
               </div>
 
-              <h4 className="font-monos text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-2 md:mb-3">
+              <h4 className="font-monos text-base md:text-lg lg:text-2xl font-semibold uppercase tracking-widest text-center md:text-left mb-4 md:mb-6">
                 Popular searches
               </h4>
               {/* Horizontal list that stays on one line at lg (no wrap) */}
@@ -275,7 +275,7 @@ export function Footer() {
       </footer>
 
       {/* Copyright */}
-      <div className="bg-white p-4">
+      <div className="bg-white p-4 mt-6">
         <p className="text-sm font-monos font-semibold text-center text-black md:text-md opacity-90">
           COPYRIGHT © 2025 VARELS – T-SHIRTS
         </p>

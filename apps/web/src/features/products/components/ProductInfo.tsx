@@ -12,12 +12,12 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, selectedVaria
 
   return (
     <div>
-      <h1 className="font-antarctican font-[500] mb-1 text-[21.6px] md:text-[28.8px]">
+      <h1 className="font-monos font-[500] mb-1 text-[21.6px] md:text-[28.8px]">
         {product.name.toUpperCase()}
       </h1>
 
       <div className="mb-4 max-w-[40%]">
-        <p className="font-antarctican font-[200] text-gray-700 text-[14.4px] md:text-[14.4px]">
+        <p className="font-monos font-[200] text-gray-700 text-[14.4px] md:text-[14.4px]">
           {fabricDetails}
         </p>
       </div>
