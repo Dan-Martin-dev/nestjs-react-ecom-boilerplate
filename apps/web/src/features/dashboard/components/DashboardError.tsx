@@ -20,11 +20,11 @@ export const DashboardError: React.FC<DashboardErrorProps> = ({
         <CardHeader>
           <div className="flex items-center space-x-2">
             <AlertCircle className="text-destructive h-6 w-6" />
-            <CardTitle className="text-destructive">{message}</CardTitle>
+            <CardTitle className="text-destructive font-monos">{message}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {details && <p className="text-sm text-muted-foreground">{details}</p>}
+          {details && <p className="text-sm text-muted-foreground font-monos">{details}</p>}
           {onRetry && (
             <Button onClick={onRetry} variant="destructive">
               Try again

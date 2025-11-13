@@ -73,7 +73,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
           <div className="w-full max-w-3xl bg-white rounded-lg shadow-xl">
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium font-monos text-gray-900">
                 Order #{order.orderNumber}
               </h3>
               <button
@@ -93,11 +93,11 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
               {/* Order Summary */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">Order Information</h4>
+                  <h4 className="text-sm font-medium font-monos text-gray-500">Order Information</h4>
                   <div className="mt-2 space-y-1 text-sm">
                     <p>
-                      <span className="font-medium">Status:</span>{' '}
-                      <span className={`inline-flex px-2 text-xs leading-5 font-semibold rounded-full 
+                      <span className="font-medium font-monos">Status:</span>{' '}
+                      <span className={`inline-flex px-2 text-xs leading-5 font-semibold font-monos rounded-full 
                         ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
                           order.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
                           order.status === 'DELIVERED' ? 'bg-blue-100 text-blue-800' : 
@@ -107,18 +107,18 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                       </span>
                     </p>
                     <p>
-                      <span className="font-medium">Date:</span>{' '}
+                      <span className="font-medium font-monos">Date:</span>{' '}
                       {format(new Date(order.createdAt), 'MMM dd, yyyy')}
                     </p>
                     <p>
-                      <span className="font-medium">Payment:</span>{' '}
+                      <span className="font-medium font-monos">Payment:</span>{' '}
                       {order.payment.paymentMethod} ({order.payment.status})
                     </p>
                   </div>
                 </div>
                 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">Shipping Address</h4>
+                  <h4 className="text-sm font-medium font-monos text-gray-500">Shipping Address</h4>
                   <div className="mt-2 space-y-1 text-sm">
                     <p>{order.shippingAddress.street} {order.shippingAddress.streetNumber || ''}</p>
                     <p>
@@ -131,21 +131,21 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
               
               {/* Order Items */}
               <div className="mt-6">
-                <h4 className="text-sm font-medium text-gray-500 mb-3">Items</h4>
+                <h4 className="text-sm font-medium font-monos text-gray-500 mb-3">Items</h4>
                 <div className="border rounded-md overflow-hidden">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                           Product
                         </th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                           Quantity
                         </th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                           Price
                         </th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                           Subtotal
                         </th>
                       </tr>
@@ -166,7 +166,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                 />
                               </div>
                               <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium font-monos text-gray-900">
                                   {item.productVariant.product.name}
                                 </div>
                                 <div className="text-sm text-gray-500">
@@ -195,7 +195,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
               <div className="border-t border-gray-200 pt-4 flex justify-end">
                 <div className="w-full max-w-xs">
                   <div className="flex justify-between py-2 text-sm">
-                    <span className="font-medium">Subtotal</span>
+                    <span className="font-medium font-monos">Subtotal</span>
                     <span className="text-gray-500">
                       ${
                         order.items.reduce(
@@ -206,10 +206,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                     </span>
                   </div>
                   <div className="flex justify-between py-2 text-sm">
-                    <span className="font-medium">Shipping</span>
+                    <span className="font-medium font-monos">Shipping</span>
                     <span className="text-gray-500">$0.00</span>
                   </div>
-                  <div className="flex justify-between py-2 text-sm font-medium">
+                  <div className="flex justify-between py-2 text-sm font-medium font-monos">
                     <span>Total</span>
                     <span>${parseFloat(order.totalAmount).toFixed(2)}</span>
                   </div>
@@ -221,7 +221,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
               <button
                 type="button"
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium font-monos text-gray-700 hover:bg-gray-50"
                 onClick={onClose}
               >
                 Close

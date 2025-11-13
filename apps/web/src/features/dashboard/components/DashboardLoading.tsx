@@ -11,7 +11,7 @@ export const DashboardLoading: React.FC<DashboardLoadingProps> = ({
   return (
     <div className="flex flex-col items-center justify-center w-full py-12">
       <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
-      <p className="text-muted-foreground font-medium">{message}</p>
+      <p className="text-muted-foreground font-medium font-monos">{message}</p>
     </div>
   );
 };

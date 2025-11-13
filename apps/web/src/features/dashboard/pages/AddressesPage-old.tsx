@@ -65,7 +65,7 @@ const AddressesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900">Your Addresses</h2>
+        <h2 className="text-2xl font-semibold font-mono text-gray-900">Your Addresses</h2>
         <p className="mt-1 text-sm text-gray-500">Manage your shipping and billing addresses</p>
       </div>
 

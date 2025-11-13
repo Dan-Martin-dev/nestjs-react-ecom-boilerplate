@@ -64,13 +64,13 @@ const DashboardLayout: React.FC = () => {
       <aside className="hidden border-r bg-background lg:block lg:w-64">
         <div className="flex h-full flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <NavLink to="/dashboard" className="flex items-center gap-2 font-semibold">
+            <NavLink to="/dashboard" className="flex items-center gap-2 font-semibold font-monos">
               <Package2 className="h-6 w-6" />
               <span className="">Dashboard</span>
             </NavLink>
           </div>
           <div className="flex-1">
-            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+            <nav className="grid items-start px-2 text-sm font-medium font-monos lg:px-4">
               {navigationItems.map((item) => (
                 <NavLink
                   key={item.path}
@@ -97,7 +97,7 @@ const DashboardLayout: React.FC = () => {
                 <AvatarFallback>{getUserInitials()}</AvatarFallback>
               </Avatar>
               <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-medium leading-none truncate">{user?.name || 'User'}</p>
+                <p className="text-sm font-medium font-monos leading-none truncate">{user?.name || 'User'}</p>
                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
             </div>
@@ -133,10 +133,10 @@ const DashboardLayout: React.FC = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-lg font-medium">
+              <nav className="grid gap-2 text-lg font-medium font-monos">
                 <NavLink
                   to="/dashboard"
-                  className="flex items-center gap-2 text-lg font-semibold mb-4"
+                  className="flex items-center gap-2 text-lg font-semibold font-monos mb-4"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Package2 className="h-6 w-6" />
@@ -168,7 +168,7 @@ const DashboardLayout: React.FC = () => {
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 overflow-hidden">
-                    <p className="text-sm font-medium leading-none truncate">{user?.name || 'User'}</p>
+                    <p className="text-sm font-medium font-monos leading-none truncate">{user?.name || 'User'}</p>
                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ const DashboardLayout: React.FC = () => {
             </SheetContent>
           </Sheet>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold">Dashboard</h1>
+            <h1 className="text-lg font-semibold font-monos">Dashboard</h1>
           </div>
         </header>
 

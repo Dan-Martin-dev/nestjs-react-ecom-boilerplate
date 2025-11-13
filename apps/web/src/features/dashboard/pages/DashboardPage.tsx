@@ -11,7 +11,7 @@ export function DashboardPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <h1 className="text-2xl font-bold font-monos mb-4">Access Denied</h1>
           <p className="text-muted-foreground">You need to be logged in to view this page.</p>
         </div>
       </div>
@@ -27,7 +27,7 @@ export function DashboardPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+          <h1 className="text-3xl font-bold font-monos mb-2">Dashboard</h1>
           <p className="text-muted-foreground">Welcome back, {user.name}!</p>
         </div>
         <Button variant="outline" onClick={handleLogout} className="gap-2">
@@ -41,7 +41,7 @@ export function DashboardPage() {
         <div className="border rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <User className="h-8 w-8 text-primary" />
-            <h2 className="text-xl font-semibold">Profile</h2>
+            <h2 className="text-xl font-semibold font-monos">Profile</h2>
           </div>
           <div className="space-y-2">
             <p><strong>Name:</strong> {user.name}</p>
@@ -57,7 +57,7 @@ export function DashboardPage() {
         <div className="border rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <ShoppingCart className="h-8 w-8 text-primary" />
-            <h2 className="text-xl font-semibold">Cart</h2>
+            <h2 className="text-xl font-semibold font-monos">Cart</h2>
           </div>
           <div className="space-y-2">
             <p><strong>Items:</strong> {items.length}</p>
@@ -72,7 +72,7 @@ export function DashboardPage() {
         <div className="border rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <Package className="h-8 w-8 text-primary" />
-            <h2 className="text-xl font-semibold">Orders</h2>
+            <h2 className="text-xl font-semibold font-monos">Orders</h2>
           </div>
           <div className="space-y-2">
             <p><strong>Total Orders:</strong> 5</p>
@@ -86,7 +86,7 @@ export function DashboardPage() {
 
       {/* Recent Activity */}
       <div className="border rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+        <h2 className="text-xl font-semibold font-monos mb-4">Recent Activity</h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2 border-b">
             <span>Order #12345 shipped</span>

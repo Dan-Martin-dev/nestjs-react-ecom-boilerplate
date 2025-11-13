@@ -81,7 +81,7 @@ const OrdersPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Your Orders</h2>
+        <h2 className="text-3xl font-bold font-monos tracking-tight">Your Orders</h2>
         <p className="text-muted-foreground">View and track your order history</p>
       </div>
 
@@ -141,7 +141,7 @@ const OrdersPage: React.FC = () => {
                 <TableBody>
                   {ordersData.data.map((order) => (
                     <TableRow key={order.id}>
-                      <TableCell className="font-medium">#{order.orderNumber}</TableCell>
+                      <TableCell className="font-medium font-monos">#{order.orderNumber}</TableCell>
                       <TableCell>{format(new Date(order.createdAt), 'MMM dd, yyyy')}</TableCell>
                       <TableCell>
                         <Badge variant={order.status === OrderStatus.PENDING ? 'secondary' : order.status === OrderStatus.CONFIRMED ? 'default' : order.status === OrderStatus.SHIPPED ? 'default' : order.status === OrderStatus.DELIVERED ? 'outline' : 'secondary'}>
@@ -161,7 +161,7 @@ const OrdersPage: React.FC = () => {
               {ordersData.meta && ordersData.meta.totalPages > 1 && (
                 <div className="flex items-center justify-between pt-4">
                   <div className="text-sm text-muted-foreground">
-                    Showing <span className="font-medium">{((currentPage - 1) * 10) + 1}</span> to <span className="font-medium">{Math.min(currentPage * 10, ordersData.meta.total)}</span> of <span className="font-medium">{ordersData.meta.total}</span> orders
+                    Showing <span className="font-medium font-monos">{((currentPage - 1) * 10) + 1}</span> to <span className="font-medium font-monos">{Math.min(currentPage * 10, ordersData.meta.total)}</span> of <span className="font-medium font-monos">{ordersData.meta.total}</span> orders
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1}>

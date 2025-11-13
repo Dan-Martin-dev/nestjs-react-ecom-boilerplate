@@ -63,7 +63,7 @@ const AccountPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Account Settings</h2>
+        <h2 className="text-3xl font-bold font-monos tracking-tight">Account Settings</h2>
         <p className="text-muted-foreground">Update your account information</p>
       </div>
       

@@ -80,7 +80,7 @@ const AccountPage: React.FC = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900">Account Settings</h2>
+        <h2 className="text-2xl font-semibold font-mono text-gray-900">Account Settings</h2>
         <p className="mt-1 text-sm text-gray-500">Update your account information</p>
       </div>
       
@@ -135,7 +135,7 @@ const AccountPage: React.FC = () => {
                 Account Type
               </label>
               <div className="mt-1">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                <span className="px-2 inline-flex text-xs leading-5 font-semibold font-mono rounded-full bg-blue-100 text-blue-800">
                   {user?.role || 'CUSTOMER'}
                 </span>
               </div>

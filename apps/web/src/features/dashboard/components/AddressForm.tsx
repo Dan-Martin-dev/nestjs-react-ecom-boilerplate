@@ -146,7 +146,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
   
   return (
     <div className="p-6">
-      <h3 className="text-lg font-semibold mb-4">
+      <h3 className="text-lg font-semibold font-monos mb-4">
         {isEditing ? 'Edit Address' : 'Add New Address'}
       </h3>
       
@@ -161,7 +161,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
               onChange={handleChange}
               className={errors.street ? 'border-destructive' : ''}
             />
-            {errors.street && <p className="text-sm text-destructive">{errors.street}</p>}
+            {errors.street && <p className="text-sm text-destructive font-monos">{errors.street}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="streetNumber">Number</Label>
@@ -179,7 +179,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
               onChange={handleChange}
               className={errors.city ? 'border-destructive' : ''}
             />
-            {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+            {errors.city && <p className="text-sm text-destructive font-monos">{errors.city}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="province">State/Province*</Label>
@@ -190,7 +190,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
               onChange={handleChange}
               className={errors.province ? 'border-destructive' : ''}
             />
-            {errors.province && <p className="text-sm text-destructive">{errors.province}</p>}
+            {errors.province && <p className="text-sm text-destructive font-monos">{errors.province}</p>}
           </div>
         </div>
         
@@ -204,7 +204,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
               onChange={handleChange}
               className={errors.zipCode ? 'border-destructive' : ''}
             />
-            {errors.zipCode && <p className="text-sm text-destructive">{errors.zipCode}</p>}
+            {errors.zipCode && <p className="text-sm text-destructive font-monos">{errors.zipCode}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="country">Country*</Label>
@@ -225,7 +225,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
                 <SelectItem value="FR">France</SelectItem>
               </SelectContent>
             </Select>
-            {errors.country && <p className="text-sm text-destructive">{errors.country}</p>}
+            {errors.country && <p className="text-sm text-destructive font-monos">{errors.country}</p>}
           </div>
         </div>
         
@@ -256,7 +256,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
                 onChange={handleChange}
                 className="h-4 w-4"
               />
-              <span className="text-sm">Shipping</span>
+              <span className="text-sm font-monos">Shipping</span>
             </label>
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
@@ -267,7 +267,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
                 onChange={handleChange}
                 className="h-4 w-4"
               />
-              <span className="text-sm">Billing</span>
+              <span className="text-sm font-monos">Billing</span>
             </label>
           </div>
         </div>
@@ -281,7 +281,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ address, onClose, onSuccess }
             onChange={handleChange}
             className="h-4 w-4 rounded border-gray-300"
           />
-          <Label htmlFor="isDefault" className="font-normal cursor-pointer">
+          <Label htmlFor="isDefault" className="font-normal font-monos cursor-pointer">
             Set as default {formData.type === 'SHIPPING' ? 'shipping' : 'billing'} address
           </Label>
         </div>

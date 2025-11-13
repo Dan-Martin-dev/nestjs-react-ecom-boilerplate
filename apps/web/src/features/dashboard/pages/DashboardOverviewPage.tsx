@@ -94,7 +94,7 @@ const DashboardOverviewPage: React.FC = () => {
         
       {/* Welcome Section */}
       <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h1 className="text-2xl font-semibold text-gray-900">Welcome back, {user?.name || 'User'}</h1>
+        <h1 className="text-2xl font-semibold font-monos text-gray-900">Welcome back, {user?.name || 'User'}</h1>
         <p className="mt-2 text-gray-600">
           Manage your account, view orders, and save your preferences.
         </p>
@@ -103,26 +103,26 @@ const DashboardOverviewPage: React.FC = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-sm font-medium text-gray-500">Total Orders</h3>
-          <p className="mt-2 text-3xl font-semibold text-gray-900">
+          <h3 className="text-sm font-medium font-monos text-gray-500">Total Orders</h3>
+          <p className="mt-2 text-3xl font-semibold font-monos text-gray-900">
             {recentOrdersData?.meta?.total || 0}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-sm font-medium text-gray-500">Pending Orders</h3>
-          <p className="mt-2 text-3xl font-semibold text-gray-900">
+          <h3 className="text-sm font-medium font-monos text-gray-500">Pending Orders</h3>
+          <p className="mt-2 text-3xl font-semibold font-monos text-gray-900">
             {recentOrdersData?.meta?.statusCount?.[OrderStatus.PENDING] || 0}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-sm font-medium text-gray-500">Completed Orders</h3>
-          <p className="mt-2 text-3xl font-semibold text-gray-900">
+          <h3 className="text-sm font-medium font-monos text-gray-500">Completed Orders</h3>
+          <p className="mt-2 text-3xl font-semibold font-monos text-gray-900">
             {recentOrdersData?.meta?.statusCount?.[OrderStatus.DELIVERED] || 0}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-sm font-medium text-gray-500">Saved Addresses</h3>
-          <p className="mt-2 text-3xl font-semibold text-gray-900">
+          <h3 className="text-sm font-medium font-monos text-gray-500">Saved Addresses</h3>
+          <p className="mt-2 text-3xl font-semibold font-monos text-gray-900">
             {recentOrdersData?.meta?.addressCount || 0}
           </p>
         </div>
@@ -131,7 +131,7 @@ const DashboardOverviewPage: React.FC = () => {
       {/* Recent Orders */}
       <div className="bg-white p-6 rounded-lg shadow-sm">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-medium text-gray-900">Recent Orders</h2>
+          <h2 className="text-lg font-medium font-monos text-gray-900">Recent Orders</h2>
           <Link to="/dashboard/orders" className="text-sm text-indigo-600 hover:text-indigo-900">
             View all orders
           </Link>
@@ -142,19 +142,19 @@ const DashboardOverviewPage: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                     Order #
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                     Total
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium font-monos text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -162,14 +162,14 @@ const DashboardOverviewPage: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {recentOrders.map((order: OrderWithTotal) => (
                   <tr key={order.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium font-monos text-gray-900">
                       #{order.orderNumber}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold font-monos rounded-full 
                         ${order.status === OrderStatus.PENDING ? 'bg-yellow-100 text-yellow-800' : 
                           order.status === OrderStatus.CONFIRMED ? 'bg-green-100 text-green-800' : 
                           order.status === OrderStatus.DELIVERED ? 'bg-blue-100 text-blue-800' : 
@@ -209,7 +209,7 @@ const DashboardOverviewPage: React.FC = () => {
 
       {/* Recommended Products */}
       <div className="bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-lg font-medium text-gray-900 mb-6">Recommended Products</h2>
+        <h2 className="text-lg font-medium font-monos text-gray-900 mb-6">Recommended Products</h2>
         
         {recommendedProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -224,7 +224,7 @@ const DashboardOverviewPage: React.FC = () => {
                 </div>
                 <div className="mt-4 flex justify-between">
                   <div>
-                    <h3 className="text-sm text-gray-700">
+                    <h3 className="text-sm font-monos text-gray-700">
                       <Link to={`/products/${product.id}`}>
                         <span aria-hidden="true" className="absolute inset-0" />
                         {product.name}
@@ -234,7 +234,7 @@ const DashboardOverviewPage: React.FC = () => {
                       {product.category || (product.categories?.length > 0 ? product.categories[0].name : 'Uncategorized')}
                     </p>
                   </div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium font-monos text-gray-900">
                     ${parseFloat(product.price).toFixed(2)}
                   </p>
                 </div>
