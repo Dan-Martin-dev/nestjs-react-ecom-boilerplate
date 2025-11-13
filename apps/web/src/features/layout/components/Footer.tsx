@@ -28,7 +28,7 @@ export function Footer() {
     },
   ];
 
-  const popularSearches = [
+/*   const popularSearches = [
     "shirts",
     "pants",
     "caps",
@@ -37,7 +37,7 @@ export function Footer() {
     "jackets",
     "socks",
     "beanies",
-  ];
+  ]; */
 
   function handleSubscribe(e: React.FormEvent) {
     e.preventDefault();
@@ -153,13 +153,15 @@ export function Footer() {
             ))}
 
             {/* Social + Popular searches column (uses last grid column space) */}
-            <div>
-              <h4 className="font-monos text-base md:text-lg lg:text-2xl font-semibold uppercase tracking-widest text-center md:text-left mb-3">
+
+             <div>
+              <h4 className="font-monos text-base md:text-lg lg:text-2xl font-semibold uppercase tracking-widest text-center md:text-left mb-4=">
                 Social media
               </h4>
 
               {/* Simple svg icons with accessible labels */}
-              <div className="flex items-center gap-3 mb-8 md:mb-12 justify-center md:justify-start">
+              {/* Simple svg icons with accessible labels */}
+              <div className="flex items-center gap-3 mb-8 md:mb-6 justify-center md:justify-start">
                 <a
                   href="#"
                   aria-label="Facebook"
@@ -253,12 +255,11 @@ export function Footer() {
                   </svg>
                 </a>
               </div>
-
-              <h4 className="font-monos text-base md:text-lg lg:text-2xl font-semibold uppercase tracking-widest text-center md:text-left mb-4 md:mb-6">
+              {/*               
+              <h4 className="font-monos text-sm md:text-xl  font-semibold uppercase tracking-widest text-center md:text-left mb-4 md:mb-6">
                 Popular searches
               </h4>
-              {/* Horizontal list that stays on one line at lg (no wrap) */}
-              <ul className="flex flex-wrap items-center gap-3 mt-3 md:mt-4 justify-center md:justify-start lg:flex-nowrap">
+               <ul className="flex flex-wrap items-center gap-3 mt-3 md:mt-4 justify-center md:justify-start lg:flex-nowrap">
                 {popularSearches.map((p) => (
                   <li key={p} className="inline-block">
                     <Link to="#" className="font-monos text-sm underline opacity-90 px-2 py-0.5 whitespace-nowrap">
@@ -266,16 +267,16 @@ export function Footer() {
                     </Link>
                   </li>
                 ))}
-              </ul>
-            </div>
+              </ul> */}
 
+            </div>
           </div>
 
         </div>
       </footer>
 
       {/* Copyright */}
-      <div className="bg-white p-4 mt-6">
+      <div className="bg-white p-4 mt-3 mb-3">
         <p className="text-sm font-monos font-semibold text-center text-black md:text-md opacity-90">
           COPYRIGHT © 2025 VARELS – T-SHIRTS
         </p>
