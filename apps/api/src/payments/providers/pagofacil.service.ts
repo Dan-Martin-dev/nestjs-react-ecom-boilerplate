@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-import { PaymentStatus } from '@repo/db';
 import { ProcessPaymentDto } from '../dto/process-payment.dto';
 import {
   OrderWithPayment,
   PaymentResponse,
   WebhookResponse,
+  PaymentStatus,
 } from '@repo/shared';
 
 @Injectable()

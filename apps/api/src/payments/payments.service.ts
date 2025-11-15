@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProcessPaymentDto } from './dto/process-payment.dto';
-import { PaymentMethod, PaymentStatus } from '@repo/db';
+import { PaymentMethod, PaymentStatus as DbPaymentStatus } from '@repo/db';
 import { MercadoPagoService } from './providers/mercadopago.service';
 import { RapiPagoService } from './providers/rapipago.service';
 import { PagoFacilService } from './providers/pagofacil.service';
 import { ConfigService } from '@nestjs/config';
-import { OrderWithPayment } from '@repo/shared';
+import { OrderWithPayment, PaymentStatus } from '@repo/shared';
 
 @Injectable()
 export class PaymentsService {
@@ -79,7 +79,7 @@ export class PaymentsService {
               payment: order.payment ? {
                 id: order.payment.id,
                 amount: String(order.payment.amount),
-                status: order.payment.status,
+                status: order.payment.status as PaymentStatus,
               } : undefined
             },
             processPaymentDto,
@@ -93,7 +93,7 @@ export class PaymentsService {
               payment: order.payment ? {
                 id: order.payment.id,
                 amount: String(order.payment.amount),
-                status: order.payment.status,
+                status: order.payment.status as PaymentStatus,
               } : undefined
             },
             processPaymentDto,
@@ -107,7 +107,7 @@ export class PaymentsService {
               payment: order.payment ? {
                 id: order.payment.id,
                 amount: String(order.payment.amount),
-                status: order.payment.status,
+                status: order.payment.status as PaymentStatus,
               } : undefined
             },
             processPaymentDto,
@@ -121,7 +121,7 @@ export class PaymentsService {
               payment: order.payment ? {
                 id: order.payment.id,
                 amount: String(order.payment.amount),
-                status: order.payment.status,
+                status: order.payment.status as PaymentStatus,
               } : undefined
             },
             processPaymentDto,
@@ -135,7 +135,7 @@ export class PaymentsService {
               payment: order.payment ? {
                 id: order.payment.id,
                 amount: String(order.payment.amount),
-                status: order.payment.status,
+                status: order.payment.status as PaymentStatus,
               } : undefined
             },
             processPaymentDto,
