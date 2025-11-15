@@ -25,7 +25,7 @@ import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '@repo/db';
+import { Role, Product } from '@repo/db';
 // Import shared schemas
 import { CreateProductSchema } from '@repo/shared';
 import { CreateProductDto } from '../common/validators';
@@ -37,6 +37,10 @@ import {
   UpdateProductDto,
   UpdateProductSchema,
 } from './dto/update-product.dto';
+
+interface ProductWithRelated extends Product {
+  relatedProducts: Product[];
+}
 
 /**
  * Products Controller
@@ -198,6 +202,35 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   findBySlug(@Param('slug') slug: string): Promise<import('@repo/db').Product> {
     return this.productsService.findBySlug(slug);
+  }
+
+  /**
+   * Get a product with related products
+   *
+   * Retrieves a single product by its slug along with related products (other color variations).
+   * This enables showing "Available in other colors" sections on product pages.
+   *
+   * @param slug - Product URL slug
+   * @returns Promise - Product with related products array
+   */
+  @Get('slug/:slug/with-related')
+  @ApiOperation({ summary: 'Get a product with related products' })
+  @ApiParam({ name: 'slug', description: 'Product slug' })
+  @ApiResponse({
+    status: 200,
+    description: 'Product with related products retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  async findBySlugWithRelated(
+    @Param('slug') slug: string,
+  ): Promise<ProductWithRelated | null> {
+    const product = (await this.productsService.findProductWithRelated(
+      slug,
+    )) as ProductWithRelated | null;
+    if (!product) {
+      throw new NotFoundException(`Product with slug ${slug} not found`);
+    }
+    return product;
   }
 
   /**

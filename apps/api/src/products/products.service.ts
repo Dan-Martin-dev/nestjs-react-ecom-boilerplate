@@ -33,6 +33,19 @@ type ProductWithRelations = Product & {
   })[];
 };
 
+type ProductWithRelated = Product & {
+  categories: Category[];
+  images: Image[];
+  variants: (ProductVariant & {
+    ProductVariantAttribute: {
+      attribute: ProductAttribute;
+      value: string;
+    }[];
+    images: Image[];
+  })[];
+  relatedProducts: Product[];
+};
+
 @Injectable()
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
@@ -675,5 +688,87 @@ export class ProductsService {
       variantsForColor: variantsDto,
       availableColors: colorsDto,
     } as ProductResponseDto;
+  }
+
+  /**
+   * Find all products in the same "family" based on shared categories and base product name
+   * Used to show related color variations
+   */
+  async findRelatedProducts(
+    productId: string,
+  ): Promise<import('@repo/db').Product[]> {
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        categories: true,
+      },
+    });
+
+    if (!product) {
+      return [];
+    }
+
+    // Extract base product name (remove color suffix if exists)
+    // E.g., "Classic Red T-Shirt" -> "T-Shirt"
+    const baseProductPattern = product.name
+      .replace(/^(Classic|Ocean|Midnight|Forest)\s+/i, '')
+      .replace(
+        /\s+(Red|Blue|Black|Green|White|Yellow|Purple|Orange|Pink|Brown|Gray|Grey)\s*/gi,
+        '',
+      )
+      .trim();
+
+    return this.prisma.product.findMany({
+      where: {
+        AND: [
+          { id: { not: productId } }, // Exclude current product
+          { isActive: true },
+          { deletedAt: null },
+          {
+            OR: [
+              { name: { contains: baseProductPattern, mode: 'insensitive' } },
+              {
+                categories: {
+                  some: {
+                    id: { in: product.categories.map((c) => c.id) },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+      include: {
+        images: { where: { isDefault: true }, take: 1 },
+        variants: { take: 1 },
+        categories: true,
+      },
+      take: 8, // Limit to 8 related products
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  }
+
+  /**
+   * Find a product with its related products
+   * This enables showing "Available in other colors" on product pages
+   */
+  async findProductWithRelated(
+    slug: string,
+  ): Promise<ProductWithRelated | null> {
+    const product = await this.findBySlug(slug);
+
+    if (!product) {
+      return null;
+    }
+
+    // Get related products
+    const relatedProducts = await this.findRelatedProducts(product.id);
+
+    return {
+      ...product,
+      relatedProducts,
+    } as ProductWithRelated;
   }
 }

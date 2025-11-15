@@ -42,6 +42,18 @@ export function useProductBySlug(slug: string) {
   })
 }
 
+// Get product by slug with related products (other color variations)
+export function useProductBySlugWithRelated(slug: string) {
+  return useQuery({
+    queryKey: [...productKeys.detail(slug), 'related'],
+    queryFn: () => apiClient.get<Product & { relatedProducts: Product[] }>(
+      API_ENDPOINTS.PRODUCT_BY_SLUG_WITH_RELATED(slug)
+    ),
+    enabled: !!slug,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  })
+}
+
 // Search products
 export function useProductSearch(query: string) {
   return useQuery({

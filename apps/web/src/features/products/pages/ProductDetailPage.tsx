@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useProductBySlug } from '../../../hooks/useProducts';
+import { /* useProductBySlug,  */useProductBySlugWithRelated } from '../../../hooks/useProducts';
 import type { Product } from '@repo/shared';
 import '../../auth/styles/auth-fonts.css';
 import {
@@ -13,8 +13,11 @@ import { getProductImages } from '../utils/productUtils';
 
 function ProductDetailPage() {
   const { productId } = useParams();
-  const { data: productResp, isLoading, error } = useProductBySlug(productId || '');
-  const product = productResp as Product | undefined;
+  
+  // Try to fetch product with related products first
+  const { data: productWithRelated, isLoading, error } = useProductBySlugWithRelated(productId || '');
+  const product = productWithRelated as (Product & { relatedProducts?: Product[] }) | undefined;
+  const relatedProducts = product?.relatedProducts || [];
 
   const { selectedVariantId, selectedVariant, setSelectedVariantId } = useProductVariant(product);
   const { quantity, increaseQuantity, decreaseQuantity } = useQuantity();
@@ -47,6 +50,7 @@ function ProductDetailPage() {
         onDecreaseQuantity={decreaseQuantity}
         onAddToCart={handleAddToCartClick}
         isAddToCartLoading={isAddToCartLoading}
+        relatedProducts={relatedProducts}
       />
     </ProductDetailLayout>
   );
