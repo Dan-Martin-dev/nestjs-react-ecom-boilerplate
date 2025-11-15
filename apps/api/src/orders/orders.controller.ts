@@ -24,7 +24,7 @@ import {
   OrdersResponse,
   AdminOrdersResponse,
   CancelOrderResponse,
-} from './interfaces/order.interfaces';
+} from '@repo/shared';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard)

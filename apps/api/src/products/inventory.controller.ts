@@ -8,7 +8,8 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
-import { InventoryService, ProductInventorySummary } from './inventory.service';
+import { InventoryService } from './inventory.service';
+import { ProductInventorySummary } from '@repo/shared';
 
 class StockUpdateDto {
   variantId!: string;

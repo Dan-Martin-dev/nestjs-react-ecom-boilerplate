@@ -120,28 +120,29 @@ This interface represents a product with its related products for "available in 
 
 ---
 
-## 🟡 MEDIUM PRIORITY - Evaluate Usage
+## � HIGH PRIORITY - Move to Shared (Continued)
 
 ### 5. Inventory Interfaces
 
 **Current Location:** `apps/api/src/products/inventory.service.ts`  
-**Target Location:** `packages/shared/src/types/inventory.ts` (conditional)
+**Target Location:** `packages/shared/src/types/inventory.ts`
 
-**Interfaces to Evaluate:**
+**Interfaces to Move:**
 - `ProductInventorySummary`
 - `StockUpdate`
 - `StockReservation`
 
 **Rationale:**
-Check if these interfaces are used only within the inventory service or across multiple modules. If used in:
+✅ **Analysis Complete**: These interfaces are used in:
+
+- Inventory controller (imports ProductInventorySummary)
+- Multiple service methods (public API)
+- Order processing (stock validation)
 - Admin inventory dashboards
-- Product stock displays
-- Order validation
-- Multiple services
 
-Then they should be moved to shared.
+They represent core business entities for stock management.
 
-**Impact:** Depends on usage analysis.
+**Impact:** High - affects inventory management and order processing.
 
 ---
 

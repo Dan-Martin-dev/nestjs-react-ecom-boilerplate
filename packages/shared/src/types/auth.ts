@@ -1,5 +1,12 @@
 import { User } from './user';
 
+// JWT Payload interface
+export interface JwtPayload {
+  sub: number;
+  email: string;
+  role?: string;
+}
+
 // Auth types and interfaces
 export interface RegisterDto {
   email: string;

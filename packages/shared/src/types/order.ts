@@ -15,31 +15,208 @@ export const PaymentMethod = {
 } as const;
 export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
 
-export const OrderStatus = {
-  PENDING: 'PENDING',
-  CONFIRMED: 'CONFIRMED',
-  SHIPPED: 'SHIPPED',
-  DELIVERED: 'DELIVERED',
-  CANCELLED: 'CANCELLED'
-} as const;
-export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
+/**
+ * Order Status Enum
+ * Represents the lifecycle states of an order
+ */
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  PROCESSING = 'PROCESSING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+  REFUNDED = 'REFUNDED',
+}
 
+/**
+ * Payment Status Enum
+ * Represents the payment processing states
+ * Note: Must match the database schema
+ */
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  SUCCESSFUL = 'SUCCESSFUL',
+  FAILED = 'FAILED',
+}
+
+/**
+ * Order Item Interface (Database/API shape)
+ * Represents a product variant within an order
+ */
 export interface OrderItem {
   id: string;
   orderId: string;
   productVariantId: string;
   quantity: number;
-  priceAtPurchase: string;
-  productVariant: ProductVariant & {
+  priceAtPurchase: any; // Handle Decimal type
+  productVariant: {
+    id: string;
+    sku: string;
+    stockQuantity: number;
     product: {
       id: string;
       name: string;
-      slug: string;
-      images?: { id: string; url: string; isDefault: boolean; }[];
+      images?: {
+        id: string;
+        url: string;
+        altText?: string | null;
+        alt?: string | null; // Keep for backwards compatibility
+        isDefault?: boolean;
+        createdAt?: Date;
+        productId?: string;
+        [key: string]: any;
+      }[];
     };
+    ProductVariantAttribute?: any[];
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+/**
+ * Order Payment Interface (Database/API shape)
+ * Represents payment information for an order
+ */
+export interface OrderPayment {
+  id: string;
+  orderId: string;
+  amount: any; // Handle Decimal type
+  currency: string;
+  paymentMethod: string;
+  status: PaymentStatus;
+  installments: number | null;
+  installmentAmount: any; // Handle Decimal type
+  installmentPlan: string | null;
+  metadata?: any;
+  paymentProviderReference?: string | null;
+  [key: string]: any;
+}
+
+/**
+ * Order Address Interface (Database/API shape)
+ * Represents shipping or billing address for an order
+ */
+export interface OrderAddress {
+  id: string;
+  street: string;
+  streetNumber: string | null;
+  apartment: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  phone: string | null;
+  type?: string;
+  userId?: string;
+  isDefault?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  [key: string]: any;
+}
+
+/**
+ * Order Tracking Interface
+ * Represents tracking events for an order
+ */
+export interface OrderTracking {
+  id: string;
+  orderId: string;
+  status: string;
+  message: string;
+  timestamp: Date;
+}
+
+/**
+ * Complete Order Interface (Database/API shape)
+ * Represents a full order with all relations
+ */
+export interface Order {
+  id: string;
+  orderNumber: string;
+  userId: string | null;
+  status: OrderStatus;
+  totalAmount: any; // Handle Decimal type
+  currency: string;
+  notes: string | null;
+  shippingAddressId: string;
+  billingAddressId: string;
+  appliedDiscountId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  items: OrderItem[];
+  payment: OrderPayment | null;
+  shippingAddress: OrderAddress;
+  billingAddress: OrderAddress;
+  OrderTracking?: OrderTracking[];
+}
+
+/**
+ * Order Summary Interface
+ * Represents a simplified order view for listings
+ */
+export interface OrderSummary {
+  id: string;
+  orderNumber: string;
+  userId: string | null;
+  status: OrderStatus;
+  totalAmount: any; // Handles Decimal type
+  currency: string;
+  createdAt: Date;
+  updatedAt: Date;
+  items: OrderItem[];
+  payment: OrderPayment | null;
+}
+
+/**
+ * Orders Response Interface
+ * Paginated response for customer order listings
+ */
+export interface OrdersResponse {
+  data: OrderSummary[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
   };
 }
 
+/**
+ * Order Summary With User Interface
+ * Order summary with user information (admin view)
+ */
+export interface OrderSummaryWithUser extends OrderSummary {
+  user: {
+    id: string;
+    email: string;
+    name: string | null;
+  } | null;
+}
+
+/**
+ * Admin Orders Response Interface
+ * Paginated response for admin order listings
+ */
+export interface AdminOrdersResponse {
+  data: OrderSummaryWithUser[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+/**
+ * Cancel Order Response Interface
+ * Response for order cancellation requests
+ */
+export interface CancelOrderResponse {
+  message: string;
+}
+
+// Legacy Payment interface for backwards compatibility
 export interface Payment {
   id: string;
   orderId: string;
@@ -56,27 +233,6 @@ export interface Payment {
   metadata?: Record<string, any>; // Additional gateway details
   createdAt: string;
   updatedAt?: string;
-}
-
-
-
-export interface Order {
-  id: string;
-  orderNumber: string;
-  userId: string;
-  status: OrderStatus;
-  totalAmount: string;
-  currency: string;          // ISO currency code (ARS for Argentine Peso)
-  shippingAddressId: string;
-  billingAddressId: string;
-  notes?: string;
-  items: OrderItem[];
-  payment: Payment;
-  invoice?: Invoice;         // The invoice associated with this order
-  shippingAddress: Address;
-  billingAddress: Address;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface CreateOrderDto {

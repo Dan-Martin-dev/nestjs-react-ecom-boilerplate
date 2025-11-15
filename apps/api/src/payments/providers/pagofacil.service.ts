@@ -7,7 +7,7 @@ import {
   OrderWithPayment,
   PaymentResponse,
   WebhookResponse,
-} from '../interfaces/payment.interfaces';
+} from '@repo/shared';
 
 @Injectable()
 export class PagoFacilService {

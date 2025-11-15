@@ -19,10 +19,14 @@ import {
   Order,
   OrdersResponse,
   AdminOrdersResponse,
-  CancelOrderResponse,
   OrderSummary,
   OrderSummaryWithUser,
-} from './interfaces/order.interfaces';
+} from '@repo/shared';
+
+// Service-specific response types
+interface CancelOrderResponse {
+  message: string;
+}
 
 @Injectable()
 export class OrdersService {

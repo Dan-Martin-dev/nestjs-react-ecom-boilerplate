@@ -11,7 +11,7 @@ import { MercadoPagoService } from './providers/mercadopago.service';
 import { RapiPagoService } from './providers/rapipago.service';
 import { PagoFacilService } from './providers/pagofacil.service';
 import { ConfigService } from '@nestjs/config';
-import { OrderWithPayment } from './interfaces/payment.interfaces';
+import { OrderWithPayment } from '@repo/shared';
 
 @Injectable()
 export class PaymentsService {

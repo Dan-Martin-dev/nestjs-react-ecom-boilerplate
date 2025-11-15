@@ -1,36 +1,10 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
-export interface ProductInventorySummary {
-  productId: string;
-  totalVariants: number;
-  totalStock: number;
-  lowStockVariants: number;
-  outOfStockVariants: number;
-  variants: Array<{
-    id: string;
-    name: string;
-    sku: string;
-    stockQuantity: number;
-    attributes: Array<{
-      name: string;
-      value: string;
-    }>;
-  }>;
-}
-
-export interface StockUpdate {
-  variantId: string;
-  quantity: number;
-  reason?: string;
-}
-
-export interface StockReservation {
-  variantId: string;
-  quantity: number;
-  reservationId: string;
-  expiresAt: Date;
-}
+import {
+  ProductInventorySummary,
+  StockUpdate,
+  StockReservation,
+} from '@repo/shared';
 
 @Injectable()
 export class InventoryService {
