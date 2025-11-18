@@ -161,7 +161,7 @@ export function Footer() {
 
               {/* Simple svg icons with accessible labels */}
               {/* Simple svg icons with accessible labels */}
-              <div className="flex items-center gap-3 mb-8 md:mb-6 justify-center md:justify-start">
+              <div className="flex items-center gap-3 mt-2 mb-4 md:mb-3 justify-center md:justify-start">
                 <a
                   href="#"
                   aria-label="Facebook"

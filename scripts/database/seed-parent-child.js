@@ -24,8 +24,8 @@ async function downloadAndSaveImage(url, filename) {
   }
 }
 
-async function seedParentChildProducts() {
-  console.log('🌱 Seeding parent-child product structure...');
+async function seedProductFamily() {
+  console.log('🌱 Seeding product family with color variants...');
 
   try {
     // 1. Create category
@@ -43,7 +43,12 @@ async function seedParentChildProducts() {
 
     // 2. Create global attributes for SIZE (shared across all products)
     const sizeAttribute = await prisma.productAttribute.upsert({
-      where: { name: 'Size' },
+      where: { 
+        name_type: {
+          name: 'Size',
+          type: 'SIZE'
+        }
+      },
       update: {},
       create: { 
         name: 'Size', 
@@ -59,9 +64,9 @@ async function seedParentChildProducts() {
       const slugValue = size.toLowerCase();
       sizeValues[size] = await prisma.productAttributeGlobalValue.upsert({
         where: { 
-          attributeId_slug: { 
+          attributeId_value: { 
             attributeId: sizeAttribute.id, 
-            slug: slugValue 
+            value: size
           } 
         },
         update: {},
@@ -101,7 +106,7 @@ async function seedParentChildProducts() {
         description: 'Bold and vibrant red cotton t-shirt. Perfect for making a statement with comfort.',
         price: 29.99,
         color: 'Red',
-        imageUrl: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800',
+        imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=800&fit=crop',
       },
       {
         name: 'Ocean Blue T-Shirt',
@@ -109,7 +114,7 @@ async function seedParentChildProducts() {
         description: 'Cool and calming blue cotton t-shirt. A versatile wardrobe essential.',
         price: 29.99,
         color: 'Blue',
-        imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800',
+        imageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=800&fit=crop',
       },
       {
         name: 'Midnight Black T-Shirt',
@@ -117,7 +122,7 @@ async function seedParentChildProducts() {
         description: 'Sleek and timeless black cotton t-shirt. Goes with everything.',
         price: 29.99,
         color: 'Black',
-        imageUrl: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800',
+        imageUrl: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=800&h=800&fit=crop',
       },
       {
         name: 'Forest Green T-Shirt',
@@ -125,7 +130,7 @@ async function seedParentChildProducts() {
         description: 'Fresh and natural green cotton t-shirt. Eco-friendly style.',
         price: 29.99,
         color: 'Green',
-        imageUrl: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800',
+        imageUrl: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=800&h=800&fit=crop',
       },
     ];
 
@@ -144,7 +149,6 @@ async function seedParentChildProducts() {
           description: colorData.description,
           price: colorData.price,
           isActive: true,
-          parentId: parentProduct.id, // Link to parent
           categories: {
             connect: { id: clothingCategory.id },
           },
@@ -170,10 +174,9 @@ async function seedParentChildProducts() {
             sku: `TSH-${colorData.color.toUpperCase()}-${size}`,
             price: colorData.price,
             stockQuantity: 100,
-            isActive: true,
             ProductVariantAttribute: {
               create: {
-                globalValueId: sizeValues[size].id,
+                attributeId: sizeAttribute.id,
                 value: size,
               },
             },
@@ -203,4 +206,4 @@ async function seedParentChildProducts() {
   }
 }
 
-seedParentChildProducts();
+seedProductFamily();
