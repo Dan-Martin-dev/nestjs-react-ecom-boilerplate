@@ -235,7 +235,7 @@ export interface Payment {
   updatedAt?: string;
 }
 
-export interface CreateOrderDto {
+interface CreateOrderDto {
   shippingAddressId: string;
   billingAddressId: string;
   paymentMethod: PaymentMethod;

@@ -26,6 +26,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CacheConfigModule } from './cache/cache.module';
 import { LoggerModule } from './logger/logger.module';
 import { MetricsModule } from './metrics/metrics.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 // NOTE: I've left out 'analytics' as its folder was empty.
 // The payments module has been implemented with Argentina-specific payment methods.
@@ -44,6 +45,14 @@ import { MetricsModule } from './metrics/metrics.module';
             path.resolve(__dirname, '../../../.env'),
           ],
       expandVariables: true,
+    }),
+    // Serve uploaded images and static files
+    ServeStaticModule.forRoot({
+      rootPath: path.join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+      serveStaticOptions: {
+        index: false,
+      },
     }),
     CacheConfigModule,
     LoggerModule,

@@ -1,12 +1,12 @@
 import type { Category } from './category';
+import { ProductImage } from '../schemas/product';
+
+// SCHEMA-FIRST MIGRATION:
+// CreateProductDto is now derived from CreateProductSchema in ../schemas/product.ts
+// Import it from schemas instead of this file for validation-backed types
+// This file retains database-returned entity types that don't need validation
 
 // Product types and interfaces
-export interface ProductImage {
-  id: string;
-  url: string;
-  altText?: string;
-  isDefault: boolean;
-}
 
 export interface ProductVariant {
   id: string;
@@ -51,30 +51,9 @@ export interface Product {
   updatedAt: string;
 }
 
-export interface CreateProductDto {
-  name: string;
-  slug: string;
-  description?: string;
-  price: number;
-  categoryIds: string[];
-  images?: {
-    url: string;
-    altText?: string;
-    isDefault?: boolean;
-  }[];
-  variants: {
-    name: string;
-    sku: string;
-    price: number;
-    stockQuantity: number;
-    attributes?: {
-      attributeId: string;
-      value: string;
-    }[];
-  }[];
-  metaTitle?: string;
-  metaDescription?: string;
-}
+// DEPRECATED: Use ProductSchema from @repo/shared/schemas instead
+// Re-export for backward compatibility during migration
+export type { ProductSchema as CreateProductDto } from '../schemas/product';
 
 export interface ProductFilterDto {
   categoryId?: string;

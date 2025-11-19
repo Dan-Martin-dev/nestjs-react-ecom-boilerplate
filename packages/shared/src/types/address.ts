@@ -24,7 +24,7 @@ export interface Address {
   updatedAt: string;
 }
 
-export interface CreateAddressDto {
+interface CreateAddressDto {
   street: string;
   streetNumber?: string;
   city: string;

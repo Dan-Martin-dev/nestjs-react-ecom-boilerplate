@@ -1,19 +1,12 @@
 import { z } from 'zod';
-import type { CreateCategoryDto } from '../types/category';
 
 // Category Schema using Zod
 export const CreateCategorySchema = z.object({
-  name: z.string().min(1, 'Category name is required'),
-  slug: z.string().min(1, 'Slug is required'),
-  description: z.string().optional(),
-  parentId: z.string().optional(),
+  name: z.string().min(1, 'Category name is required').max(100),
+  slug: z.string().min(1, 'Slug is required').max(100),
+  description: z.string().max(500, 'Description too long').optional(),
+  parentId: z.string().uuid('Invalid parent category ID').optional(),
 });
-
-// Export the type that is inferred from the schema
-export type CategorySchema = z.infer<typeof CreateCategorySchema>;
-
-// Type assertion to ensure compatibility with shared types
-const _typeCheck: CreateCategoryDto = {} as unknown as CategorySchema;
 
 // Create a schema for category response DTOs
 export const CategoryDtoSchema = z.object({
@@ -27,4 +20,6 @@ export const CategoryDtoSchema = z.object({
   }).optional()
 });
 
+// Export the inferred types - SCHEMA-FIRST APPROACH
+export type CategorySchema = z.infer<typeof CreateCategorySchema>;
 export type CategoryDto = z.infer<typeof CategoryDtoSchema>;

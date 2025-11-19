@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import type { CreateProductDto } from '../types/product';
 
 export const ProductImageSchema = z.object({
   id: z.string(),
@@ -10,16 +9,16 @@ export const ProductImageSchema = z.object({
 
 // Schema for creating products
 export const CreateProductSchema = z.object({
-  name: z.string().min(1, 'Product name is required'),
+  name: z.string().min(1, 'Product name is required').max(100),
   slug: z.string().min(1, 'Slug is required'),
-  description: z.string().optional(),
-  price: z.number().positive('Price must be positive'),
+  description: z.string().min(10, 'Description must be at least 10 characters').max(2000).optional(),
+  price: z.number().positive('Price must be positive').max(999999.99, 'Price exceeds maximum allowed'),
   categoryIds: z.array(z.string()).min(1, 'At least one category is required'),
   images: z.array(z.object({
     url: z.string().url('Invalid image URL'),
     altText: z.string().optional(),
     isDefault: z.boolean().default(false),
-  })).optional(),
+  })).min(1, 'At least one image is required').max(10, 'Maximum 10 images allowed').optional(),
   variants: z.array(z.object({
     name: z.string().min(1, 'Variant name is required'),
     slug: z.string().min(1, 'Variant slug is required'),
@@ -31,8 +30,17 @@ export const CreateProductSchema = z.object({
       value: z.string(),
     })).optional(),
   })).min(1, 'At least one variant is required'),
-  metaTitle: z.string().optional(),
-  metaDescription: z.string().optional(),
+  metaTitle: z.string().max(60, 'Meta title too long').optional(),
+  metaDescription: z.string().max(160, 'Meta description too long').optional(),
+}).refine((data) => {
+  // Business rule: Premium products (>$100) require detailed descriptions
+  if (data.price > 100 && data.description) {
+    return data.description.length >= 50;
+  }
+  return true;
+}, {
+  message: 'Premium products (>$100) require detailed descriptions (50+ characters)',
+  path: ['description'],
 });
 
 // Schema for product responses
@@ -60,9 +68,7 @@ export const ProductDtoSchema = z.object({
   updatedAt: z.string().optional()
 });
 
-// Export the inferred types
+// Export the inferred types - SCHEMA-FIRST APPROACH
 export type ProductSchema = z.infer<typeof CreateProductSchema>;
 export type ProductDto = z.infer<typeof ProductDtoSchema>;
-
-// Type assertion to ensure compatibility with shared types
-const _typeCheck: CreateProductDto = {} as unknown as ProductSchema;
+export type ProductImage = z.infer<typeof ProductImageSchema>;
