@@ -13,8 +13,4 @@ export interface Review {
   updatedAt: string;
 }
 
-export interface CreateReviewDto {
-  productId: string;
-  rating: number;
-  comment?: string;
-}
+// DTOs now come from schemas/review.ts (schema-first approach)

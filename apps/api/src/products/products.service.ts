@@ -341,7 +341,7 @@ export class ProductsService {
     if (categoryIds && categoryIds.length > 0) {
       updateData.categories = {
         set: [], // Clear existing categories first
-        connect: categoryIds.map((id) => ({ id })),
+        connect: categoryIds.map((id: string) => ({ id })),
       };
     }
 
@@ -349,11 +349,13 @@ export class ProductsService {
     if (images && images.length > 0) {
       updateData.images = {
         deleteMany: {}, // Delete all existing images
-        create: images.map((img) => ({
-          url: img.url,
-          altText: img.altText ?? '',
-          isDefault: img.isDefault ?? false,
-        })),
+        create: images.map(
+          (img: { url: string; altText?: string; isDefault?: boolean }) => ({
+            url: img.url,
+            altText: img.altText ?? '',
+            isDefault: img.isDefault ?? false,
+          }),
+        ),
       };
     }
 
@@ -361,21 +363,32 @@ export class ProductsService {
     if (variants && variants.length > 0) {
       updateData.variants = {
         deleteMany: {}, // Delete all existing variants
-        create: variants.map((variant) => ({
-          name: variant.name,
-          slug: variant.slug,
-          sku: variant.sku,
-          price: variant.price.toString(),
-          stockQuantity: variant.stockQuantity,
-          ProductVariantAttribute: variant.attributes
-            ? {
-                create: variant.attributes.map((attr) => ({
-                  attributeId: attr.attributeId,
-                  value: attr.value,
-                })),
-              }
-            : undefined,
-        })),
+        create: variants.map(
+          (variant: {
+            name: string;
+            slug: string;
+            sku: string;
+            price: number;
+            stockQuantity: number;
+            attributes?: { attributeId: string; value: string }[];
+          }) => ({
+            name: variant.name,
+            slug: variant.slug,
+            sku: variant.sku,
+            price: variant.price.toString(),
+            stockQuantity: variant.stockQuantity,
+            ProductVariantAttribute: variant.attributes
+              ? {
+                  create: variant.attributes.map(
+                    (attr: { attributeId: string; value: string }) => ({
+                      attributeId: attr.attributeId,
+                      value: attr.value,
+                    }),
+                  ),
+                }
+              : undefined,
+          }),
+        ),
       };
     }
 

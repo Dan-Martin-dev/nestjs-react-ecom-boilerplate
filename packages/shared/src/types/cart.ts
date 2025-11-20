@@ -25,7 +25,4 @@ export interface Cart {
   updatedAt: string;
 }
 
-export interface AddToCartDto {
-  productVariantId: string;
-  quantity: number;
-}
+// DTOs now come from schemas/cart.ts (schema-first approach)

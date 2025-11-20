@@ -21,17 +21,4 @@ export interface Discount {
   updatedAt: string;
 }
 
-export interface CreateDiscountDto {
-  code: string;
-  description?: string;
-  type: DiscountType;
-  value: number;
-  startDate?: Date;
-  endDate?: Date;
-  isActive?: boolean;
-  usageLimit?: number;
-  usageLimitPerUser?: number;
-  minimumSpend?: number;
-  applicableProductIds?: string[];
-  applicableCategoryIds?: string[];
-}
+// DTOs now come from schemas/discount.ts (schema-first approach)
